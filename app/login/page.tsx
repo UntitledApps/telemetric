@@ -1,27 +1,63 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 import { Loader } from "lucide-react";
-import { useState } from "react";
-import { login } from "../login/actions";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { login, verifyOtp } from "../login/actions";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
 
   const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(event.target.value);
   };
 
-  const handleSubmit = async (formData: FormData) => {
+  const [isApplePlatform, setIsApplePlatform] = useState(false);
+
+  useEffect(() => {
+    const platform = navigator.platform.toLowerCase();
+    const isApple = /mac|iphone|ipad|ipod/.test(platform);
+    setIsApplePlatform(isApple);
+  }, []);
+  const handleOtpChange = (value: string) => {
+    setOtp(value);
+  };
+
+  const handleSubmitEmail = async (formData: FormData) => {
     setIsSubmitting(true);
 
     try {
       await login(formData);
       setIsSuccess(true);
     } catch (error) {
-      // Handle error accordingly
       console.error("Login error:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSubmitOtp = async () => {
+    setIsSubmitting(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("email", email);
+      formData.append("otp", otp);
+
+      await verifyOtp(formData);
+      setIsVerified(true);
+    } catch (error) {
+      console.error("OTP Verification error:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -30,10 +66,12 @@ export default function LoginPage() {
   const isEmailValid =
     email.length > 0 && /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email);
 
+  const isOtpValid = otp.length === 6;
+
   return (
     <div className="flex justify-center items-center min-h-screen">
       <form
-        className="bg-white p-6 rounded-lg shadow-md w-full "
+        className="bg-white p-6 rounded-lg shadow-md w-full"
         style={{
           maxWidth: "350px",
           gap: "10px",
@@ -42,44 +80,154 @@ export default function LoginPage() {
         }}
         onSubmit={(e) => {
           e.preventDefault();
-          const formData = new FormData(e.currentTarget);
-          handleSubmit(formData);
+          if (!isSuccess) {
+            const formData = new FormData(e.currentTarget);
+            handleSubmitEmail(formData);
+          } else if (isSuccess && isOtpValid) {
+            handleSubmitOtp();
+          }
         }}
       >
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Email:
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          required
-          value={email}
-          onChange={handleEmailChange}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
+        {!isSuccess ? (
+          <>
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Email:
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              value={email}
+              onChange={handleEmailChange}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            />
 
-        <Button
-          type="submit"
-          disabled={!isEmailValid || isSubmitting || isSuccess}
-          style={{
-            width: "100%",
-          }}
-        >
-          {isSubmitting ? (
-            <>
-              <Loader className="mr-2 h-4 w-4 animate-spin" />
-              Please wait
-            </>
-          ) : isSuccess ? (
-            "Check your inbox"
-          ) : (
-            "Continue"
-          )}
-        </Button>
+            <Button
+              type="submit"
+              disabled={!isEmailValid || isSubmitting}
+              style={{
+                width: "100%",
+              }}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  Sending code
+                </>
+              ) : (
+                "Continue"
+              )}
+            </Button>
+          </>
+        ) : !isVerified ? (
+          <>
+            <p className="text-sm text-gray-700">
+              A verification code has been sent to your email. Please enter the
+              OTP below:
+            </p>
+            <InputOTP maxLength={6} onChange={handleOtpChange}>
+              <InputOTPGroup>
+                <InputOTPSlot index={0} />
+                <InputOTPSlot index={1} />
+                <InputOTPSlot index={2} />
+              </InputOTPGroup>
+              <InputOTPSeparator />
+              <InputOTPGroup>
+                <InputOTPSlot index={3} />
+                <InputOTPSlot index={4} />
+                <InputOTPSlot index={5} />
+              </InputOTPGroup>
+            </InputOTP>
+
+            <Button
+              type="submit"
+              disabled={!isOtpValid || isSubmitting}
+              style={{
+                width: "100%",
+              }}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader className="mr-2 h-4 w-4 animate-spin" />
+                  Verifying OTP
+                </>
+              ) : (
+                "Verify OTP"
+              )}
+            </Button>
+            <div className="mt-4 flex flex-col gap-2">
+              <p className="text-sm text-gray-700">
+                Quickly access your E-Mail client:
+              </p>
+              <Button
+                type="button"
+                variant={"outline"}
+                style={{
+                  width: "100%",
+                  gap: "5px",
+                }}
+                onClick={() =>
+                  window.open("https://mail.google.com/", "_blank")
+                }
+              >
+                <Image
+                  src="/images/gmail.webp"
+                  width={20}
+                  height={20}
+                  alt="Gmail"
+                />
+                Open Gmail
+              </Button>
+
+              <Button
+                type="button"
+                variant={"outline"}
+                style={{
+                  width: "100%",
+                  gap: "5px",
+                }}
+                onClick={() =>
+                  window.open("https://outlook.live.com/owa/", "_blank")
+                }
+              >
+                <Image
+                  src="/images/outlook.webp"
+                  width={20}
+                  height={20}
+                  alt="Outlook"
+                />
+                Open Outlook
+              </Button>
+              {isApplePlatform && (
+                <Button
+                  type="button"
+                  variant={"outline"}
+                  style={{
+                    width: "100%",
+                    gap: "5px",
+                  }}
+                  onClick={() => window.open("message://", "_self")}
+                >
+                  <Image
+                    src="/images/apple_mail.webp"
+                    width={20}
+                    height={20}
+                    alt="Apple Mail"
+                  />{" "}
+                  Open Apple Mail
+                </Button>
+              )}
+            </div>
+          </>
+        ) : (
+          <p className="text-sm text-green-600">
+            Your email has been verified successfully!
+          </p>
+        )}
       </form>
     </div>
   );
