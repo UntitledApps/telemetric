@@ -1,5 +1,8 @@
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 import { createClient } from "@supabase/supabase-js";
 import type { Metadata } from "next";
+
 import { Inter } from "next/font/google";
 
 import "./globals.css";
@@ -21,7 +24,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
+        <Toaster />
+      </body>
     </html>
   );
 }

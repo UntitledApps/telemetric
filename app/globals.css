@@ -6,6 +6,7 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --bg-gold: #ffee8b;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -13,7 +14,34 @@
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
+
+    --bg-gold: #3d3400;
   }
+}
+
+.primary-button {
+  background-color: var(--bg-gold); /* Gold background color */
+  color: #f8f8f8; /* Black text color */
+  padding-top: 0.75rem; /* Equivalent to py-3 */
+  padding-bottom: 0.75rem; /* Equivalent to py-3 */
+  padding-left: 1.5rem; /* Equivalent to px-6 */
+  padding-right: 1.5rem; /* Equivalent to px-6 */
+  border-radius: 9999px; /* Fully rounded (rounded-full) */
+  font-size: 1.125rem; /* Equivalent to text-lg */
+  transition: background-color 0.3s ease, opacity 0.3s ease;
+
+  /* Outline */
+  outline: 1px solid #ffd900; /* Light black outline */
+  /* Drop shadow */
+}
+
+.primary-button:hover {
+  background-color: #ffd700; /* Gold background color */
+  opacity: 0.9; /* Slightly reduce opacity on hover */
+}
+
+.bg-gold {
+  background-color: #ffee8b;
 }
 
 @layer utilities {
