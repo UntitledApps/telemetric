@@ -47,7 +47,16 @@ export async function verifyOtp(formData: FormData) {
     redirect("/error");
   }
 
-  redirect("/");
+  const { data: { user } } = await supabase.auth.getUser();
+
+  supabase.from("customers").upsert([
+    {
+      id: user?.id,
+      createdAt: new Date(),
+    },
+  ]);
+
+  redirect("/dashboard");
 }
 
 export async function logout() {

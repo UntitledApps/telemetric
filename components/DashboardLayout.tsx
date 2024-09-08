@@ -1,7 +1,7 @@
 // components/DashboardLayout.tsx
 "use client";
-
 import {
+  BadgeDollarSign,
   FolderInput,
   Home,
   LineChart,
@@ -9,13 +9,13 @@ import {
   Milestone,
   Package,
   Package2,
-  Radio,
   Settings,
   ShoppingCart,
   Telescope,
   Users,
 } from "lucide-react";
 import Link from "next/link";
+import React, { useEffect, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -26,29 +26,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-
 import {
   Select,
   SelectContent,
-  SelectGroup,
-  SelectLabel,
+  SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
-import DataExplorer from "../maincontent/data_explorer";
-import DataImportExport from "../maincontent/import_export_data";
-import LiveView from "../maincontent/liveview";
-import Metrics from "../maincontent/metrics/metrics";
-import Setup from "../maincontent/setup";
-import { AccountWidget } from "./account/accountwidget";
-import { Tabs, TabsList, TabsTrigger } from "./tabs";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Project } from "@/types/";
+import { createClient } from "@/utils/supabase/client";
+import { AccountWidget } from "../components/account/accountwidget";
+import DataExplorer from "./maincontent/data_explorer";
+import DataImportExport from "./maincontent/import_export_data";
+import Metrics from "./maincontent/metrics/metrics";
+import Projects from "./maincontent/projects";
+import Setup from "./maincontent/setup";
+import ProjectSelect from "./navigation/projectselect";
 import { TimeRangePicker } from "./utils/timerangepicker";
 
 enum SelectedNavItem {
+  PROJECTS,
   METRICS,
+  REVENUE,
   LIVEVIEW,
   DATA_EXPLORER,
   SETUP,
@@ -57,22 +57,87 @@ enum SelectedNavItem {
 }
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
-  //state to keep track of the selected nav item
+  const supabase = createClient();
   const [selectedNavItem, setSelectedNavItem] = useState<SelectedNavItem>(
     SelectedNavItem.METRICS
   );
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [loadingProjects, setLoadingProjects] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [environment, setEnvironment] = useState<string>("Production");
 
-  //function to handle the click event on the nav items
-  function handleNavItemClick(selectedNavItem: SelectedNavItem) {
-    setSelectedNavItem(selectedNavItem);
-  }
-  //Render content based on the selected nav item
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError) {
+          throw authError;
+        }
+
+        if (!user) {
+          throw new Error("Unauthorized access");
+        }
+
+        const { data: customerData, error: customerError } = await supabase
+          .from("customers")
+          .select("projects")
+          .eq("id", user?.id)
+          .single();
+
+        if (customerError) {
+          throw customerError;
+        }
+
+        if (customerData && customerData.projects) {
+          const { data: projectsData, error: projectsError } = await supabase
+            .from("projects")
+            .select("*")
+            .in("id", customerData.projects);
+
+          if (projectsError) {
+            throw projectsError;
+          }
+
+          setProjects(projectsData || []);
+
+          setLoadingProjects(false);
+        }
+      } catch (error) {
+        setError((error as Error).message);
+      } finally {
+        setLoadingProjects(false);
+      }
+    };
+
+    fetchProjects();
+  }, [supabase]);
+
+  const handleNavItemClick = (navItem: SelectedNavItem) => {
+    setSelectedNavItem(navItem);
+  };
+
+  const handleProjectChange = (projectId: string) => {
+    const project = projects.find((proj) => proj.id === projectId) || null;
+    setSelectedProject(project);
+  };
+
   function renderContent() {
     switch (selectedNavItem) {
+      case SelectedNavItem.PROJECTS:
+        return <Projects />;
       case SelectedNavItem.METRICS:
-        return <Metrics />;
-      case SelectedNavItem.LIVEVIEW:
-        return <LiveView />;
+        return (
+          <Metrics
+            selectedProject={selectedProject}
+            environment={environment}
+          />
+        );
+      // Pass selected project data here
       case SelectedNavItem.DATA_EXPLORER:
         return <DataExplorer />;
       case SelectedNavItem.SETUP:
@@ -81,27 +146,46 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         return <Settings />;
       case SelectedNavItem.IMPORT_EXPORT_DATA:
         return <DataImportExport />;
+      default:
+        return null;
     }
   }
 
+  const handleEnvironmentChange = (value: string) => {
+    setEnvironment(value);
+  };
+
+  if (error) return <div>Error: {error}</div>;
+
   return (
-    <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
-      <div className="hidden border-r bg-muted/40 md:block">
-        <div className="flex h-full max-h-screen flex-col gap-2">
+    <div className="sticky top-0  grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+      <div className="sticky top-0  hidden border-r  bg-white md:block">
+        <div className="sticky top-0  flex h-full max-h-screen flex-col gap-2">
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-            <Select>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select a fruit" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>Your Projects</SelectLabel>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+            <ProjectSelect
+              projects={projects}
+              selectedProject={selectedProject?.id || ""}
+              onProjectChange={handleProjectChange}
+            />
           </div>
           <div className="flex-1">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
+              <Link
+                href="#"
+                onClick={() => handleNavItemClick(SelectedNavItem.PROJECTS)}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                  selectedNavItem === SelectedNavItem.PROJECTS
+                    ? "bg-muted text-primary"
+                    : "text-muted-foreground hover:text-primary"
+                }`}
+              >
+                <Package2 className="h-4 w-4" />
+                Projects
+              </Link>
+              <div className="h-3"></div>
+              <p className="text-muted-foreground text-xs font-medium px-3 py-2">
+                Data
+              </p>
               <Link
                 href="#"
                 onClick={() => handleNavItemClick(SelectedNavItem.METRICS)}
@@ -116,18 +200,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               </Link>
               <Link
                 href="#"
-                onClick={() => handleNavItemClick(SelectedNavItem.LIVEVIEW)}
+                onClick={() => handleNavItemClick(SelectedNavItem.REVENUE)}
                 className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                  selectedNavItem === SelectedNavItem.LIVEVIEW
+                  selectedNavItem === SelectedNavItem.REVENUE
                     ? "bg-muted text-primary"
                     : "text-muted-foreground hover:text-primary"
                 }`}
               >
-                <Radio className="h-4 w-4" />
-                Liveview
-                <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                  6
-                </Badge>
+                <BadgeDollarSign className="h-4 w-4" />
+                Revenue
               </Link>
               <Link
                 href="#"
@@ -202,7 +283,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         </div>
       </div>
       <div className="flex flex-col">
-        <header className="flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6">
+        <header className="sticky top-0  z-30 flex h-14 items-center gap-4 border-b bg-white px-4 lg:h-[60px] lg:px-6">
           <Sheet>
             <SheetTrigger asChild>
               <Button
@@ -280,28 +361,27 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
               </div>
             </SheetContent>
           </Sheet>
-          <p
-            className="text-sm font-medium text-muted-foreground"
-            style={{ marginLeft: "auto" }}
-          >
-            Timerange:
-          </p>
-          <TimeRangePicker />
-          <p
-            className="text-sm font-medium text-muted-foreground"
-            style={{ marginLeft: "auto" }}
-          >
-            Show Data from
-          </p>
-          <Tabs defaultValue="account" className="w-[200px]">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="account">Debug</TabsTrigger>
-              <TabsTrigger value="password">Production</TabsTrigger>
-            </TabsList>
-          </Tabs>
+          <div style={{ marginLeft: "auto" }}></div>
+          {selectedProject && (
+            <>
+              <Select onValueChange={handleEnvironmentChange}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select environment" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Debug/Development">
+                    Debug/Development
+                  </SelectItem>
+                  <SelectItem value="Production">Production</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <TimeRangePicker />
+            </>
+          )}
           <AccountWidget />
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+        <main className="flex flex-1 flex-col gap-4 p-4 ">
           {renderContent()}
         </main>
       </div>

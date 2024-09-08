@@ -1,154 +1,90 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress"; // Assuming you have a progress component
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import React from "react";
 
-export function Browsers() {
+interface BrowserUsage {
+  browser: string;
+  percentage: number;
+}
+
+// This should match how you fetch and structure user data in your app
+interface UserData {
+  id: string;
+  metadata: {
+    metadata: {
+      browser?: string;
+    };
+  };
+}
+
+const Browsers = ({ userData }: { userData: UserData[] }) => {
+  const [browserUsage, setBrowserUsage] = React.useState<BrowserUsage[]>([]);
+
+  React.useEffect(() => {
+    const browserCounts: { [key: string]: number } = {};
+
+    userData.forEach((user) => {
+      const { browser } = user.metadata.metadata; // Accessing nested metadata for browser
+      if (browser) {
+        browserCounts[browser] = (browserCounts[browser] || 0) + 1;
+      }
+    });
+
+    const totalUsers = userData.length;
+    const calculatedBrowserUsage = Object.entries(browserCounts).map(
+      ([browser, count]) => ({
+        browser,
+        percentage: Number(((count / totalUsers) * 100).toFixed(1)),
+      })
+    );
+
+    setBrowserUsage(calculatedBrowserUsage);
+  }, [userData]);
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>Browsers</CardTitle>
       </CardHeader>
-      <CardContent className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <img
-            src="/images/browsers/brave.png" // replace with actual path to Apple logo
-            alt="Apple logo"
-            className="w-6 h-6"
-          />
-          <span>iOS</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Progress value={100} className="w-full max-w-[200px]" />
-          <span className="font-medium">100%</span>
-        </div>
-      </CardContent>
-      <CardContent className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <img
-            src="/images/browsers/chrome.png" // replace with actual path to Apple logo
-            alt="Apple logo"
-            className="w-6 h-6"
-          />
-          <span>iOS</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Progress value={100} className="w-full max-w-[200px]" />
-          <span className="font-medium">100%</span>
-        </div>
-      </CardContent>
-      <CardContent className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <img
-            src="/images/browsers/edge.png" // replace with actual path to Apple logo
-            alt="Apple logo"
-            className="w-6 h-6"
-          />
-          <span>iOS</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Progress value={100} className="w-full max-w-[200px]" />
-          <span className="font-medium">100%</span>
-        </div>
-      </CardContent>
-      <CardContent className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <img
-            src="/images/browsers/firefox.png" // replace with actual path to Apple logo
-            alt="Apple logo"
-            className="w-6 h-6"
-          />
-          <span>iOS</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Progress value={100} className="w-full max-w-[200px]" />
-          <span className="font-medium">100%</span>
-        </div>
-      </CardContent>
-      <CardContent className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <img
-            src="/images/browsers/opera.png" // replace with actual path to Apple logo
-            alt="Apple logo"
-            className="w-6 h-6"
-          />
-          <span>iOS</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Progress value={100} className="w-full max-w-[200px]" />
-          <span className="font-medium">100%</span>
-        </div>
-      </CardContent>
-      <CardContent className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <img
-            src="/images/browsers/safari.png" // replace with actual path to Apple logo
-            alt="Apple logo"
-            className="w-6 h-6"
-          />
-          <span>iOS</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Progress value={100} className="w-full max-w-[200px]" />
-          <span className="font-medium">100%</span>
-        </div>
-      </CardContent>
-      <CardContent className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <img
-            src="/images/browsers/vivaldi.png" // replace with actual path to Apple logo
-            alt="Apple logo"
-            className="w-6 h-6"
-          />
-          <span>iOS</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Progress value={100} className="w-full max-w-[200px]" />
-          <span className="font-medium">100%</span>
-        </div>
-      </CardContent>
-      <CardContent className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <img
-            src="/images/browsers/duckduckduckgobrowser.png" // replace with actual path to Apple logo
-            alt="Apple logo"
-            className="w-6 h-6"
-          />
-          <span>iOS</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Progress value={100} className="w-full max-w-[200px]" />
-          <span className="font-medium">100%</span>
-        </div>
-      </CardContent>
-      <CardContent className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <img
-            src="/images/browsers/tor.png" // replace with actual path to Apple logo
-            alt="Apple logo"
-            className="w-6 h-6"
-          />
-          <span>iOS</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Progress value={100} className="w-full max-w-[200px]" />
-          <span className="font-medium">100%</span>
-        </div>
-      </CardContent>
-      <CardContent className="flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <img
-            src="/images/browsers/samsung.png" // replace with actual path to Apple logo
-            alt="Apple logo"
-            className="w-6 h-6"
-          />
-          <span>iOS</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Progress value={100} className="w-full max-w-[200px]" />
-          <span className="font-medium">100%</span>
-        </div>
-      </CardContent>
+      {browserUsage.map((browser) => (
+        <CardContent
+          key={browser.browser}
+          className="flex justify-between items-center"
+        >
+          <div className="flex items-center gap-2">
+            <img
+              src={`/images/browsers/${browser.browser.toLowerCase()}.png`} // Ensure correct image paths
+              alt={`${browser.browser} logo`}
+              className="w-6 h-6"
+            />
+            <CardDescription
+              className="text-sm  "
+              style={{ textTransform: "capitalize", color: "black" }}
+            >
+              {browser.browser}
+            </CardDescription>
+          </div>
+          <div className="flex items-center gap-2">
+        
+            <CardDescription
+              className="text-sm 0 "
+              style={{ textTransform: "capitalize", color: "black" }}
+            >
+              {browser.percentage}%
+            </CardDescription>
+          </div>
+        </CardContent>
+      ))}
     </Card>
   );
-}
+};
+
+export default Browsers;

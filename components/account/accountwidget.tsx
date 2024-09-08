@@ -19,7 +19,7 @@ import { createClient } from "@/utils/supabase/client"; // Adjust the import pat
 import { Headset, LogOut, Mail, Settings } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Dialog, DialogTrigger } from "../dialog";
+import { Dialog, DialogTrigger } from "../ui/dialog";
 import { AccountDialog } from "./accountdialog";
 
 export function AccountWidget() {
