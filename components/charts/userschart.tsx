@@ -18,6 +18,15 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
+const formatNumber = (num: number) => {
+  return num.toLocaleString();
+};
+
+// Function to calculate the total number of users
+const calculateTotalUsers = (data: { date: string; users: number }[]) => {
+  return data.reduce((total, entry) => total + entry.users, 0);
+};
+
 // Function to format dates in "20th Feb" style
 const formatDate = (dateString: any) => {
   const date = new Date(dateString);
@@ -34,6 +43,8 @@ const formatDate = (dateString: any) => {
 };
 
 export function MainChart({ data }: MainChartProps) {
+  const totalUsers = calculateTotalUsers(data);
+
   return (
     <div
       className="border-r border-gray-200 overflow-hidden"
@@ -43,19 +54,46 @@ export function MainChart({ data }: MainChartProps) {
         <div
           style={{
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
+            flexDirection: "row",
+            alignItems: "start",
             justifyItems: "center",
           }}
         >
-          <div className="text-lg font-bold">${data["users"]}</div>
-          <div className="text-sm text-gray-600">Unique Users</div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyItems: "center",
+              padding: "16px",
+            }}
+          >
+            <div className="text-lg font-bold">{formatNumber(totalUsers)}</div>
+            <div className="text-sm text-gray-600">Unique Users</div>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyItems: "center",
+              padding: "16px",
+            }}
+          >
+            <div className="text-lg font-bold">{formatNumber(totalUsers)}</div>
+            <div className="text-sm text-gray-600">Revenue</div>
+          </div>
         </div>
+        <div
+          style={{
+            height: "16px",
+          }}
+        ></div>
 
         <ChartContainer
           config={chartConfig}
           style={{
-            maxHeight: "70vh",
+            maxHeight: "65vh",
           }}
         >
           <AreaChart
