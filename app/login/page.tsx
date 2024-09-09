@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   InputOTP,
   InputOTPGroup,
@@ -69,140 +70,100 @@ export default function LoginPage() {
   const isOtpValid = otp.length === 6;
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
-      <form
-        className="bg-white p-6 rounded-lg shadow-md w-full"
-        style={{
-          maxWidth: "350px",
-          gap: "10px",
-          display: "flex",
-          flexDirection: "column",
-        }}
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!isSuccess) {
-            const formData = new FormData(e.currentTarget);
-            handleSubmitEmail(formData);
-          } else if (isSuccess && isOtpValid) {
-            handleSubmitOtp();
-          }
-        }}
-      >
-        {!isSuccess ? (
-          <>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email:
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              value={email}
-              onChange={handleEmailChange}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            />
+    <div className="flex flex-col lg:flex-row items-center min-h-screen">
+      <div className="flex-1 lg:w-1/2 p-6">
+        <form
+          className=" p-6 w-full"
+          style={{
+            maxWidth: "350px",
+            gap: "10px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!isSuccess) {
+              const formData = new FormData(e.currentTarget);
+              handleSubmitEmail(formData);
+            } else if (isSuccess && isOtpValid) {
+              handleSubmitOtp();
+            }
+          }}
+        >
+          {!isSuccess ? (
+            <>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Email:
+              </label>
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                value={email}
+                onChange={handleEmailChange}
+              />
 
-            <Button
-              type="submit"
-              disabled={!isEmailValid || isSubmitting}
-              style={{
-                width: "100%",
-              }}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader className="mr-2 h-4 w-4 animate-spin" />
-                  Sending code
-                </>
-              ) : (
-                "Continue"
-              )}
-            </Button>
-          </>
-        ) : !isVerified ? (
-          <>
-            <p className="text-sm text-gray-700">
-              A verification code has been sent to your email. Please enter the
-              OTP below:
-            </p>
-            <InputOTP maxLength={6} onChange={handleOtpChange}>
-              <InputOTPGroup>
-                <InputOTPSlot index={0} />
-                <InputOTPSlot index={1} />
-                <InputOTPSlot index={2} />
-              </InputOTPGroup>
-              <InputOTPSeparator />
-              <InputOTPGroup>
-                <InputOTPSlot index={3} />
-                <InputOTPSlot index={4} />
-                <InputOTPSlot index={5} />
-              </InputOTPGroup>
-            </InputOTP>
-
-            <Button
-              type="submit"
-              disabled={!isOtpValid || isSubmitting}
-              style={{
-                width: "100%",
-              }}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader className="mr-2 h-4 w-4 animate-spin" />
-                  Verifying OTP
-                </>
-              ) : (
-                "Verify OTP"
-              )}
-            </Button>
-            <div className="mt-4 flex flex-col gap-2">
+              <Button
+                type="submit"
+                disabled={!isEmailValid || isSubmitting}
+                style={{
+                  width: "100%",
+                }}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                    Sending code
+                  </>
+                ) : (
+                  "Continue"
+                )}
+              </Button>
+            </>
+          ) : (
+            <>
               <p className="text-sm text-gray-700">
-                Quickly access your E-Mail client:
+                A verification code has been sent to your email. Please enter
+                the OTP below:
               </p>
-              <Button
-                type="button"
-                variant={"outline"}
-                style={{
-                  width: "100%",
-                  gap: "5px",
-                }}
-                onClick={() =>
-                  window.open("https://mail.google.com/", "_blank")
-                }
-              >
-                <Image
-                  src="/images/gmail.webp"
-                  width={20}
-                  height={20}
-                  alt="Gmail"
-                />
-                Open Gmail
-              </Button>
+              <InputOTP maxLength={6} onChange={handleOtpChange}>
+                <InputOTPGroup>
+                  <InputOTPSlot index={0} />
+                  <InputOTPSlot index={1} />
+                  <InputOTPSlot index={2} />
+                </InputOTPGroup>
+                <InputOTPSeparator />
+                <InputOTPGroup>
+                  <InputOTPSlot index={3} />
+                  <InputOTPSlot index={4} />
+                  <InputOTPSlot index={5} />
+                </InputOTPGroup>
+              </InputOTP>
 
               <Button
-                type="button"
-                variant={"outline"}
+                type="submit"
+                disabled={!isOtpValid || isSubmitting}
                 style={{
                   width: "100%",
-                  gap: "5px",
                 }}
-                onClick={() =>
-                  window.open("https://outlook.live.com/owa/", "_blank")
-                }
               >
-                <Image
-                  src="/images/outlook.webp"
-                  width={20}
-                  height={20}
-                  alt="Outlook"
-                />
-                Open Outlook
+                {isSubmitting ? (
+                  <>
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                    Verifying OTP
+                  </>
+                ) : (
+                  "Verify OTP"
+                )}
               </Button>
-              {isApplePlatform && (
+              <div className="mt-4 flex flex-col gap-2">
+                <p className="text-sm text-gray-700">
+                  Quickly access your E-Mail client:
+                </p>
                 <Button
                   type="button"
                   variant={"outline"}
@@ -210,25 +171,62 @@ export default function LoginPage() {
                     width: "100%",
                     gap: "5px",
                   }}
-                  onClick={() => window.open("message://", "_self")}
+                  onClick={() =>
+                    window.open("https://mail.google.com/", "_blank")
+                  }
                 >
                   <Image
-                    src="/images/apple_mail.webp"
+                    src="/images/gmail.webp"
                     width={20}
                     height={20}
-                    alt="Apple Mail"
-                  />{" "}
-                  Open Apple Mail
+                    alt="Gmail"
+                  />
+                  Open Gmail
                 </Button>
-              )}
-            </div>
-          </>
-        ) : (
-          <p className="text-sm text-green-600">
-            Your email has been verified successfully!
-          </p>
-        )}
-      </form>
+
+                <Button
+                  type="button"
+                  variant={"outline"}
+                  style={{
+                    width: "100%",
+                    gap: "5px",
+                  }}
+                  onClick={() =>
+                    window.open("https://outlook.live.com/owa/", "_blank")
+                  }
+                >
+                  <Image
+                    src="/images/outlook.webp"
+                    width={20}
+                    height={20}
+                    alt="Outlook"
+                  />
+                  Open Outlook
+                </Button>
+                {isApplePlatform && (
+                  <Button
+                    type="button"
+                    variant={"outline"}
+                    style={{
+                      width: "100%",
+                      gap: "5px",
+                    }}
+                    onClick={() => window.open("message://", "_self")}
+                  >
+                    <Image
+                      src="/images/apple_mail.webp"
+                      width={20}
+                      height={20}
+                      alt="Apple Mail"
+                    />{" "}
+                    Open Apple Mail
+                  </Button>
+                )}
+              </div>
+            </>
+          )}
+        </form>
+      </div>
     </div>
   );
 }

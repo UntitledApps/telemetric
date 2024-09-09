@@ -105,3 +105,43 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* styles.css or LoginPage.module.css */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  position: relative;
+}
+
+.form-wrapper {
+  max-width: 350px;
+  width: 100%;
+}
+
+.image-wrapper {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+}
+
+@media (min-width: 1000px) {
+  .container {
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .form-wrapper {
+    width: 50%;
+  }
+
+  .image-wrapper {
+    display: block;
+    width: 50%;
+    height: auto;
+  }
+}
