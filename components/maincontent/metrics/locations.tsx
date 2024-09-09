@@ -81,7 +81,7 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
   }, [userData, selectedLocationType]);
 
   return (
-    <div className=" border-b border-gray-200 border-r">
+    <div className="  border-gray-200 border-r">
       <div className="p-2">
         <div className="flex items-center justify-between mb-2">
           <div className="text-lg font-bold">Locations Overview</div>
@@ -107,7 +107,7 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
             {locationUsage.map((location) => (
               <div
                 key={location.city}
-                className="relative flex items-center py-1 border-t border-gray-200"
+                className="relative flex items-center py-1  border-gray-200"
               >
                 <div
                   className="absolute bg-blue-200 opacity-50"
@@ -132,7 +132,7 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
             {locationUsage.map((location) => (
               <div
                 key={location.region}
-                className="relative flex items-center py-1 border-t border-gray-200"
+                className="relative flex items-center py-1  border-gray-200"
               >
                 <div
                   className="absolute bg-blue-200 opacity-50"
@@ -157,7 +157,7 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
             {locationUsage.map((location) => (
               <div
                 key={location.country}
-                className="relative flex items-center py-1 border-t border-gray-200"
+                className="relative flex items-center py-1  border-gray-200"
               >
                 <div
                   className="absolute bg-blue-200 opacity-50"

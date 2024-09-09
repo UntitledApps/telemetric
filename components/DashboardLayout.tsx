@@ -150,7 +150,12 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         return null;
     }
   }
-
+  useEffect(() => {
+    const mainElement = document.querySelector("main");
+    if (mainElement) {
+      mainElement.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [selectedNavItem]);
   const handleEnvironmentChange = (value: string) => {
     setEnvironment(value);
   };
@@ -364,6 +369,17 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <div style={{ marginLeft: "auto" }}></div>
           {selectedProject && (
             <>
+              <Select onValueChange={handleEnvironmentChange}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Show App Data" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Debug/Development">
+                    Debug/Development
+                  </SelectItem>
+                  <SelectItem value="Production">Production</SelectItem>
+                </SelectContent>
+              </Select>
               <Select onValueChange={handleEnvironmentChange}>
                 <SelectTrigger className="w-[180px]">
                   <SelectValue placeholder="Select environment" />
