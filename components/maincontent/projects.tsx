@@ -1,3 +1,4 @@
+// components/Projects.tsx
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
@@ -43,14 +44,8 @@ const Projects: React.FC = () => {
           data: { user },
           error: authError,
         } = await supabase.auth.getUser();
-
-        if (authError) {
-          throw authError;
-        }
-
-        if (!user) {
-          throw new Error("Unauthorized access");
-        }
+        if (authError) throw authError;
+        if (!user) throw new Error("Unauthorized access");
 
         const { data: customerData, error: customerError } = await supabase
           .from("customers")
@@ -58,20 +53,14 @@ const Projects: React.FC = () => {
           .eq("id", user?.id)
           .single();
 
-        if (customerError) {
-          throw customerError;
-        }
-
+        if (customerError) throw customerError;
         if (customerData && customerData.projects) {
           const { data: projectsData, error: projectsError } = await supabase
             .from("projects")
             .select("*")
             .in("id", customerData.projects);
 
-          if (projectsError) {
-            throw projectsError;
-          }
-
+          if (projectsError) throw projectsError;
           setProjects(projectsData || []);
         }
       } catch (error) {
@@ -99,17 +88,15 @@ const Projects: React.FC = () => {
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
           gap: "16px",
           padding: "8px",
         }}
       >
-        {Array.from({ length: 1 }).map((_, index) => (
+        {Array.from({ length: 4 }).map((_, index) => (
           <Card
             key={index}
             style={{
-              width: "200px",
-              height: "200px",
               display: "flex",
               flexDirection: "column",
               padding: "8px",
@@ -156,7 +143,7 @@ const Projects: React.FC = () => {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
         gap: "16px",
         padding: "8px",
       }}
@@ -168,10 +155,9 @@ const Projects: React.FC = () => {
           <Card
             key={project.id}
             style={{
-              width: "200px",
-              height: "200px",
               display: "flex",
               flexDirection: "column",
+              padding: "8px",
             }}
           >
             <CardHeader

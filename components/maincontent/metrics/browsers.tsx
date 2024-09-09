@@ -1,13 +1,5 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import React from "react";
 
 interface BrowserUsage {
@@ -46,44 +38,57 @@ const Browsers = ({ userData }: { userData: UserData[] }) => {
       })
     );
 
-    setBrowserUsage(calculatedBrowserUsage);
+    // Sort by percentage in descending order
+    const sortedBrowserUsage = calculatedBrowserUsage.sort(
+      (a, b) => b.percentage - a.percentage
+    );
+
+    setBrowserUsage(sortedBrowserUsage);
   }, [userData]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Browsers</CardTitle>
-      </CardHeader>
-      {browserUsage.map((browser) => (
-        <CardContent
-          key={browser.browser}
-          className="flex justify-between items-center"
-        >
-          <div className="flex items-center gap-2">
-            <img
-              src={`/images/browsers/${browser.browser.toLowerCase()}.png`} // Ensure correct image paths
-              alt={`${browser.browser} logo`}
-              className="w-6 h-6"
+    <div className="border-t border-b border-gray-200">
+      <div className="p-2">
+        <div className="text-lg font-bold mb-1">Browsers</div>
+        {browserUsage.map((browser) => (
+          <div
+            key={browser.browser}
+            style={{ marginBottom: "-5px" }}
+            className="relative flex items-center py-1 border-gray-200"
+          >
+            <div
+              className="absolute bg-blue-200 opacity-50"
+              style={{
+                width: `${browser.percentage}%`,
+                zIndex: -1,
+                insetBlockEnd: 6,
+                insetBlockStart: 6,
+                borderRadius: "8px",
+              }}
             />
-            <CardDescription
-              className="text-sm  "
-              style={{ textTransform: "capitalize", color: "black" }}
-            >
-              {browser.browser}
-            </CardDescription>
-          </div>
-          <div className="flex items-center gap-2">
-        
-            <CardDescription
-              className="text-sm 0 "
+            <div className="flex items-center gap-2 w-full p-2">
+              <img
+                src={`/images/browsers/${browser.browser.toLowerCase()}.png`} // Ensure correct image paths
+                alt={`${browser.browser} logo`}
+                className="w-5 h-5"
+              />
+              <div
+                className="text-sm"
+                style={{ textTransform: "capitalize", color: "black" }}
+              >
+                {browser.browser}
+              </div>
+            </div>
+            <div
+              className="text-sm"
               style={{ textTransform: "capitalize", color: "black" }}
             >
               {browser.percentage}%
-            </CardDescription>
+            </div>
           </div>
-        </CardContent>
-      ))}
-    </Card>
+        ))}
+      </div>
+    </div>
   );
 };
 

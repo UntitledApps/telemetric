@@ -1,9 +1,9 @@
 import { MainChart } from "@/components/charts/userschart";
 import { createClient } from "@/utils/supabase/client";
 import React, { useEffect, useState } from "react";
-import AppleMap from "../applemap";
 import Browsers from "./browsers";
 import LocationCard from "./locations";
+import UserWorldMap from "./map";
 import OperatingSystemCard from "./operatingsystems";
 
 interface Project {
@@ -162,12 +162,12 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, environment }) => {
           height: "16px",
         }}
       ></div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1  sm:grid-cols-2">
         <OperatingSystemCard userData={users} />
         <Browsers userData={users} />
+        <LocationCard userData={users} />
+        <UserWorldMap userData={users} />
       </div>
-      <LocationCard userData={users} />
-      <AppleMap token="eyJraWQiOiJLSDRHSktHMzVDIiwidHlwIjoiSldUIiwiYWxnIjoiRVMyNTYifQ.eyJpc3MiOiIzUjVQSDVOUktMIiwiaWF0IjoxNzI1ODAxMzEzLCJleHAiOjE3MjY0Njk5OTl9.HsZx66wPHX09EytPkH9oJLgttG5jkpvX_a6Axe3xXAzmrn0amQPUICzjmn7KcurcRvcI8RymemkGn4bOhT0OfQ"></AppleMap>
     </div>
   );
 };

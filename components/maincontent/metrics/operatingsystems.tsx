@@ -1,10 +1,3 @@
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { useEffect, useState } from "react";
 
 interface OSUsage {
@@ -35,6 +28,7 @@ interface User {
     };
   };
 }
+
 const OperatingSystemCard = ({ userData }: { userData: User[] }) => {
   const [osUsage, setOsUsage] = useState<OSUsage[]>([]);
 
@@ -54,41 +48,57 @@ const OperatingSystemCard = ({ userData }: { userData: User[] }) => {
       percentage: Number(((count / totalUsers) * 100).toFixed(1)),
     }));
 
-    setOsUsage(calculatedOsUsage);
+    // Sort by percentage in descending order
+    const sortedOsUsage = calculatedOsUsage.sort(
+      (a, b) => b.percentage - a.percentage
+    );
+
+    setOsUsage(sortedOsUsage);
   }, [userData]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Operating Systems</CardTitle>
-      </CardHeader>
-      {osUsage.map((os) => (
-        <CardContent
-          key={os.os}
-          className="relative flex items-center gap-4           justify-between"
-        >
-          <div className="flex items-center gap-4 w-full">
-            <img
-              src={`/images/os/${os.os.toLowerCase()}.png`}
-              alt={`${os.os} logo`}
-              className="w-6 h-6"
+    <div className="border-t border-b border-gray-200 border-r">
+      <div className="p-2">
+        <div className="text-lg font-bold mb-1">Operating Systems</div>
+        {osUsage.map((os) => (
+          <div
+            key={os.os}
+            style={{ marginBottom: "-5px" }}
+            className="relative flex items-center py-1 border-gray-200"
+          >
+            <div
+              className="absolute bg-blue-200 opacity-50"
+              style={{
+                width: `${os.percentage}%`,
+                zIndex: -1,
+                insetBlockEnd: 6,
+                insetBlockStart: 6,
+                borderRadius: "8px",
+              }}
             />
-            <CardDescription
-              className="text-sm  "
+            <div className="flex items-center gap-2 w-full p-2">
+              <img
+                src={`/images/os/${os.os.toLowerCase()}.png`}
+                alt={`${os.os} logo`}
+                className="w-5 h-5"
+              />
+              <div
+                className="text-sm"
+                style={{ textTransform: "capitalize", color: "black" }}
+              >
+                {os.os}
+              </div>
+            </div>
+            <div
+              className="text-sm"
               style={{ textTransform: "capitalize", color: "black" }}
             >
-              {os.os}
-            </CardDescription>
+              {os.percentage}%
+            </div>
           </div>
-          <CardDescription
-            className="text-sm  "
-            style={{ textTransform: "capitalize", color: "black" }}
-          >
-            {os.percentage}%
-          </CardDescription>
-        </CardContent>
-      ))}
-    </Card>
+        ))}
+      </div>
+    </div>
   );
 };
 

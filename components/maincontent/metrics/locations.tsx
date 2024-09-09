@@ -1,10 +1,21 @@
-// components/LocationCard.tsx
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { countryEmojiMap, countryNameMap } from "@/utils/countryDefs";
 import { useEffect, useState } from "react";
 
 interface LocationUsage {
-  city: string;
+  city?: string;
+  region?: string;
+  country?: string;
   count: number;
+  percentage?: number; // Added percentage field
 }
 
 interface User {
@@ -29,44 +40,148 @@ interface User {
 
 const LocationCard = ({ userData }: { userData: User[] }) => {
   const [locationUsage, setLocationUsage] = useState<LocationUsage[]>([]);
+  const [selectedLocationType, setSelectedLocationType] =
+    useState<string>("country");
 
   useEffect(() => {
     const cityCounts: { [key: string]: number } = {};
+    const regionCounts: { [key: string]: number } = {};
+    const countryCounts: { [key: string]: number } = {};
 
     userData.forEach((user) => {
-      const city = user.metadata.metadata.location?.city; // Access the nested metadata for city
-      if (city) {
-        cityCounts[city] = (cityCounts[city] || 0) + 1;
+      const location = user.metadata.metadata.location;
+      if (location) {
+        const { city, region, country } = location;
+        if (city) {
+          cityCounts[city] = (cityCounts[city] || 0) + 1;
+        }
+        if (region) {
+          regionCounts[region] = (regionCounts[region] || 0) + 1;
+        }
+        if (country) {
+          countryCounts[country] = (countryCounts[country] || 0) + 1;
+        }
       }
     });
 
-    const calculatedLocationUsage = Object.entries(cityCounts).map(
-      ([city, count]) => ({
-        city,
-        count,
-      })
-    );
+    const totalUsers = userData.length;
+    const calculatedLocationUsage = Object.entries(
+      selectedLocationType === "city"
+        ? cityCounts
+        : selectedLocationType === "region"
+        ? regionCounts
+        : countryCounts
+    ).map(([key, count]) => ({
+      [selectedLocationType]: key,
+      count,
+      percentage: Number(((count / totalUsers) * 100).toFixed(1)), // Calculate percentage
+    }));
 
     setLocationUsage(calculatedLocationUsage);
-  }, [userData]);
+  }, [userData, selectedLocationType]);
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Locations Overview</CardTitle>
-      </CardHeader>
-      {locationUsage.map((location) => (
-        <CardContent
-          key={location.city}
-          className="relative flex items-center gap-4"
-        >
-          <div className="flex items-center gap-4 w-full">
-            <span className="flex-1">{location.city}</span>
-            <span className="font-medium">{location.count} users</span>
-          </div>
-        </CardContent>
-      ))}
-    </Card>
+    <div className=" border-b border-gray-200 border-r">
+      <div className="p-2">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-lg font-bold">Locations Overview</div>
+          <Select
+            onValueChange={setSelectedLocationType}
+            defaultValue="country"
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Select a type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Location Type</SelectLabel>
+                <SelectItem value="city">City</SelectItem>
+                <SelectItem value="region">Region</SelectItem>
+                <SelectItem value="country">Country</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        {selectedLocationType === "city" && (
+          <>
+            {locationUsage.map((location) => (
+              <div
+                key={location.city}
+                className="relative flex items-center py-1 border-t border-gray-200"
+              >
+                <div
+                  className="absolute bg-blue-200 opacity-50"
+                  style={{
+                    width: `${location.percentage}%`,
+                    zIndex: -1,
+                    insetBlockEnd: 4,
+                    insetBlockStart: 4,
+                    borderRadius: "8px",
+                  }}
+                />
+                <div className="flex items-center gap-2 w-full p-2">
+                  <span className="flex-1 text-sm">{location.city}</span>
+                  <span className="text-sm">{location.count} users</span>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+        {selectedLocationType === "region" && (
+          <>
+            {locationUsage.map((location) => (
+              <div
+                key={location.region}
+                className="relative flex items-center py-1 border-t border-gray-200"
+              >
+                <div
+                  className="absolute bg-blue-200 opacity-50"
+                  style={{
+                    width: `${location.percentage}%`,
+                    zIndex: -1,
+                    insetBlockEnd: 4,
+                    insetBlockStart: 4,
+                    borderRadius: "8px",
+                  }}
+                />
+                <div className="flex items-center gap-2 w-full p-2">
+                  <span className="flex-1 text-sm">{location.region}</span>
+                  <span className="text-sm">{location.count} users</span>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+        {selectedLocationType === "country" && (
+          <>
+            {locationUsage.map((location) => (
+              <div
+                key={location.country}
+                className="relative flex items-center py-1 border-t border-gray-200"
+              >
+                <div
+                  className="absolute bg-blue-200 opacity-50"
+                  style={{
+                    width: `${location.percentage}%`,
+                    zIndex: -1,
+                    insetBlockEnd: 4,
+                    insetBlockStart: 4,
+                    borderRadius: "8px",
+                  }}
+                />
+                <div className="flex items-center gap-2 w-full p-2">
+                  <span className="flex-1 text-sm">
+                    {countryEmojiMap[location.country!] || "🌍"}{" "}
+                    {countryNameMap[location.country!] || location.country}
+                  </span>
+                  <span className="text-sm">{location.count} users</span>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 
