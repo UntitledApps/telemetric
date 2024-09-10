@@ -1,16 +1,15 @@
-// components/Projects.tsx
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { createClient } from "@/utils/supabase/client";
+import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
+import SyncLoader from "react-spinners/SyncLoader";
 
 interface Project {
   id: string;
@@ -31,7 +30,11 @@ interface Project {
   };
 }
 
-const Projects: React.FC = () => {
+interface ProjectsProps {
+  onProjectSelect: (projectId: string) => void;
+}
+
+const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   const supabase = createClient();
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -87,53 +90,14 @@ const Projects: React.FC = () => {
     return (
       <div
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-          gap: "16px",
-          padding: "8px",
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100%",
         }}
       >
-        {Array.from({ length: 4 }).map((_, index) => (
-          <Card
-            key={index}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              padding: "8px",
-            }}
-          >
-            <CardHeader
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "10px",
-                padding: "8px",
-                flexShrink: 0,
-              }}
-            >
-              <Skeleton className="w-[40px] h-[40px] rounded-full" />
-              <Skeleton className="w-[120px] h-[20px] rounded-full" />
-            </CardHeader>
-            <CardContent
-              style={{
-                flexGrow: 1,
-                overflow: "hidden",
-                padding: "8px",
-              }}
-            >
-              <Skeleton className="w-[150px] h-[20px] rounded-full mb-2" />
-              <Skeleton className="w-[100px] h-[20px] rounded-full" />
-            </CardContent>
-            <CardFooter
-              style={{
-                padding: "8px",
-              }}
-            >
-              <Skeleton className="w-[80px] h-[20px] rounded-full" />
-            </CardFooter>
-          </Card>
-        ))}
+
       </div>
     );
 
@@ -152,55 +116,96 @@ const Projects: React.FC = () => {
         <div>No projects found</div>
       ) : (
         projects.map((project) => (
-          <Card
+          <motion.div
             key={project.id}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              padding: "8px",
-            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            exit={{ opacity: 0 }}
           >
-            <CardHeader
+            <Card
+              onClick={() => onProjectSelect(project.id)}
               style={{
                 display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "10px",
+                flexDirection: "column",
                 padding: "8px",
-                flexShrink: 0,
+                cursor: "pointer",
               }}
             >
-              <Avatar>
-                <AvatarImage
-                  src={project.metadata.favIconURL}
-                  alt={project.metadata.name}
-                />
-                <AvatarFallback>{project.metadata.name[0]}</AvatarFallback>
-              </Avatar>
-              <CardTitle>{project.metadata.name}</CardTitle>
-            </CardHeader>
-            <CardContent
-              style={{
-                flexGrow: 1,
-                overflow: "hidden",
-                padding: "8px",
-              }}
-            >
-              <CardDescription>
-                Revenue: ${getLatestRevenue(project.data)}
-              </CardDescription>
-              <CardDescription>
-                Users: {getUserCount(project.data)}
-              </CardDescription>
-            </CardContent>
-            <CardFooter
-              style={{
-                padding: "8px",
-              }}
-            >
-              {/* Add project actions here */}
-            </CardFooter>
-          </Card>
+              <CardHeader
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: "10px",
+                  justifyContent: "start",
+                  padding: "8px",
+                  flexShrink: 0,
+                }}
+              >
+                <Avatar>
+                  <AvatarImage
+                    src={project.metadata.favIconURL}
+                    alt={project.metadata.name}
+                  />
+                  <AvatarFallback>{project.metadata.name[0]}</AvatarFallback>
+                </Avatar>
+                <CardTitle>{project.metadata.name}</CardTitle>
+              </CardHeader>
+              <CardContent
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  gap: "16px",
+                  padding: "8px",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <div className="text-lg font-bold">
+                    {getUserCount(project.data)}
+                  </div>
+                  <div className="text-sm text-gray-600">Unique Users</div>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <div className="text-lg font-bold">
+                    {Object.keys(project.data).length}
+                  </div>
+                  <div className="text-sm text-gray-600">Events</div>
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <div className="text-lg font-bold">
+                    {getLatestRevenue(project.data)}$
+                  </div>
+                  <div className="text-sm text-gray-600">Revenue</div>
+                </div>
+              </CardContent>
+              <CardFooter
+                style={{
+                  padding: "8px",
+                }}
+              >
+                {/* Add project actions here */}
+              </CardFooter>
+            </Card>
+          </motion.div>
         ))
       )}
     </div>

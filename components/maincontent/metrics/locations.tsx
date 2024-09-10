@@ -7,9 +7,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { countryEmojiMap, countryNameMap } from "@/utils/countryDefs";
+import { countryNameMap } from "@/utils/countryDefs";
 import { useEffect, useState } from "react";
-
 interface LocationUsage {
   city?: string;
   region?: string;
@@ -17,7 +16,6 @@ interface LocationUsage {
   count: number;
   percentage?: number; // Added percentage field
 }
-
 interface User {
   id: string;
   metadata: {
@@ -37,17 +35,14 @@ interface User {
     };
   };
 }
-
 const LocationCard = ({ userData }: { userData: User[] }) => {
   const [locationUsage, setLocationUsage] = useState<LocationUsage[]>([]);
   const [selectedLocationType, setSelectedLocationType] =
     useState<string>("country");
-
   useEffect(() => {
     const cityCounts: { [key: string]: number } = {};
     const regionCounts: { [key: string]: number } = {};
     const countryCounts: { [key: string]: number } = {};
-
     userData.forEach((user) => {
       const location = user.metadata.metadata.location;
       if (location) {
@@ -63,7 +58,6 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
         }
       }
     });
-
     const totalUsers = userData.length;
     const calculatedLocationUsage = Object.entries(
       selectedLocationType === "city"
@@ -76,10 +70,8 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
       count,
       percentage: Number(((count / totalUsers) * 100).toFixed(1)), // Calculate percentage
     }));
-
     setLocationUsage(calculatedLocationUsage);
   }, [userData, selectedLocationType]);
-
   return (
     <div className="  border-gray-200 border-r">
       <div className="p-2">
@@ -95,9 +87,9 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
             <SelectContent>
               <SelectGroup>
                 <SelectLabel>Location Type</SelectLabel>
-                <SelectItem value="city">City</SelectItem>
-                <SelectItem value="region">Region</SelectItem>
                 <SelectItem value="country">Country</SelectItem>
+                <SelectItem value="region">Region</SelectItem>
+                <SelectItem value="city">City</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>
@@ -170,8 +162,15 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
                   }}
                 />
                 <div className="flex items-center gap-2 w-full p-2">
-                  <span className="flex-1 text-sm">
-                    {countryEmojiMap[location.country!] || "🌍"}{" "}
+                  <img
+                    src={`/images/countries/${location.country}.svg`}
+                    alt={location.country}
+                    style={{
+                      borderRadius: "6px",
+                    }}
+                    className="w-5 h-5" // Adjust the width and height as needed
+                  />
+                  <span className="text-sm flex-1">
                     {countryNameMap[location.country!] || location.country}
                   </span>
                   <span className="text-sm">{location.count} users</span>
@@ -184,5 +183,4 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
     </div>
   );
 };
-
 export default LocationCard;

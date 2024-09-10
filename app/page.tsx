@@ -1,11 +1,16 @@
 import { EmailForm } from "@/components/emailform";
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
   const supabase = createClient();
 
   const { data, error } = await supabase.auth.getUser();
+
+  if (data?.user) {
+    redirect("/dashboard");
+  }
 
   return (
     <div className="min-h-screen font-inter text-gray-900 bg-white">

@@ -1,0 +1,19 @@
+<svg width="56" height="40" viewBox="0 0 56 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="56" height="40" rx="4" fill="white"/>
+<mask id="mask0_102_2087" style="mask-type:luminance" maskUnits="userSpaceOnUse" x="0" y="0" width="56" height="40">
+<rect width="56" height="40" rx="4" fill="white"/>
+</mask>
+<g mask="url(#mask0_102_2087)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M56 0V20H0V0H56Z" fill="#29C53F"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M56 20V41.3333H0V20H56Z" fill="#579DED"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M0 40L56 20L0 0V40Z" fill="#F42D56"/>
+<circle cx="17.3333" cy="20" r="8" stroke="#FFC63C" stroke-width="2.66667"/>
+<circle cx="16" cy="17.3333" r="1.33333" fill="#FFC63C"/>
+<circle cx="18.6666" cy="18.6667" r="1.33333" fill="#FFC63C"/>
+<circle cx="17.3333" cy="16" r="1.33333" fill="#FFC63C"/>
+<circle cx="16" cy="20" r="1.33333" fill="#FFC63C"/>
+<circle cx="18.6666" cy="21.3333" r="1.33333" fill="#FFC63C"/>
+<circle cx="16" cy="22.6667" r="1.33333" fill="#FFC63C"/>
+<circle cx="18.6666" cy="24" r="1.33333" fill="#FFC63C"/>
+</g>
+</svg>

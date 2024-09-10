@@ -1,7 +1,7 @@
 // components/DashboardLayout.tsx
 "use client";
+import { motion } from "framer-motion";
 import {
-  BadgeDollarSign,
   FolderInput,
   Home,
   LineChart,
@@ -122,34 +122,102 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   };
 
   const handleProjectChange = (projectId: string) => {
-    const project = projects.find((proj) => proj.id === projectId) || null;
+    const project = projects.find((p) => p.id === projectId) || null;
+
     setSelectedProject(project);
+    if (project) {
+      setSelectedNavItem(SelectedNavItem.METRICS);
+    }
+  };
+  const fadeInVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
   };
 
+  const fadeInTransition = { duration: 0.5 };
+
   function renderContent() {
-    switch (selectedNavItem) {
-      case SelectedNavItem.PROJECTS:
-        return <Projects />;
-      case SelectedNavItem.METRICS:
-        return (
-          <Metrics
-            selectedProject={selectedProject}
-            environment={environment}
-          />
-        );
-      // Pass selected project data here
-      case SelectedNavItem.DATA_EXPLORER:
-        return <DataExplorer />;
-      case SelectedNavItem.SETUP:
-        return <Setup />;
-      case SelectedNavItem.SETTINGS:
-        return <Settings />;
-      case SelectedNavItem.IMPORT_EXPORT_DATA:
-        return <DataImportExport />;
-      default:
-        return null;
-    }
+    return (
+      <div>
+        {(() => {
+          switch (selectedNavItem) {
+            case SelectedNavItem.PROJECTS:
+              return (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  variants={fadeInVariants}
+                  transition={fadeInTransition}
+                >
+                  <Projects onProjectSelect={handleProjectChange} />
+                </motion.div>
+              );
+            case SelectedNavItem.METRICS:
+              return (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  variants={fadeInVariants}
+                  transition={fadeInTransition}
+                >
+                  <Metrics
+                    selectedProject={selectedProject}
+                    environment={environment}
+                  />
+                </motion.div>
+              );
+            case SelectedNavItem.DATA_EXPLORER:
+              return (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  variants={fadeInVariants}
+                  transition={fadeInTransition}
+                >
+                  <DataExplorer />
+                </motion.div>
+              );
+            case SelectedNavItem.SETUP:
+              return (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  variants={fadeInVariants}
+                  transition={fadeInTransition}
+                >
+                  <Setup />
+                </motion.div>
+              );
+            case SelectedNavItem.SETTINGS:
+              return (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  variants={fadeInVariants}
+                  transition={fadeInTransition}
+                >
+                  <Settings />
+                </motion.div>
+              );
+            case SelectedNavItem.IMPORT_EXPORT_DATA:
+              return (
+                <motion.div
+                  initial="hidden"
+                  animate="visible"
+                  variants={fadeInVariants}
+                  transition={fadeInTransition}
+                >
+                  <DataImportExport />
+                </motion.div>
+              );
+            default:
+              return null;
+          }
+        })()}
+      </div>
+    );
   }
+
   useEffect(() => {
     const mainElement = document.querySelector("main");
     if (mainElement) {
@@ -203,18 +271,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 <LineChart className="h-4 w-4" />
                 Metrics
               </Link>
-              <Link
-                href="#"
-                onClick={() => handleNavItemClick(SelectedNavItem.REVENUE)}
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                  selectedNavItem === SelectedNavItem.REVENUE
-                    ? "bg-muted text-primary"
-                    : "text-muted-foreground hover:text-primary"
-                }`}
-              >
-                <BadgeDollarSign className="h-4 w-4" />
-                Revenue
-              </Link>
+
               <Link
                 href="#"
                 onClick={() =>
