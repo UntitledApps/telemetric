@@ -3,10 +3,19 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart";
+import {
+  endOfDay,
+  format,
+  isToday,
+  isWithinInterval,
+  startOfDay,
+} from "date-fns";
+import { DateRange } from "react-day-picker"; // Import DateRange
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 interface MainChartProps {
-  data: { date: string; users: number }[];
+  data: Record<string, { os: string; browser: string }>;
+  dateRange?: DateRange;
 }
 
 const chartConfig = {
@@ -35,8 +44,68 @@ const formatDate = (dateString: any) => {
   return `${ordinal(day)} ${month}`;
 };
 
-export function MainChart({ data }: MainChartProps) {
-  const totalUsers = data.reduce((total, entry) => total + entry.users, 0);
+// Function to format hours in "HH:00" style
+const formatHour = (dateString: any) => {
+  const date = new Date(dateString);
+  return `${date.getHours()}:00`;
+};
+
+// Function to transform activities map into chart data format
+const transformActivitiesMap = (
+  activitiesMap: Record<string, { os: string; browser: string }>,
+  dateRange?: DateRange
+) => {
+  const { from, to } = dateRange || {};
+  const today = new Date();
+  const isTodayRange =
+    from && to && isToday(new Date(from)) && isToday(new Date(to));
+
+  const data = Object.entries(activitiesMap).reduce(
+    (acc, [timestamp, value]) => {
+      const activityDate = new Date(timestamp);
+      const dateKey = isTodayRange
+        ? formatHour(timestamp)
+        : format(activityDate, "yyyy-MM-dd");
+
+      if (
+        dateRange &&
+        (from || to) &&
+        !isWithinInterval(activityDate, {
+          start: from ? startOfDay(new Date(from)) : new Date(0),
+          end: to ? endOfDay(new Date(to)) : new Date(),
+        })
+      ) {
+        return acc;
+      }
+
+      const existing = acc.find((item) => item.date === dateKey);
+      if (existing) {
+        existing.users += 1;
+      } else {
+        acc.push({ date: dateKey, users: 1 });
+      }
+
+      return acc;
+    },
+    [] as { date: string; users: number }[]
+  );
+
+  return data;
+};
+
+export function MainChart({ data, dateRange }: MainChartProps) {
+  const transformedData = transformActivitiesMap(data, dateRange);
+  const totalUsers = transformedData.reduce(
+    (total, entry) => total + entry.users,
+    0
+  );
+
+  const isTodayRange =
+    dateRange &&
+    dateRange.from &&
+    dateRange.to &&
+    isToday(new Date(dateRange.from)) &&
+    isToday(new Date(dateRange.to));
 
   return (
     <div
@@ -90,7 +159,7 @@ export function MainChart({ data }: MainChartProps) {
           }}
         >
           <AreaChart
-            data={data}
+            data={transformedData}
             margin={{
               top: 0,
               left: -30,
@@ -104,7 +173,12 @@ export function MainChart({ data }: MainChartProps) {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
-              tickFormatter={formatDate}
+              tickFormatter={(tick) => {
+                if (isTodayRange) {
+                  return formatHour(tick);
+                }
+                return formatDate(tick);
+              }}
             />
             <YAxis />
             <defs>
@@ -128,7 +202,9 @@ export function MainChart({ data }: MainChartProps) {
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
                   const date = new Date(label);
-                  const formattedDate = formatDate(date);
+                  const formattedDate = isTodayRange
+                    ? formatHour(date)
+                    : formatDate(date);
                   return (
                     <div
                       style={{

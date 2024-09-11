@@ -22,7 +22,7 @@ const ProjectSelect: FC<ProjectSelectProps> = ({
   selectedProject,
   onProjectChange,
 }) => {
-  console.log(projects); // Debugging line to check project structure
+
 
   return (
     <Select onValueChange={onProjectChange} value={selectedProject || ""}>

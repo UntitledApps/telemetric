@@ -28,6 +28,7 @@ export function Navigation({
   projects,
   selectedProject,
 }: NavigationProps) {
+
   return (
     <div className="sticky top-0 hidden border-r bg-white md:block">
       <div className="sticky top-0 flex h-full max-h-screen flex-col gap-2">

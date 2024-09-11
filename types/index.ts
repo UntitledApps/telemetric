@@ -1,15 +1,20 @@
 // types/index.ts
 export interface Project {
   id: string;
-  users: {
+  data: {
     [key: string]: {
-      user_activity: {
-        [timestamp: string]: string;
+      users: string[];
+      events: {
+        [key: string]: number;
       };
+      revenue: string;
     };
   };
   metadata: {
     name: string;
+    type: string;
+    favIconURL: string;
+    ogImageURL: string;
   };
 }
 
@@ -19,17 +24,17 @@ export enum SelectedNavItem {
   DATA_EXPLORER = "DATA_EXPLORER",
   SETUP = "SETUP",
   SETTINGS = "SETTINGS",
-  IMPORT_EXPORT_DATA = "IMPORT_EXPORT_DATA"
+  IMPORT_EXPORT_DATA = "IMPORT_EXPORT_DATA",
 }
 
 export interface User {
   id: string;
 
-  metadata: {
+
     os?: string;
-    visits?: number;
+
     browser?: string;
-    lastSeen?: string;
+
     location?: {
       ip: string;
       loc: string; // "lat,lng"
@@ -41,6 +46,16 @@ export interface User {
       hostname: string;
       timezone: string;
     };
-    firstSeen?: string;
-  };
+
+
 }
+
+
+export interface Activity {
+  id: string;
+  user_id: string;
+  timestamp: string;
+  project_id: string; // Ensure this is included
+  // Add other properties if needed
+}
+

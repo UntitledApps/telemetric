@@ -1,9 +1,9 @@
+// components/DashboardLayout.tsx
 "use client";
-import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
 
-import { Project, SelectedNavItem } from "@/types";
+import { Activity, Project, SelectedNavItem, User } from "@/types";
 import { createClient } from "@/utils/supabase/client";
 import { Header } from "./Header";
 import DataExplorer from "./maincontent/data_explorer";
@@ -25,11 +25,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [loadingProjects, setLoadingProjects] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [environment, setEnvironment] = useState<string>("Production");
-  const [loading, setLoading] = useState<boolean>(false); // Add loading state
-
+  const [loading, setLoading] = useState<boolean>(false); // Add loading statet
+  const [activitiesIds, setActivitiesIds] = useState<string[]>([]);
+  const [activitiesMap, setActivitiesMap] = useState<{
+    [timestamp: string]: { os: string; browser: string };
+  }>({});
   useEffect(() => {
-    const fetchProjects = async () => {
-      setLoading(true); // Set loading to true when starting to fetch data
+    const fetchProjectsAndActivities = async () => {
+      setLoading(true);
       try {
         const {
           data: { user },
@@ -43,24 +46,85 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           .select("projects")
           .eq("id", user.id)
           .single();
+
         if (customerError) throw customerError;
+        if (customerData && customerData.projects) {
+          const { data: projectsData, error: projectsError } = await supabase
+            .from("projects")
+            .select("*")
+            .in("id", customerData.projects);
 
-        const { data: projectsData, error: projectsError } = await supabase
-          .from("projects")
-          .select("*")
-          .in("id", customerData.projects);
-        if (projectsError) throw projectsError;
+          if (projectsError) throw projectsError;
+          setProjects(projectsData || []);
 
-        setProjects(projectsData);
+          const projectIds = projectsData?.map((project) => project.id) || [];
+          if (projectIds.length > 0) {
+            const { data: activitiesData, error: activitiesError } =
+              await supabase
+                .from("activities")
+                .select("id, user_id, timestamp, project_id") // Ensure project_id is selected
+                .in("project_id", projectIds);
+
+            if (activitiesError) throw activitiesError;
+
+            const activityIds =
+              activitiesData?.map((activity: Activity) => activity.id) || [];
+            setActivitiesIds(activityIds);
+
+            const userIds =
+              activitiesData?.map((activity: Activity) => activity.user_id) ||
+              [];
+            if (userIds.length > 0) {
+              const { data: usersData, error: usersError } = await supabase
+                .from("users")
+                .select("id, os, browser")
+                .in("id", userIds);
+
+              if (usersError) throw usersError;
+
+              const usersMap =
+                usersData?.reduce((acc: { [id: string]: User }, user: User) => {
+                  acc[user.id] = user;
+                  return acc;
+                }, {}) || {};
+
+              console.log(usersMap);
+              const activitiesMap =
+                activitiesData?.reduce(
+                  (
+                    acc: {
+                      [timestamp: string]: { os: string; browser: string };
+                    },
+                    activity: Activity
+                  ) => {
+                    console.log(activity);
+                    const user = usersMap[activity.user_id];
+                    console.log(user);
+
+                    if (user) {
+                      acc[activity.timestamp] = {
+                        os: user.os!,
+                        browser: user.browser!,
+                      };
+                    }
+                    console.log(acc);
+                    return acc;
+                  },
+                  {}
+                ) || {};
+
+              setActivitiesMap(activitiesMap);
+            }
+          }
+        }
       } catch (error) {
         setError((error as Error).message);
       } finally {
-        setLoading(false); // Set loading to false once data is fetched
-        setLoadingProjects(false);
+        setLoading(false);
       }
     };
 
-    fetchProjects();
+    fetchProjectsAndActivities();
   }, [supabase]);
 
   const handleDateRangeChange = (range: DateRange | undefined) => {
@@ -74,88 +138,35 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const handleProjectChange = (projectId: string) => {
     const project = projects.find((p) => p.id === projectId) || null;
     setSelectedProject(project);
-    if (project) setSelectedNavItem(SelectedNavItem.METRICS);
+    // if (project) setSelectedNavItem(SelectedNavItem.METRICS);
   };
-
-  const fadeInVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1 },
-  };
-
-  const fadeInTransition = { duration: 0.5 };
 
   function renderContent() {
     switch (selectedNavItem) {
       case SelectedNavItem.PROJECTS:
         return (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeInVariants}
-            transition={fadeInTransition}
-          >
-            <Projects onProjectSelect={handleProjectChange} />
-          </motion.div>
+          <Projects
+            onProjectSelect={handleProjectChange}
+            projects={projects} // Pass projects data as a prop
+          />
         );
       case SelectedNavItem.METRICS:
         return (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeInVariants}
-            transition={fadeInTransition}
-          >
-            <Metrics
-              selectedProject={selectedProject}
-              environment={environment}
-              dateRange={dateRange} // Pass dateRange if needed
-            />
-          </motion.div>
+          <Metrics
+            selectedProject={selectedProject}
+            environment={environment}
+            dateRange={dateRange}
+            activities={activitiesMap}
+          />
         );
       case SelectedNavItem.DATA_EXPLORER:
-        return (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeInVariants}
-            transition={fadeInTransition}
-          >
-            <DataExplorer />
-          </motion.div>
-        );
+        return <DataExplorer />;
       case SelectedNavItem.SETUP:
-        return (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeInVariants}
-            transition={fadeInTransition}
-          >
-            <Setup />
-          </motion.div>
-        );
+        return <Setup />;
       case SelectedNavItem.SETTINGS:
-        return (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeInVariants}
-            transition={fadeInTransition}
-          >
-            <Settings />
-          </motion.div>
-        );
+        return <Settings />;
       case SelectedNavItem.IMPORT_EXPORT_DATA:
-        return (
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={fadeInVariants}
-            transition={fadeInTransition}
-          >
-            <DataImportExport />
-          </motion.div>
-        );
+        return <DataImportExport />;
       default:
         return null;
     }
