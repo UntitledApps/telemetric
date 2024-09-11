@@ -9,7 +9,6 @@ import {
 import { createClient } from "@/utils/supabase/client";
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import SyncLoader from "react-spinners/SyncLoader";
 
 interface Project {
   id: string;
@@ -76,12 +75,18 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
     fetchProjects();
   }, []);
 
-  const getLatestRevenue = (data: { [key: string]: { revenue: string } }) => {
+  const getLatestRevenue = (
+    data: { [key: string]: { revenue: string } } | undefined
+  ) => {
+    if (!data) return "N/A";
     const latestDate = Object.keys(data).sort().pop();
     return latestDate ? data[latestDate].revenue : "N/A";
   };
 
-  const getUserCount = (data: { [key: string]: { users: string[] } }) => {
+  const getUserCount = (
+    data: { [key: string]: { users: string[] } } | undefined
+  ) => {
+    if (!data) return 0;
     const latestDate = Object.keys(data).sort().pop();
     return latestDate ? data[latestDate].users.length : 0;
   };
@@ -97,7 +102,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
           height: "100%",
         }}
       >
-
+        {/* Add spinner here if desired */}
       </div>
     );
 
@@ -172,18 +177,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
                   </div>
                   <div className="text-sm text-gray-600">Unique Users</div>
                 </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                  }}
-                >
-                  <div className="text-lg font-bold">
-                    {Object.keys(project.data).length}
-                  </div>
-                  <div className="text-sm text-gray-600">Events</div>
-                </div>
+
                 <div
                   style={{
                     display: "flex",

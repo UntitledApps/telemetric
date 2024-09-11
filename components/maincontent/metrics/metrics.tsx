@@ -1,4 +1,5 @@
 import { MainChart } from "@/components/charts/userschart";
+import { User } from "@/types";
 import { createClient } from "@/utils/supabase/client";
 import React, { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
@@ -6,23 +7,13 @@ import Browsers from "./browsers";
 import LocationCard from "./locations";
 import UserWorldMap from "./map";
 import OperatingSystemCard from "./operatingsystems";
-import { User } from "@/types";
 
 interface Project {
   id: string;
-  users: {
-    [key: string]: {
-      user_activity: {
-        [timestamp: string]: string;
-      };
-    };
-  };
   metadata: {
     name: string;
   };
 }
-
-
 
 interface Location {
   lat: number;
@@ -42,6 +33,7 @@ const Metrics: React.FC<MetricsProps> = ({
   dateRange,
 }) => {
   const [users, setUsers] = useState<User[]>([]);
+  const [activities, setActivities] = useState<any[]>([]); // Adjust type as needed
   const [projectData, setProjectData] = useState<Project | null>(null);
   const supabase = createClient();
 
@@ -51,7 +43,7 @@ const Metrics: React.FC<MetricsProps> = ({
         // Fetch project data based on environment
         const { data, error } = await supabase
           .from("projects")
-          .select("id, users, metadata")
+          .select("id, metadata")
           .eq("id", selectedProject.id)
           .single();
 
@@ -83,6 +75,21 @@ const Metrics: React.FC<MetricsProps> = ({
             }))
           );
         }
+
+        // Fetch activity data for the selected project
+        const { data: activityData, error: activityError } = await supabase
+          .from("activities")
+          .select("*")
+          .eq("project_id", selectedProject.id);
+
+        if (activityError) {
+          console.error("Error fetching activities data:", activityError);
+          return;
+        }
+
+        if (activityData) {
+          setActivities(activityData);
+        }
       }
     };
 
@@ -93,28 +100,23 @@ const Metrics: React.FC<MetricsProps> = ({
     return <div>Select a project to view metrics</div>;
   }
 
-  // Filter user activity data based on selected date range
-  const userActivityData = projectData?.users || {};
-  const filteredData = Object.keys(userActivityData).flatMap((date) => {
-    const activities = userActivityData[date]?.user_activity || {};
-    const userCounts = Object.values(activities).reduce((countMap, userId) => {
-      countMap[userId] = (countMap[userId] || 0) + 1;
-      return countMap;
-    }, {} as { [userId: string]: number });
-
-    // Check if date is within the selected date range
-    const isDateInRange = dateRange
-      ? new Date(date) >= dateRange.from! &&
-        (!dateRange.to || new Date(date) <= dateRange.to)
-      : true;
-
-    return isDateInRange
-      ? {
-          date,
-          users: Object.keys(userCounts).length, // Number of unique users
-        }
-      : [];
-  });
+  // Process user activity data based on fetched activities
+  const filteredData = activities
+    .filter((activity) => {
+      const activityDate = new Date(activity.date);
+      return dateRange
+        ? activityDate >= dateRange.from! &&
+            (!dateRange.to || activityDate <= dateRange.to)
+        : true;
+    })
+    .reduce((acc: { [date: string]: { users: string[] } }, activity) => {
+      const date = activity.date.split("T")[0]; // Extract date from datetime string
+      if (!acc[date]) {
+        acc[date] = { users: [] };
+      }
+      acc[date].users.push(activity.user_id);
+      return acc;
+    }, {});
 
   // Extract location data from users
   const locations: Location[] = users
@@ -139,7 +141,7 @@ const Metrics: React.FC<MetricsProps> = ({
 
   return (
     <div>
-      <MainChart data={filteredData} />
+
       <UserWorldMap userData={users} />
       <LocationCard userData={users} />
       <OperatingSystemCard userData={users} />

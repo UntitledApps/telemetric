@@ -50,7 +50,6 @@ export function EmailForm() {
       // Optional: Handle success feedback, e.g., show a success message
     } catch (error) {
       console.error("There was a problem with the subscription:", error);
-
       // Optional: Handle error feedback, e.g., show an error message
     }
   }

@@ -13,6 +13,15 @@ export interface Project {
   };
 }
 
+export enum SelectedNavItem {
+  PROJECTS = "PROJECTS",
+  METRICS = "METRICS",
+  DATA_EXPLORER = "DATA_EXPLORER",
+  SETUP = "SETUP",
+  SETTINGS = "SETTINGS",
+  IMPORT_EXPORT_DATA = "IMPORT_EXPORT_DATA"
+}
+
 export interface User {
   id: string;
 
