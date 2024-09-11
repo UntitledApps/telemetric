@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
+import { DateRange } from "react-day-picker";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -61,6 +62,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [selectedNavItem, setSelectedNavItem] = useState<SelectedNavItem>(
     SelectedNavItem.METRICS
   );
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [loadingProjects, setLoadingProjects] = useState<boolean>(true);
@@ -68,13 +70,18 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [environment, setEnvironment] = useState<string>("Production");
 
   useEffect(() => {
-    const fetchProjects = async () => {
+    const fetchProjects = async (dateRange: {
+      startDate: string;
+      endDate: string;
+    }) => {
       try {
         const {
           data: { user },
           error: authError,
         } = await supabase.auth.getUser();
 
+
+      
         if (authError) {
           throw authError;
         }
@@ -93,20 +100,26 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           throw customerError;
         }
 
-        if (customerData && customerData.projects) {
-          const { data: projectsData, error: projectsError } = await supabase
-            .from("projects")
-            .select("*")
-            .in("id", customerData.projects);
+        const { data: projectsData, error: projectsError } = await supabase
+          .from("projects")
+          .select("*")
+          .in("id", customerData.projects);
 
-          if (projectsError) {
-            throw projectsError;
-          }
-
-          setProjects(projectsData || []);
-
-          setLoadingProjects(false);
+        if (projectsError) {
+          throw projectsError;
         }
+
+        // Convert dateRange to Date objects
+        const startDate = new Date(dateRange.startDate);
+        const endDate = new Date(dateRange.endDate);
+
+        setProjects(
+          projectsData.map((project: Project) => {
+            return {
+              ...project,
+            };
+          })
+        );
       } catch (error) {
         setError((error as Error).message);
       } finally {
@@ -114,9 +127,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       }
     };
 
-    fetchProjects();
+    fetchProjects({
+      startDate: dateRange?.from?.toISOString() || "",
+      endDate: dateRange?.to?.toISOString() || "",
+    });
   }, [supabase]);
-
+  const handleDateRangeChange = (range: DateRange | undefined) => {
+    setDateRange(range);
+  };
   const handleNavItemClick = (navItem: SelectedNavItem) => {
     setSelectedNavItem(navItem);
   };
@@ -449,7 +467,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 </SelectContent>
               </Select>
 
-              <TimeRangePicker />
+              <TimeRangePicker onDateRangeChange={handleDateRangeChange} />
             </>
           )}
           <AccountWidget />

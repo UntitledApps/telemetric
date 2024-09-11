@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -18,8 +16,7 @@ import {
 } from "@/components/ui/popover";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
-import { addDays, format } from "date-fns";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { addDays } from "date-fns";
 import * as React from "react";
 import { DateRange } from "react-day-picker";
 
@@ -38,7 +35,11 @@ const statuses: Status[] = [
   { value: "custom", label: "Custom" },
 ];
 
-export function TimeRangePicker() {
+interface TimeRangePickerProps {
+  onDateRangeChange: (range?: DateRange) => void;
+}
+
+export function TimeRangePicker({ onDateRangeChange }: TimeRangePickerProps) {
   const [open, setOpen] = React.useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [selectedStatus, setSelectedStatus] = React.useState<Status | null>(
@@ -46,13 +47,22 @@ export function TimeRangePicker() {
   );
 
   const showDatePicker = selectedStatus?.value === "custom";
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
+
+  const handleDateRangeChange = (range: DateRange | undefined) => {
+    setDateRange(range);
+    onDateRangeChange(range); // Notify parent component of date range change
+  };
 
   const pickerContent = (
     <>
       <StatusList setOpen={setOpen} setSelectedStatus={setSelectedStatus} />
       {showDatePicker && (
         <div className="mt-4">
-          <DatePickerWithRange />
+          <DatePickerWithRange
+            dateRange={dateRange}
+            onDateRangeChange={handleDateRangeChange}
+          />
         </div>
       )}
     </>
@@ -120,52 +130,26 @@ function StatusList({
   );
 }
 
+interface DatePickerWithRangeProps {
+  dateRange?: DateRange;
+  onDateRangeChange: (range: DateRange | undefined) => void;
+}
+
 export function DatePickerWithRange({
-  className,
-}: React.HTMLAttributes<HTMLDivElement>) {
-  const [date, setDate] = React.useState<DateRange | undefined>({
-    from: new Date(2022, 0, 20),
-    to: addDays(new Date(2022, 0, 20), 20),
-  });
+  dateRange,
+  onDateRangeChange,
+}: DatePickerWithRangeProps) {
+  const handleDateRangeChange = (range: DateRange | undefined) => {
+    onDateRangeChange(range);
+  };
 
   return (
-    <div className={cn("grid gap-2", className)}>
-      <Popover>
-        <PopoverTrigger asChild>
-          <Button
-            id="date"
-            variant={"outline"}
-            className={cn(
-              "w-[300px] justify-start text-left font-normal",
-              !date && "text-muted-foreground"
-            )}
-          >
-            <CalendarIcon className="mr-2 h-4 w-4" />
-            {date?.from ? (
-              date.to ? (
-                <>
-                  {format(date.from, "LLL dd, y")} -{" "}
-                  {format(date.to, "LLL dd, y")}
-                </>
-              ) : (
-                format(date.from, "LLL dd, y")
-              )
-            ) : (
-              <span>Pick a date</span>
-            )}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
-          <Calendar
-            initialFocus
-            mode="range"
-            defaultMonth={date?.from}
-            selected={date}
-            onSelect={setDate}
-            numberOfMonths={2}
-          />
-        </PopoverContent>
-      </Popover>
+    <div className="grid gap-2">
+      <Calendar
+        mode="range"
+        selected={dateRange}
+        onSelect={handleDateRangeChange}
+      />
     </div>
   );
 }

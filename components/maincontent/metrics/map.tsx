@@ -1,27 +1,10 @@
 // components/UserWorldMap.tsx
+import { User } from "@/types";
 import { Maximize, Minimize } from "lucide-react";
 import { useEffect, useState } from "react";
 import WorldMap from "react-svg-worldmap";
 
-interface User {
-  id: string;
-  metadata: {
-    metadata: {
-      location?: {
-        ip: string;
-        loc: string; // "lat,lng"
-        org: string;
-        city: string;
-        postal: string;
-        region: string;
-        country: string;
-        hostname: string;
-        timezone: string;
-      };
-      // other properties
-    };
-  };
-}
+
 
 const UserWorldMap = ({ userData }: { userData: User[] }) => {
   const [mapData, setMapData] = useState<{ country: string; value: number }[]>(
@@ -33,7 +16,7 @@ const UserWorldMap = ({ userData }: { userData: User[] }) => {
     const countryCounts: { [key: string]: number } = {};
 
     userData.forEach((user) => {
-      const location = user.metadata.metadata.location;
+      const location = user.metadata.location;
       if (location && location.country) {
         const country = location.country;
         countryCounts[country] = (countryCounts[country] || 0) + 1;

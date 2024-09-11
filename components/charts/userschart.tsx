@@ -1,5 +1,3 @@
-"use client";
-
 import {
   ChartConfig,
   ChartContainer,
@@ -22,11 +20,6 @@ const formatNumber = (num: number) => {
   return num.toLocaleString();
 };
 
-// Function to calculate the total number of users
-const calculateTotalUsers = (data: { date: string; users: number }[]) => {
-  return data.reduce((total, entry) => total + entry.users, 0);
-};
-
 // Function to format dates in "20th Feb" style
 const formatDate = (dateString: any) => {
   const date = new Date(dateString);
@@ -43,7 +36,7 @@ const formatDate = (dateString: any) => {
 };
 
 export function MainChart({ data }: MainChartProps) {
-  const totalUsers = calculateTotalUsers(data);
+  const totalUsers = data.reduce((total, entry) => total + entry.users, 0);
 
   return (
     <div

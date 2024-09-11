@@ -7,6 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { User } from "@/types";
 import { countryNameMap } from "@/utils/countryDefs";
 import { useEffect, useState } from "react";
 interface LocationUsage {
@@ -16,25 +17,7 @@ interface LocationUsage {
   count: number;
   percentage?: number; // Added percentage field
 }
-interface User {
-  id: string;
-  metadata: {
-    metadata: {
-      location?: {
-        ip: string;
-        loc: string; // "lat,lng"
-        org: string;
-        city: string;
-        postal: string;
-        region: string;
-        country: string;
-        hostname: string;
-        timezone: string;
-      };
-      // other properties
-    };
-  };
-}
+
 const LocationCard = ({ userData }: { userData: User[] }) => {
   const [locationUsage, setLocationUsage] = useState<LocationUsage[]>([]);
   const [selectedLocationType, setSelectedLocationType] =
@@ -44,7 +27,7 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
     const regionCounts: { [key: string]: number } = {};
     const countryCounts: { [key: string]: number } = {};
     userData.forEach((user) => {
-      const location = user.metadata.metadata.location;
+      const location = user.metadata.location;
       if (location) {
         const { city, region, country } = location;
         if (city) {

@@ -1,3 +1,4 @@
+import { User } from "@/types";
 import { useEffect, useState } from "react";
 
 interface OSUsage {
@@ -5,29 +6,7 @@ interface OSUsage {
   percentage: number;
 }
 
-interface User {
-  id: string;
-  metadata: {
-    metadata: {
-      os?: string;
-      visits?: number;
-      browser?: string;
-      lastSeen?: string;
-      location?: {
-        ip: string;
-        loc: string; // "lat,lng"
-        org: string;
-        city: string;
-        postal: string;
-        region: string;
-        country: string;
-        hostname: string;
-        timezone: string;
-      };
-      firstSeen?: string;
-    };
-  };
-}
+
 
 const OperatingSystemCard = ({ userData }: { userData: User[] }) => {
   const [osUsage, setOsUsage] = useState<OSUsage[]>([]);
@@ -36,7 +15,7 @@ const OperatingSystemCard = ({ userData }: { userData: User[] }) => {
     const osCounts: { [key: string]: number } = {};
 
     userData.forEach((user) => {
-      const os = user.metadata.metadata.os; // Access the nested metadata for OS
+      const os = user.metadata.os; // Access the nested metadata for OS
       if (os) {
         osCounts[os] = (osCounts[os] || 0) + 1;
       }

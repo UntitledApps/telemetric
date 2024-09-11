@@ -1,5 +1,6 @@
 "use client";
 
+import { User } from "@/types";
 import React from "react";
 
 interface BrowserUsage {
@@ -8,23 +9,15 @@ interface BrowserUsage {
 }
 
 // This should match how you fetch and structure user data in your app
-interface UserData {
-  id: string;
-  metadata: {
-    metadata: {
-      browser?: string;
-    };
-  };
-}
 
-const Browsers = ({ userData }: { userData: UserData[] }) => {
+const Browsers = ({ userData }: { userData: User[] }) => {
   const [browserUsage, setBrowserUsage] = React.useState<BrowserUsage[]>([]);
 
   React.useEffect(() => {
     const browserCounts: { [key: string]: number } = {};
 
     userData.forEach((user) => {
-      const { browser } = user.metadata.metadata; // Accessing nested metadata for browser
+      const { browser } = user.metadata; // Accessing nested metadata for browser
       if (browser) {
         browserCounts[browser] = (browserCounts[browser] || 0) + 1;
       }

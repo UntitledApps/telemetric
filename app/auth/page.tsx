@@ -32,8 +32,15 @@ const LoginPage = () => {
   }, []);
 
   return (
-    <div>
-      <h1>Login Page</h1>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <h1>Sign in with Google</h1>
       {/* Add your login form or UI here */}
     </div>
   );

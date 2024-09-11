@@ -1,16 +1,20 @@
 import { MainChart } from "@/components/charts/userschart";
 import { createClient } from "@/utils/supabase/client";
 import React, { useEffect, useState } from "react";
+import { DateRange } from "react-day-picker";
 import Browsers from "./browsers";
 import LocationCard from "./locations";
 import UserWorldMap from "./map";
 import OperatingSystemCard from "./operatingsystems";
+import { User } from "@/types";
 
 interface Project {
   id: string;
-  data: {
+  users: {
     [key: string]: {
-      users: string[];
+      user_activity: {
+        [timestamp: string]: string;
+      };
     };
   };
   metadata: {
@@ -18,29 +22,7 @@ interface Project {
   };
 }
 
-interface User {
-  id: string;
-  metadata: {
-    metadata: {
-      os?: string;
-      visits?: number;
-      browser?: string;
-      lastSeen?: string;
-      location?: {
-        ip: string;
-        loc: string; // "lat,lng"
-        org: string;
-        city: string;
-        postal: string;
-        region: string;
-        country: string;
-        hostname: string;
-        timezone: string;
-      };
-      firstSeen?: string;
-    };
-  };
-}
+
 
 interface Location {
   lat: number;
@@ -51,26 +33,16 @@ interface Location {
 interface MetricsProps {
   selectedProject: Project | null;
   environment: string;
+  dateRange?: DateRange;
 }
 
-type ProjectData = {
-  data: Record<string, { users: string[] }>;
-};
-
-type DebugProjectData = {
-  debugData: Record<string, { users: string[] }>;
-};
-
-// Type guard function to check if projectData is of type DebugProjectData
-const isDebugProjectData = (data: any): data is DebugProjectData => {
-  return "debugData" in data;
-};
-
-const Metrics: React.FC<MetricsProps> = ({ selectedProject, environment }) => {
+const Metrics: React.FC<MetricsProps> = ({
+  selectedProject,
+  environment,
+  dateRange,
+}) => {
   const [users, setUsers] = useState<User[]>([]);
-  const [projectData, setProjectData] = useState<
-    ProjectData | DebugProjectData | null
-  >(null);
+  const [projectData, setProjectData] = useState<Project | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -79,7 +51,7 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, environment }) => {
         // Fetch project data based on environment
         const { data, error } = await supabase
           .from("projects")
-          .select(environment === "Debug/Development" ? "debugData" : "data")
+          .select("id, users, metadata")
           .eq("id", selectedProject.id)
           .single();
 
@@ -88,8 +60,9 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, environment }) => {
           return;
         }
 
+        // Ensure data conforms to Project type
         if (data) {
-          setProjectData(data);
+          setProjectData(data as Project);
         }
 
         // Fetch user data
@@ -106,7 +79,7 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, environment }) => {
           setUsers(
             userData.map((user) => ({
               id: user.id,
-              metadata: user,
+              metadata: user.metadata, // Adjust this if needed
             }))
           );
         }
@@ -120,22 +93,33 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, environment }) => {
     return <div>Select a project to view metrics</div>;
   }
 
-  // Safeguard for projectData type
-  const selectedProjectData =
-    projectData && isDebugProjectData(projectData)
-      ? projectData.debugData
-      : projectData?.data || {};
+  // Filter user activity data based on selected date range
+  const userActivityData = projectData?.users || {};
+  const filteredData = Object.keys(userActivityData).flatMap((date) => {
+    const activities = userActivityData[date]?.user_activity || {};
+    const userCounts = Object.values(activities).reduce((countMap, userId) => {
+      countMap[userId] = (countMap[userId] || 0) + 1;
+      return countMap;
+    }, {} as { [userId: string]: number });
 
-  // Transform the data to match MainChart's expected format
-  const formattedData = Object.keys(selectedProjectData).map((date) => ({
-    date,
-    users: selectedProjectData[date]?.users.length || 0,
-  }));
+    // Check if date is within the selected date range
+    const isDateInRange = dateRange
+      ? new Date(date) >= dateRange.from! &&
+        (!dateRange.to || new Date(date) <= dateRange.to)
+      : true;
+
+    return isDateInRange
+      ? {
+          date,
+          users: Object.keys(userCounts).length, // Number of unique users
+        }
+      : [];
+  });
 
   // Extract location data from users
   const locations: Location[] = users
     .map((user) => {
-      const location = user.metadata.metadata.location;
+      const location = user.metadata.location;
       if (!location || typeof location.loc !== "string") {
         return null;
       }
@@ -148,26 +132,18 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, environment }) => {
       return {
         lat: Number(lat),
         lng: Number(lng),
-        city: location.city || "Unknown",
+        city: location.city || "",
       };
     })
-    .filter((loc): loc is Location => loc !== null); // Ensure null values are filtered out
+    .filter((loc): loc is Location => loc !== null);
 
   return (
     <div>
-      <MainChart data={formattedData} />
-
-      <div
-        style={{
-          height: "16px",
-        }}
-      ></div>
-      <div className="grid grid-cols-1  sm:grid-cols-2">
-        <OperatingSystemCard userData={users} />
-        <Browsers userData={users} />
-        <LocationCard userData={users} />
-        <UserWorldMap userData={users} />
-      </div>
+      <MainChart data={filteredData} />
+      <UserWorldMap userData={users} />
+      <LocationCard userData={users} />
+      <OperatingSystemCard userData={users} />
+      <Browsers userData={users} />
     </div>
   );
 };
