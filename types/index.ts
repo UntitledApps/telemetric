@@ -1,15 +1,7 @@
 // types/index.ts
 export interface Project {
   id: string;
-  data: {
-    [key: string]: {
-      users: string[];
-      events: {
-        [key: string]: number;
-      };
-      revenue: string;
-    };
-  };
+
   metadata: {
     name: string;
     type: string;
@@ -30,26 +22,22 @@ export enum SelectedNavItem {
 export interface User {
   id: string;
 
+  os?: string;
 
-    os?: string;
+  browser?: string;
 
-    browser?: string;
-
-    location?: {
-      ip: string;
-      loc: string; // "lat,lng"
-      org: string;
-      city: string;
-      postal: string;
-      region: string;
-      country: string;
-      hostname: string;
-      timezone: string;
-    };
-
-
+  location?: {
+    ip: string;
+    loc: string; // "lat,lng"
+    org: string;
+    city: string;
+    postal: string;
+    region: string;
+    country: string;
+    hostname: string;
+    timezone: string;
+  };
 }
-
 
 export interface Activity {
   id: string;
@@ -58,4 +46,3 @@ export interface Activity {
   project_id: string; // Ensure this is included
   // Add other properties if needed
 }
-

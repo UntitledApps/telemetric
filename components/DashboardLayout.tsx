@@ -181,7 +181,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     switch (selectedNavItem) {
       case SelectedNavItem.PROJECTS:
         return (
-          <Projects onProjectSelect={handleProjectChange} projects={projects} />
+          <Projects
+            onProjectSelect={handleProjectChange}
+            projects={projects}
+          />
         );
       case SelectedNavItem.METRICS:
         return (

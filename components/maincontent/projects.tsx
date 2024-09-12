@@ -1,55 +1,26 @@
-// components/maincontent/projects.tsx
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import React from "react";
+import { Badge } from "../ui/badge";
 
-interface Project {
-  id: string;
-  data: {
-    [key: string]: {
-      users: string[];
-      events: {
-        [key: string]: number;
-      };
-      revenue: string;
-    };
-  };
-  metadata: {
-    name: string;
-    type: string;
-    favIconURL: string;
-    ogImageURL: string;
-  };
-}
+import { Project } from "@/types";
+import { DateRange } from "react-day-picker";
 
 interface ProjectsProps {
   onProjectSelect: (projectId: string) => void;
-  projects: Project[]; // Accept projects as a prop
+  projects: Project[];
+  dateRange?: DateRange; // Added dateRange prop for filtering
 }
 
-const Projects: React.FC<ProjectsProps> = ({ onProjectSelect, projects }) => {
-  const getLatestRevenue = (
-    data: { [key: string]: { revenue: string } } | undefined
-  ) => {
-    if (!data) return "N/A";
-    const latestDate = Object.keys(data).sort().pop();
-    return latestDate ? data[latestDate].revenue : "N/A";
-  };
+const Projects: React.FC<ProjectsProps> = ({
+  onProjectSelect,
+  projects,
+  dateRange,
+}) => {
+  // Function to get total users from activities data
 
-  const getUserCount = (
-    data: { [key: string]: { users: string[] } } | undefined
-  ) => {
-    if (!data) return 0;
-    const latestDate = Object.keys(data).sort().pop();
-    return latestDate ? data[latestDate].users.length : 0;
-  };
+  // Function to get the latest revenue (for consistency with previous code)
 
   if (projects.length === 0)
     return (
@@ -70,9 +41,9 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect, projects }) => {
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+        gridTemplateColumns: "repeat(auto-fill, minmax(200px, 200px))",
         gap: "16px",
-        padding: "8px",
+        padding: "16px",
       }}
     >
       {projects.map((project) => (
@@ -88,71 +59,34 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect, projects }) => {
             style={{
               display: "flex",
               flexDirection: "column",
-              padding: "8px",
+              padding: "0px",
               cursor: "pointer",
             }}
           >
             <CardHeader
               style={{
                 display: "flex",
-                flexDirection: "row",
+                flexDirection: "column",
                 alignItems: "center",
-                gap: "10px",
-                justifyContent: "start",
-                padding: "8px",
+                gap: "5px",
+                justifyContent: "center",
+                padding: "16px",
                 flexShrink: 0,
               }}
             >
-              <Avatar>
+              <Avatar className="w-16 h-16">
                 <AvatarImage
-                  src={project.metadata.favIconURL}
+                  src={
+                    project.metadata.favIconURL ||
+                    "http://www.google.com/s2/favicons?domain=askrudi.com&sz=256"
+                  }
                   alt={project.metadata.name}
                 />
                 <AvatarFallback>{project.metadata.name[0]}</AvatarFallback>
               </Avatar>
               <CardTitle>{project.metadata.name}</CardTitle>
+              <Badge>Type: {project.metadata.type.toUpperCase()}</Badge>
             </CardHeader>
-            <CardContent
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                gap: "16px",
-                padding: "8px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <div className="text-lg font-bold">
-                  {getUserCount(project.data)}
-                </div>
-                <div className="text-sm text-gray-600">Unique Users</div>
-              </div>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <div className="text-lg font-bold">
-                  {getLatestRevenue(project.data)}$
-                </div>
-                <div className="text-sm text-gray-600">Revenue</div>
-              </div>
-            </CardContent>
-            <CardFooter
-              style={{
-                padding: "8px",
-              }}
-            >
-              {/* Add project actions here */}
-            </CardFooter>
           </Card>
         </motion.div>
       ))}
