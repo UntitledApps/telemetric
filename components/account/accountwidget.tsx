@@ -7,7 +7,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuSub,
@@ -16,10 +15,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { createClient } from "@/utils/supabase/client"; // Adjust the import path as necessary
-import { Headset, LogOut, Mail, Settings } from "lucide-react";
+import { Headset, LogOut, Mail } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { Dialog, DialogTrigger } from "../ui/dialog";
+import { Dialog } from "../ui/dialog";
 import { AccountDialog } from "./accountdialog";
 
 export function AccountWidget() {
@@ -65,21 +64,8 @@ export function AccountWidget() {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem>
-            <DialogTrigger
-              style={{
-                gap: "5px",
-                display: "flex",
-                flexDirection: "row",
-                width: "100%",
-              }}
-            >
-              <Settings className="h-4 w-4" /> Settings
-            </DialogTrigger>
-          </DropdownMenuItem>
           <DropdownMenuSub>
             <DropdownMenuSubTrigger>
               <Headset className="mr-2 h-4 w-4" />
