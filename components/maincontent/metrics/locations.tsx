@@ -7,9 +7,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { User } from "@/types";
 import { countryNameMap } from "@/utils/countryDefs";
 import { useEffect, useState } from "react";
+
 interface LocationUsage {
   city?: string;
   region?: string;
@@ -18,16 +18,25 @@ interface LocationUsage {
   percentage?: number; // Added percentage field
 }
 
-const LocationCard = ({ userData }: { userData: User[] }) => {
+interface LocationCardProps {
+  activities: Record<
+    string,
+    { location: { city?: string; region?: string; country?: string } }
+  >;
+}
+
+const LocationCard = ({ activities }: LocationCardProps) => {
   const [locationUsage, setLocationUsage] = useState<LocationUsage[]>([]);
   const [selectedLocationType, setSelectedLocationType] =
     useState<string>("country");
+
   useEffect(() => {
     const cityCounts: { [key: string]: number } = {};
     const regionCounts: { [key: string]: number } = {};
     const countryCounts: { [key: string]: number } = {};
-    userData.forEach((user) => {
-      const location = user.metadata.location;
+
+    Object.values(activities).forEach((activity) => {
+      const location = activity.location;
       if (location) {
         const { city, region, country } = location;
         if (city) {
@@ -41,7 +50,8 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
         }
       }
     });
-    const totalUsers = userData.length;
+
+    const totalActivities = Object.keys(activities).length;
     const calculatedLocationUsage = Object.entries(
       selectedLocationType === "city"
         ? cityCounts
@@ -51,12 +61,14 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
     ).map(([key, count]) => ({
       [selectedLocationType]: key,
       count,
-      percentage: Number(((count / totalUsers) * 100).toFixed(1)), // Calculate percentage
+      percentage: Number(((count / totalActivities) * 100).toFixed(1)), // Calculate percentage
     }));
-    setLocationUsage(calculatedLocationUsage);
-  }, [userData, selectedLocationType]);
+
+    setLocationUsage(calculatedLocationUsage as LocationUsage[]);
+  }, [activities, selectedLocationType]);
+
   return (
-    <div className="  border-gray-200 border-r">
+    <div className="border-gray-200 border-r">
       <div className="p-2">
         <div className="flex items-center justify-between mb-2">
           <div className="text-lg font-bold">Locations Overview</div>
@@ -82,7 +94,7 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
             {locationUsage.map((location) => (
               <div
                 key={location.city}
-                className="relative flex items-center py-1  border-gray-200"
+                className="relative flex items-center py-1 border-gray-200"
               >
                 <div
                   className="absolute bg-blue-200 opacity-50"
@@ -107,7 +119,7 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
             {locationUsage.map((location) => (
               <div
                 key={location.region}
-                className="relative flex items-center py-1  border-gray-200"
+                className="relative flex items-center py-1 border-gray-200"
               >
                 <div
                   className="absolute bg-blue-200 opacity-50"
@@ -132,7 +144,7 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
             {locationUsage.map((location) => (
               <div
                 key={location.country}
-                className="relative flex items-center py-1  border-gray-200"
+                className="relative flex items-center py-1 border-gray-200"
               >
                 <div
                   className="absolute bg-blue-200 opacity-50"
@@ -148,9 +160,7 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
                   <img
                     src={`/images/countries/${location.country}.svg`}
                     alt={location.country}
-                    style={{
-                      borderRadius: "6px",
-                    }}
+                    style={{ borderRadius: "6px" }}
                     className="w-5 h-5" // Adjust the width and height as needed
                   />
                   <span className="text-sm flex-1">
@@ -166,4 +176,5 @@ const LocationCard = ({ userData }: { userData: User[] }) => {
     </div>
   );
 };
+
 export default LocationCard;

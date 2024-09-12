@@ -1,4 +1,3 @@
-// components/DashboardLayout.tsx
 "use client";
 import React, { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
@@ -25,11 +24,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [loadingProjects, setLoadingProjects] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [environment, setEnvironment] = useState<string>("Production");
-  const [loading, setLoading] = useState<boolean>(false); // Add loading statet
+  const [loading, setLoading] = useState<boolean>(false);
   const [activitiesIds, setActivitiesIds] = useState<string[]>([]);
-  const [activitiesMap, setActivitiesMap] = useState<{
+  const [initialActivitiesMap, setInitialActivitiesMap] = useState<{
     [timestamp: string]: { os: string; browser: string };
   }>({});
+  const [currentActivitiesMap, setCurrentActivitiesMap] = useState<{
+    [timestamp: string]: { os: string; browser: string };
+  }>({});
+
   useEffect(() => {
     const fetchProjectsAndActivities = async () => {
       setLoading(true);
@@ -62,7 +65,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             const { data: activitiesData, error: activitiesError } =
               await supabase
                 .from("activities")
-                .select("id, user_id, timestamp, project_id") // Ensure project_id is selected
+                .select("id, user_id, timestamp, project_id")
                 .in("project_id", projectIds);
 
             if (activitiesError) throw activitiesError;
@@ -77,7 +80,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             if (userIds.length > 0) {
               const { data: usersData, error: usersError } = await supabase
                 .from("users")
-                .select("id, os, browser")
+                .select("id, os, browser, location")
                 .in("id", userIds);
 
               if (usersError) throw usersError;
@@ -88,32 +91,35 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   return acc;
                 }, {}) || {};
 
-              console.log(usersMap);
               const activitiesMap =
                 activitiesData?.reduce(
                   (
                     acc: {
-                      [timestamp: string]: { os: string; browser: string };
+                      [timestamp: string]: {
+                        os: string; browser: string;
+                        location: { city?: string; region?: string; country?: string };
+
+                       };
                     },
                     activity: Activity
                   ) => {
-                    console.log(activity);
                     const user = usersMap[activity.user_id];
-                    console.log(user);
-
                     if (user) {
                       acc[activity.timestamp] = {
                         os: user.os!,
                         browser: user.browser!,
+                        location: user.location!,
                       };
                     }
-                    console.log(acc);
                     return acc;
                   },
                   {}
                 ) || {};
 
-              setActivitiesMap(activitiesMap);
+              setInitialActivitiesMap(activitiesMap);
+              setCurrentActivitiesMap(
+                filterActivitiesByDateRange(activitiesMap, dateRange)
+              );
             }
           }
         }
@@ -127,6 +133,36 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     fetchProjectsAndActivities();
   }, [supabase]);
 
+  useEffect(() => {
+    setCurrentActivitiesMap(
+      filterActivitiesByDateRange(initialActivitiesMap, dateRange)
+    );
+  }, [dateRange, initialActivitiesMap]);
+
+  const filterActivitiesByDateRange = (
+    activitiesMap: { [timestamp: string]: { os: string; browser: string } },
+    range: DateRange | undefined
+  ) => {
+    console.log("initialActivitiesMap", activitiesMap);
+    if (!range || !range.from || !range.to) return activitiesMap;
+
+    const { from, to } = range;
+
+    // Convert range boundaries to dates with time set to 00:00:00 for start and 23:59:59 for end
+    const startDate = new Date(from);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = new Date(to);
+    endDate.setHours(23, 59, 59, 999);
+
+    return Object.fromEntries(
+      Object.entries(activitiesMap).filter(([timestamp]) => {
+        const date = new Date(timestamp);
+        return date >= startDate && date <= endDate;
+      })
+    );
+  };
+
   const handleDateRangeChange = (range: DateRange | undefined) => {
     setDateRange(range);
   };
@@ -138,17 +174,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const handleProjectChange = (projectId: string) => {
     const project = projects.find((p) => p.id === projectId) || null;
     setSelectedProject(project);
-    // if (project) setSelectedNavItem(SelectedNavItem.METRICS);
+    setSelectedNavItem(SelectedNavItem.METRICS);
   };
 
   function renderContent() {
     switch (selectedNavItem) {
       case SelectedNavItem.PROJECTS:
         return (
-          <Projects
-            onProjectSelect={handleProjectChange}
-            projects={projects} // Pass projects data as a prop
-          />
+          <Projects onProjectSelect={handleProjectChange} projects={projects} />
         );
       case SelectedNavItem.METRICS:
         return (
@@ -156,7 +189,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             selectedProject={selectedProject}
             environment={environment}
             dateRange={dateRange}
-            activities={activitiesMap}
+            activities={currentActivitiesMap}
           />
         );
       case SelectedNavItem.DATA_EXPLORER:
@@ -184,7 +217,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       <div className="flex items-center justify-center h-screen">
         Loading...
       </div>
-    ); // Loading screen
+    );
   }
 
   if (error) return <div>Error: {error}</div>;
@@ -200,6 +233,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       />
       <div className="flex flex-col">
         <Header
+          dateRange={dateRange}
           handleEnvironmentChange={setEnvironment}
           handleDateRangeChange={handleDateRangeChange}
           selectedProject={selectedProject}

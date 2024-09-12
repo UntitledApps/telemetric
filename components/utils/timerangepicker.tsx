@@ -1,24 +1,21 @@
+// TimeRangePicker.tsx
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import {
   Command,
-  CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { cn } from "@/lib/utils";
-import { addDays } from "date-fns";
 import * as React from "react";
 import { DateRange } from "react-day-picker";
+// Assuming you have this component
 
 type Status = {
   value: string;
@@ -32,124 +29,117 @@ const statuses: Status[] = [
   { value: "last-30-days", label: "Last 30 days" },
   { value: "this-month", label: "This month" },
   { value: "last-month", label: "Last month" },
-  { value: "custom", label: "Custom" },
 ];
 
 interface TimeRangePickerProps {
-  onDateRangeChange: (range?: DateRange) => void;
-}
-
-export function TimeRangePicker({ onDateRangeChange }: TimeRangePickerProps) {
-  const [open, setOpen] = React.useState(false);
-  const isDesktop = useMediaQuery("(min-width: 768px)");
-  const [selectedStatus, setSelectedStatus] = React.useState<Status | null>(
-    null
-  );
-
-  const showDatePicker = selectedStatus?.value === "custom";
-  const [dateRange, setDateRange] = React.useState<DateRange | undefined>();
-
-  const handleDateRangeChange = (range: DateRange | undefined) => {
-    setDateRange(range);
-    onDateRangeChange(range); // Notify parent component of date range change
-  };
-
-  const pickerContent = (
-    <>
-      <StatusList setOpen={setOpen} setSelectedStatus={setSelectedStatus} />
-      {showDatePicker && (
-        <div className="mt-4">
-          <DatePickerWithRange
-            dateRange={dateRange}
-            onDateRangeChange={handleDateRangeChange}
-          />
-        </div>
-      )}
-    </>
-  );
-
-  if (isDesktop) {
-    return (
-      <Popover open={open} onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
-          <Button variant="outline" className="w-[150px] justify-start">
-            {selectedStatus ? <>{selectedStatus.label}</> : <>Today</>}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-0" align="start">
-          {pickerContent}
-        </PopoverContent>
-      </Popover>
-    );
-  }
-
-  return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
-        <Button variant="outline" className="w-[150px] justify-start">
-          {selectedStatus ? <>{selectedStatus.label}</> : <>+ Set status</>}
-        </Button>
-      </DrawerTrigger>
-      <DrawerContent>
-        <div className="mt-4 border-t">{pickerContent}</div>
-      </DrawerContent>
-    </Drawer>
-  );
-}
-
-function StatusList({
-  setOpen,
-  setSelectedStatus,
-}: {
-  setOpen: (open: boolean) => void;
-  setSelectedStatus: (status: Status | null) => void;
-}) {
-  return (
-    <Command>
-      <CommandInput placeholder="Filter timeranges..." />
-      <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup>
-          {statuses.map((status) => (
-            <CommandItem
-              key={status.value}
-              value={status.value}
-              onSelect={(value) => {
-                setSelectedStatus(
-                  statuses.find((s) => s.value === value) || null
-                );
-                setOpen(false);
-              }}
-            >
-              {status.label}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-      </CommandList>
-    </Command>
-  );
-}
-
-interface DatePickerWithRangeProps {
-  dateRange?: DateRange;
   onDateRangeChange: (range: DateRange | undefined) => void;
+  dateRange: DateRange | undefined;
 }
 
-export function DatePickerWithRange({
-  dateRange,
+export function TimeRangePicker({
   onDateRangeChange,
-}: DatePickerWithRangeProps) {
-  const handleDateRangeChange = (range: DateRange | undefined) => {
+  dateRange,
+}: TimeRangePickerProps) {
+  const [open, setOpen] = React.useState<boolean>(false);
+  const [selectedRange, setSelectedRange] = React.useState<string | null>(null);
+
+  const isSmallScreen = useMediaQuery("(max-width: 768px)");
+
+  const handleRangeChange = (range: DateRange) => {
+    setSelectedRange(null);
     onDateRangeChange(range);
   };
 
+  const handleRangeSelection = (value: string) => {
+    setSelectedRange(value);
+    switch (value) {
+      case "today":
+        onDateRangeChange({
+          from: new Date(),
+          to: new Date(),
+        });
+        break;
+      case "yesterday":
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        onDateRangeChange({
+          from: yesterday,
+          to: yesterday,
+        });
+        break;
+      case "last-7-days":
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        onDateRangeChange({
+          from: sevenDaysAgo,
+          to: new Date(),
+        });
+        break;
+      case "last-30-days":
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        onDateRangeChange({
+          from: thirtyDaysAgo,
+          to: new Date(),
+        });
+        break;
+      case "this-month":
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0); // Last day of the month
+
+        onDateRangeChange({
+          from: startOfMonth,
+          to: endOfMonth,
+        });
+        break;
+
+      case "last-month":
+        const startOfLastMonth = new Date();
+        startOfLastMonth.setMonth(startOfLastMonth.getMonth() - 1);
+        startOfLastMonth.setDate(1);
+        const endOfLastMonth = new Date(startOfLastMonth);
+        endOfLastMonth.setMonth(endOfLastMonth.getMonth() + 1);
+        endOfLastMonth.setDate(0);
+        onDateRangeChange({
+          from: startOfLastMonth,
+          to: endOfLastMonth,
+        });
+        break;
+
+      default:
+        onDateRangeChange(undefined);
+        break;
+    }
+    setOpen(false);
+  };
+
   return (
-    <div className="grid gap-2">
-      <Calendar
-        mode="range"
-        selected={dateRange}
-        onSelect={handleDateRangeChange}
-      />
-    </div>
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" className="w-26">
+          {selectedRange
+            ? statuses.find((status) => status.value === selectedRange)?.label
+            : "Select time range"}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent>
+        <Command>
+          <CommandInput placeholder="Search time range..." />
+          <CommandList>
+            <CommandGroup>
+              {statuses.map((status) => (
+                <CommandItem
+                  key={status.value}
+                  onSelect={() => handleRangeSelection(status.value)}
+                >
+                  {status.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }

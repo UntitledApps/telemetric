@@ -10,7 +10,7 @@ import {
   isWithinInterval,
   startOfDay,
 } from "date-fns";
-import { DateRange } from "react-day-picker"; // Import DateRange
+import { DateRange } from "react-day-picker";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 interface MainChartProps {
@@ -52,20 +52,17 @@ const formatHour = (dateString: any) => {
 
 // Function to transform activities map into chart data format
 const transformActivitiesMap = (
-  activitiesMap: Record<string, { os: string; browser: string }>,
+  activitiesMap: Record<string, { os: string; browser: string }> = {},
   dateRange?: DateRange
 ) => {
   const { from, to } = dateRange || {};
-  const today = new Date();
-  const isTodayRange =
-    from && to && isToday(new Date(from)) && isToday(new Date(to));
-
   const data = Object.entries(activitiesMap).reduce(
     (acc, [timestamp, value]) => {
       const activityDate = new Date(timestamp);
-      const dateKey = isTodayRange
-        ? formatHour(timestamp)
-        : format(activityDate, "yyyy-MM-dd");
+      const dateKey =
+        from && to && isToday(new Date(from)) && isToday(new Date(to))
+          ? formatHour(timestamp)
+          : format(activityDate, "yyyy-MM-dd");
 
       if (
         dateRange &&
@@ -161,7 +158,7 @@ export function MainChart({ data, dateRange }: MainChartProps) {
           <AreaChart
             data={transformedData}
             margin={{
-              top: 0,
+              top: 5,
               left: -30,
               right: 0,
               bottom: 0,
@@ -173,6 +170,7 @@ export function MainChart({ data, dateRange }: MainChartProps) {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
+
               tickFormatter={(tick) => {
                 if (isTodayRange) {
                   return formatHour(tick);
@@ -194,6 +192,7 @@ export function MainChart({ data, dateRange }: MainChartProps) {
               fill="url(#userGradient)"
               fillOpacity={1}
               stroke="#0057FF"
+
               strokeWidth={1.5}
               animationDuration={0}
             />
