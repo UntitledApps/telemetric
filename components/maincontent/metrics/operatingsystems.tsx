@@ -37,7 +37,7 @@ const OperatingSystemCard = ({
   }, [activities]);
 
   return (
-    <div className="border-t border-b border-gray-200 border-r p-2">
+    <div className="border-t  border-gray-200 border-r p-2">
       <div className="text-lg font-bold mb-1">Operating Systems</div>
       {osUsage.map((os) => (
         <div

@@ -21,7 +21,7 @@ interface LocationUsage {
 interface LocationCardProps {
   activities: Record<
     string,
-    { location: { city?: string; region?: string; country?: string } }
+    { location?: { city?: string; region?: string; country?: string } }
   >;
 }
 
@@ -68,7 +68,7 @@ const LocationCard = ({ activities }: LocationCardProps) => {
   }, [activities, selectedLocationType]);
 
   return (
-    <div className="border-gray-200 border-r">
+    <div className="border-gray-200 border-t">
       <div className="p-2">
         <div className="flex items-center justify-between mb-2">
           <div className="text-lg font-bold">Locations Overview</div>

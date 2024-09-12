@@ -41,7 +41,7 @@ const Browsers = ({ activities }: BrowsersProps) => {
   }, [activities]);
 
   return (
-    <div className="border-t border-b border-gray-200 p-2">
+    <div className="border-t border-gray-200 p-2">
       <div className="text-lg font-bold mb-1">Browsers</div>
       {browserUsage.map((browser) => (
         <div

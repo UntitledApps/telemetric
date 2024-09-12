@@ -5,6 +5,7 @@ import React from "react";
 import { DateRange } from "react-day-picker";
 import Browsers from "./browsers";
 import LocationCard from "./locations";
+import UserWorldMap from "./map";
 import OperatingSystemCard from "./operatingsystems";
 
 interface MetricsProps {
@@ -16,9 +17,9 @@ interface MetricsProps {
     {
       os: string;
       browser: string;
-      location: { city?: string; region?: string; country?: string };
+      location?: { city?: string; region?: string; country?: string }; // Marked as optional
     }
-  >; // Adjust type as needed
+  >;
 }
 
 const Metrics: React.FC<MetricsProps> = ({
@@ -43,10 +44,12 @@ const Metrics: React.FC<MetricsProps> = ({
         style={{ marginTop: "16px" }} // Add margin or adjust styles as needed
       >
         <OperatingSystemCard activities={activities} />
+
         {selectedProject.metadata.type === "web" && (
           <Browsers activities={activities} />
         )}
         <LocationCard activities={activities} />
+        <UserWorldMap activities={activities} />
       </div>
     </motion.div>
   );
