@@ -4,7 +4,7 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_ANON_KEY")!,
 );
-// supabase functions deploy init --no-verify-jwt
+// supabase functions deploy revenue --no-verify-jwt
 function setCORSHeaders(response: Response): Response {
   response.headers.set("Access-Control-Allow-Origin", "*"); // Replace '*' with specific origin if needed
   response.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -27,22 +27,22 @@ async function handleRequest(req: Request): Promise<Response> {
     const {
       projectID,
       userID,
-      os,
-      browser,
-      location,
-      referrer,
+      total,
     } = requestBody;
     //supabase functions deploy init --no-verify-jwt
     // Upsert user data
+
+    const revenueID = globalThis.crypto.randomUUID();
     const { error: userError } = await supabase
-      .from("users") // Replace with your actual table name
+      .from("revenue") // Replace with your actual table name
       .upsert([
         {
-          id: userID, // Replace with the actual column name for user ID
-          os: os,
-          browser: browser,
-          location: location,
-          referrer: referrer,
+          id: revenueID, // Replace with the actual column name for user ID
+          user_id: userID,
+          project_id: projectID,
+          timestamp: new Date().toISOString(),
+          //total is stored as cents to avoid floating point errors
+          total: total * 100,
         },
       ]);
 
@@ -51,22 +51,6 @@ async function handleRequest(req: Request): Promise<Response> {
     }
 
     //
-
-    const activityID = globalThis.crypto.randomUUID();
-    const { error: activityError } = await supabase
-      .from("activities") // Replace with your actual table name
-      .upsert([
-        {
-          id: activityID, // Replace with the actual column name for activity ID
-          user_id: userID,
-          project_id: projectID,
-          timestamp: new Date().toISOString(),
-        },
-      ]);
-
-    if (activityError) {
-      throw activityError;
-    }
 
     const jsonResponse = new Response("", {
       status: 200,
