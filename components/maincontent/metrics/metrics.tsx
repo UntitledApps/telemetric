@@ -20,12 +20,24 @@ interface MetricsProps {
       location?: { city?: string; region?: string; country?: string }; // Marked as optional
     }
   >;
+  /*
+  revenue: Record<
+    string,
+    {
+      total: number;
+      os: string;
+      browser: string;
+      location?: { city?: string; region?: string; country?: string }; // Marked as optional
+    }
+  >;
+  */
 }
 
 const Metrics: React.FC<MetricsProps> = ({
   selectedProject,
   environment,
   dateRange,
+
   activities,
 }) => {
   if (!selectedProject) {

@@ -2,6 +2,7 @@
 "use client";
 import {
   FolderInput,
+  HeartPulse,
   LineChart,
   Milestone,
   Package2,
@@ -28,7 +29,6 @@ export function Navigation({
   projects,
   selectedProject,
 }: NavigationProps) {
-
   return (
     <div className="sticky top-0 hidden border-r bg-white md:block">
       <div className="sticky top-0 flex h-full max-h-screen flex-col gap-2">
@@ -67,7 +67,20 @@ export function Navigation({
               }`}
             >
               <LineChart className="h-4 w-4" />
-              Metrics
+Metrics
+            </Link>
+
+            <Link
+              href="#"
+              onClick={() => handleNavItemClick(SelectedNavItem.EVENTS)}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
+                selectedNavItem === SelectedNavItem.EVENTS
+                  ? "bg-muted text-primary"
+                  : "text-muted-foreground hover:text-primary"
+              }`}
+            >
+              <HeartPulse className="h-4 w-4" />
+              Events
             </Link>
             <Link
               href="#"

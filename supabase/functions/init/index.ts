@@ -1,4 +1,5 @@
 import { createClient } from "jsr:@supabase/supabase-js@2";
+
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_ANON_KEY")!,
@@ -26,22 +27,45 @@ async function handleRequest(req: Request): Promise<Response> {
     const {
       projectID,
       userID,
-      metadata,
+      os,
+      browser,
+      location,
+      referrer,
     } = requestBody;
-
+//supabase functions deploy init --no-verify-jwt
     // Upsert user data
-    const { data, error } = await supabase
+    const { error: userError } = await supabase
       .from("users") // Replace with your actual table name
       .upsert([
         {
           id: userID, // Replace with the actual column name for user ID
-          connnectedProject: projectID, // Replace with the actual column name for project ID
-          metadata: metadata, // Replace with the actual column name for metadata
+          os: os,
+          browser: browser,
+          location: location,
+          referrer: referrer,
         },
       ]);
 
-    if (error) {
-      throw error;
+    if (userError) {
+      throw userError;
+    }
+
+    //
+
+    const activityID = globalThis.crypto.randomUUID();
+    const { error: activityError } = await supabase
+      .from("activities") // Replace with your actual table name
+      .upsert([
+        {
+          id: activityID, // Replace with the actual column name for activity ID
+          user_id: userID,
+          project_id: projectID,
+          timeStamp: new Date().toISOString(),
+        },
+      ]);
+
+    if (activityError) {
+      throw activityError;
     }
 
     const jsonResponse = new Response("", {

@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { DateRange } from "react-day-picker";
 
-import { Activity, Project, SelectedNavItem, User } from "@/types";
+import { Activity, Project, Revenue, SelectedNavItem, User } from "@/types";
 import { createClient } from "@/utils/supabase/client";
 import { Header } from "./Header";
 import DataExplorer from "./maincontent/data_explorer";
@@ -32,6 +32,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [currentActivitiesMap, setCurrentActivitiesMap] = useState<{
     [timestamp: string]: { os: string; browser: string };
   }>({});
+  const [revenueData, setRevenueData] = useState<Revenue[]>([]);
 
   useEffect(() => {
     const fetchProjectsAndActivities = async () => {
@@ -96,10 +97,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   (
                     acc: {
                       [timestamp: string]: {
-                        os: string; browser: string;
-                        location: { city?: string; region?: string; country?: string };
-
-                       };
+                        os: string;
+                        browser: string;
+                        location: {
+                          city?: string;
+                          region?: string;
+                          country?: string;
+                        };
+                      };
                     },
                     activity: Activity
                   ) => {
@@ -121,6 +126,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 filterActivitiesByDateRange(activitiesMap, dateRange)
               );
             }
+
+            // Fetch revenue data
+            const { data: revenueData, error: revenueError } = await supabase
+              .from("revenue")
+              .select("id, user_id, timestamp, project_id, total")
+              .in("project_id", projectIds);
+
+            if (revenueError) throw revenueError;
+            setRevenueData(revenueData || []);
           }
         }
       } catch (error) {
@@ -181,10 +195,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     switch (selectedNavItem) {
       case SelectedNavItem.PROJECTS:
         return (
-          <Projects
-            onProjectSelect={handleProjectChange}
-            projects={projects}
-          />
+          <Projects onProjectSelect={handleProjectChange} projects={projects} />
         );
       case SelectedNavItem.METRICS:
         return (
