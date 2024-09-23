@@ -1,17 +1,19 @@
 import { EmailForm } from "@/components/emailform";
 import { createClient } from "@/utils/supabase/server";
+import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-export default async function Home() {
+export default async function Home({ query }: GetServerSidePropsContext) {
   const supabase = createClient();
 
   const { data, error } = await supabase.auth.getUser();
 
-  if (data?.user) {
+  const showHomePage = query?.showHomePage === "true";
+
+  if (data?.user && !showHomePage) {
     redirect("/dashboard");
   }
-
   return (
     <div className="min-h-screen font-inter text-gray-900 bg-white">
       {/* Navbar */}

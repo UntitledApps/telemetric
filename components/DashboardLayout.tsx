@@ -11,7 +11,7 @@ import Metrics from "./maincontent/metrics/metrics";
 import Projects from "./maincontent/projects";
 import Settings from "./maincontent/settings";
 import Setup from "./maincontent/setup";
-import { Navigation } from "./Navigation";
+import { Navigation } from "./navbarapp";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
@@ -214,6 +214,8 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         return <Settings />;
       case SelectedNavItem.IMPORT_EXPORT_DATA:
         return <DataImportExport />;
+      case SelectedNavItem.PROFILE:
+        return <div>Profile</div>;
       default:
         return null;
     }

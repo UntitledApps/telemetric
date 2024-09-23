@@ -7,9 +7,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Project } from "@/types";
+import { Mail, MessageCircle } from "lucide-react";
+import Image from "next/image";
 import { DateRange } from "react-day-picker";
-import { AccountWidget } from "../components/account/accountwidget";
 import { DatePickerWithRange } from "./custometimerange";
+import { Button } from "./ui/button";
+import { Dialog } from "./ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 import { TimeRangePicker } from "./utils/timerangepicker";
 
 interface HeaderProps {
@@ -35,12 +44,9 @@ export function Header({
           {/* Conditionally render the Select component */}
           <div
             style={{
-             marginLeft: "auto",
-            }
-            }
-          >
-
-          </div>
+              marginLeft: "auto",
+            }}
+          ></div>
           {showEnvironmentSelect && (
             <Select onValueChange={handleEnvironmentChange}>
               <SelectTrigger className="w-[180px]">
@@ -64,7 +70,42 @@ export function Header({
           />
         </>
       )}
-      <AccountWidget />
+      <Dialog>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="secondary">
+              <MessageCircle className="mr-2 h-4 w-4" />
+              Feedback
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuItem>
+              <Image
+                src="/images/x.svg"
+                alt="X"
+                className="mr-2 h-4 w-4"
+                width={16}
+                height={16}
+              />
+              In the X Community
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Mail className="mr-2 h-4 w-4" />
+              Per E-Mail
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </Dialog>
+      <Button variant="ghost">Support/Help </Button>
+      <Button
+        variant="ghost"
+        onClick={() =>
+          window.open("https://telemetric.untitledapps.net/docs", "_blank")
+        }
+      >
+        Docs{" "}
+      </Button>
     </header>
   );
 }

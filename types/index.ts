@@ -24,6 +24,7 @@ export enum SelectedNavItem {
   SETUP = "SETUP",
   SETTINGS = "SETTINGS",
   IMPORT_EXPORT_DATA = "IMPORT_EXPORT_DATA",
+  PROFILE = "PROFILE",
 }
 export interface User {
   id: string;

@@ -12,6 +12,9 @@ import {
 import Link from "next/link";
 
 import { Project, SelectedNavItem } from "@/types/";
+import { createClient } from "@/utils/supabase/client";
+import { useEffect, useState } from "react";
+import { UserProfile } from "./account/userprofile";
 import ProjectSelect from "./navigation/projectselect";
 
 interface NavigationProps {
@@ -29,6 +32,18 @@ export function Navigation({
   projects,
   selectedProject,
 }: NavigationProps) {
+  const supabase = createClient();
+  const [userEmail, setUserEmails] = useState<string>("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUserEmails(user?.email ? user.email : "");
+    };
+    fetchData();
+  }, []);
   return (
     <div className="sticky top-0 hidden border-r bg-white md:block">
       <div className="sticky top-0 flex h-full max-h-screen flex-col gap-2">
@@ -67,7 +82,7 @@ export function Navigation({
               }`}
             >
               <LineChart className="h-4 w-4" />
-Metrics
+              Metrics
             </Link>
 
             <Link
@@ -133,6 +148,31 @@ Metrics
               Import/Export Data
             </Link>
           </nav>
+        </div>
+        <UserProfile
+          selectedNavItem={selectedNavItem}
+          handleNavItemClick={handleNavItemClick}
+          handleProjectChange={handleProjectChange}
+          projects={projects}
+          selectedProject={selectedProject}
+        ></UserProfile>
+        <div className="flex flex-col h-14 items-center justify-center border-t px-4 lg:h-[60px] lg:px-6">
+          <Link
+            href="https://untitledapps.net/telemetric"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 text-muted-foreground text-xs text-align-center"
+          >
+            Imprint & Privacy
+          </Link>
+          <Link
+            href="https://untitledapps.net"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-3 text-muted-foreground text-xs text-center"
+          >
+            &copy; 2024 UNTITLEDAPPS e.U. | All rights reserved.
+          </Link>
         </div>
       </div>
     </div>
