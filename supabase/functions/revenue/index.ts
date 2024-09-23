@@ -1,5 +1,4 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_ANON_KEY")!,
@@ -14,49 +13,71 @@ function setCORSHeaders(response: Response): Response {
   );
   return response;
 }
-
 async function handleRequest(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") {
     // Handle CORS preflight request
     const response = new Response(null, { status: 204 });
     return setCORSHeaders(response);
   }
-
   try {
     const requestBody = await req.json();
     const {
       projectID,
       userID,
       total,
+      debugData,
+      version,
     } = requestBody;
     //supabase functions deploy init --no-verify-jwt
     // Upsert user data
-
-    const revenueID = globalThis.crypto.randomUUID();
-    const { error: userError } = await supabase
-      .from("revenue") // Replace with your actual table name
-      .upsert([
-        {
-          id: revenueID, // Replace with the actual column name for user ID
-          user_id: userID,
-          project_id: projectID,
-          timestamp: new Date().toISOString(),
-          //total is stored as cents to avoid floating point errors
-          total: total * 100,
-        },
-      ]);
-
-    if (userError) {
-      throw userError;
+    if (debugData == true) {
+      const revenueID = globalThis.crypto.randomUUID();
+      const { error: userError } = await supabase
+        .from("debugRevenue") // Replace with your actual table name
+        .upsert([
+          {
+            id: revenueID, // Replace with the actual column name for user ID
+            user_id: userID,
+            project_id: projectID,
+            timestamp: new Date().toISOString(),
+            version: version,
+            //total is stored as cents to avoid floating point errors
+            total: total * 100,
+          },
+        ]);
+      if (userError) {
+        throw userError;
+      }
+      const jsonResponse = new Response("", {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+      return setCORSHeaders(jsonResponse);
+    } else {
+      const revenueID = globalThis.crypto.randomUUID();
+      const { error: userError } = await supabase
+        .from("revenue") // Replace with your actual table name
+        .upsert([
+          {
+            id: revenueID, // Replace with the actual column name for user ID
+            user_id: userID,
+            project_id: projectID,
+            timestamp: new Date().toISOString(),
+            version: version,
+            //total is stored as cents to avoid floating point errors
+            total: total * 100,
+          },
+        ]);
+      if (userError) {
+        throw userError;
+      }
+      const jsonResponse = new Response("", {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+      return setCORSHeaders(jsonResponse);
     }
-
     //
-
-    const jsonResponse = new Response("", {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-    return setCORSHeaders(jsonResponse);
   } catch (error) {
     console.error("Error:", error);
     const errorResponse = new Response(error.message, {
@@ -66,5 +87,4 @@ async function handleRequest(req: Request): Promise<Response> {
     return setCORSHeaders(errorResponse);
   }
 }
-
 Deno.serve(handleRequest);

@@ -28,34 +28,60 @@ async function handleRequest(req: Request): Promise<Response> {
       projectID,
       userID,
       name,
+      version,
+      debugData,
     } = requestBody;
     //supabase functions deploy init --no-verify-jwt
     // Upsert user data
 
-    const revenueID = globalThis.crypto.randomUUID();
-    const { error: userError } = await supabase
-      .from("events") // Replace with your actual table name
-      .upsert([
-        {
-          id: revenueID, // Replace with the actual column name for user ID
-          user_id: userID,
-          project_id: projectID,
-          timestamp: new Date().toISOString(),
-          name: name,
-        },
-      ]);
+    if (debugData == true) {
+      const revenueID = globalThis.crypto.randomUUID();
+      const { error: userError } = await supabase
+        .from("debugEvents") // Replace with your actual table name
+        .upsert([
+          {
+            id: revenueID, // Replace with the actual column name for user ID
+            user_id: userID,
+            project_id: projectID,
+            timestamp: new Date().toISOString(),
+            name: name,
+            version: version,
+          },
+        ]);
 
-    if (userError) {
-      throw userError;
+      if (userError) {
+        throw userError;
+      }
+      const jsonResponse = new Response("", {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+      return setCORSHeaders(jsonResponse);
+    } else {
+      const revenueID = globalThis.crypto.randomUUID();
+      const { error: userError } = await supabase
+        .from("events") // Replace with your actual table name
+        .upsert([
+          {
+            id: revenueID, // Replace with the actual column name for user ID
+            user_id: userID,
+            project_id: projectID,
+            timestamp: new Date().toISOString(),
+            name: name,
+            version: version,
+          },
+        ]);
+
+      if (userError) {
+        throw userError;
+      }
+      const jsonResponse = new Response("", {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+      return setCORSHeaders(jsonResponse);
     }
-
     //
-
-    const jsonResponse = new Response("", {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-    return setCORSHeaders(jsonResponse);
   } catch (error) {
     console.error("Error:", error);
     const errorResponse = new Response(error.message, {
