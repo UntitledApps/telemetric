@@ -39,73 +39,113 @@ export function Header({
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-white px-4 lg:h-[60px] lg:px-6">
-      {selectedProject && (
-        <>
-          {/* Conditionally render the Select component */}
-          <div
-            style={{
-              marginLeft: "auto",
-            }}
-          ></div>
-          {showEnvironmentSelect && (
-            <Select onValueChange={handleEnvironmentChange}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select environment" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Debug/Development">
-                  Debug/Development
-                </SelectItem>
-                <SelectItem value="Production">Production</SelectItem>
-              </SelectContent>
-            </Select>
-          )}
-          <TimeRangePicker
-            onDateRangeChange={handleDateRangeChange}
-            dateRange={dateRange}
-          />
-          <DatePickerWithRange
-            onDateRangeChange={handleDateRangeChange}
-            dateRange={dateRange}
-          />
-        </>
-      )}
-      <Dialog>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="secondary">
-              <MessageCircle className="mr-2 h-4 w-4" />
-              Feedback
-            </Button>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent className="w-56">
-            <DropdownMenuItem>
-              <Image
-                src="/images/x.svg"
-                alt="X"
-                className="mr-2 h-4 w-4"
-                width={16}
-                height={16}
-              />
-              In the X Community
-            </DropdownMenuItem>
-            <DropdownMenuItem>
-              <Mail className="mr-2 h-4 w-4" />
-              Per E-Mail
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </Dialog>
-      <Button variant="ghost">Support/Help </Button>
-      <Button
-        variant="ghost"
-        onClick={() =>
-          window.open("https://telemetric.untitledapps.net/docs", "_blank")
-        }
+      <div
+        className="sticky top-0 z-30 flex h-14 items-center gap-4"
+        style={{
+          marginLeft: "auto",
+        }}
       >
-        Docs{" "}
-      </Button>
+        {selectedProject && (
+          <>
+            {/* Conditionally render the Select component */}
+
+            {showEnvironmentSelect && (
+              <Select onValueChange={handleEnvironmentChange}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select environment" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Debug/Development">
+                    Debug/Development
+                  </SelectItem>
+                  <SelectItem value="Production">Production</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+            <TimeRangePicker
+              onDateRangeChange={handleDateRangeChange}
+              dateRange={dateRange}
+            />
+            <DatePickerWithRange
+              onDateRangeChange={handleDateRangeChange}
+              dateRange={dateRange}
+            />
+          </>
+        )}
+        <Dialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary">
+                <MessageCircle className="mr-2 h-4 w-4" />
+                Feedback
+              </Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent className="w-46">
+              <DropdownMenuItem
+                onClick={() =>
+                  window.open("https://x.com/i/communities/1834566987483082773")
+                }
+              >
+                <Image
+                  src="/images/x.svg"
+                  alt="X"
+                  className="mr-2 h-4 w-4"
+                  width={16}
+                  height={16}
+                />
+                In the X Community
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => window.open("mailto:team@untitledapps.net")}
+              >
+                <Mail className="mr-2 h-4 w-4" />
+                Per E-Mail
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </Dialog>
+        <Dialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost">Support/Help</Button>
+            </DropdownMenuTrigger>
+
+            <DropdownMenuContent className="w-46">
+              <DropdownMenuItem
+                onClick={() =>
+                  window.open(
+                    "https://x.com/messages/compose?recipient_id=1680911613988073473"
+                  )
+                }
+              >
+                <Image
+                  src="/images/x.svg"
+                  alt="X"
+                  className="mr-2 h-4 w-4"
+                  width={16}
+                  height={16}
+                />
+                Send me an DM on X
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => window.open("mailto:team@untitledapps.net")}
+              >
+                <Mail className="mr-2 h-4 w-4" />
+                Per E-Mail
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </Dialog>
+        <Button
+          variant="ghost"
+          onClick={() =>
+            window.open("https://telemetric.untitledapps.net/docs", "_blank")
+          }
+        >
+          Docs{" "}
+        </Button>
+      </div>
     </header>
   );
 }

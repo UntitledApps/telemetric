@@ -55,7 +55,7 @@ export function UserProfile({ handleNavItemClick }: NavigationProps) {
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="flex h-14 items-center   gap-3 m-3 "
+            className="flex h-14 items-center   gap-3 mx-4  px-2"
           >
             <Avatar>
               <AvatarFallback>U</AvatarFallback>
