@@ -14,6 +14,8 @@ export default async function Home({ query }: GetServerSidePropsContext) {
   if (data?.user && !showHomePage) {
     redirect("/dashboard");
   }
+
+   
   return (
     <div className="min-h-screen font-inter text-gray-900 bg-white">
       {/* Navbar */}

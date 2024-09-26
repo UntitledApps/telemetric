@@ -2,8 +2,9 @@ import { Toaster } from "@/components/shadcn/sonner";
 import { ThemeProvider } from "@/components/shadcn/theme-provider";
 import { createClient } from "@supabase/supabase-js";
 import type { Metadata } from "next";
-
 import { Inter } from "next/font/google";
+import { TelemetricProvider } from 'telemetric-javascript-sdk'; // Import from the package
+
 
 import "./globals.css";
 
@@ -32,7 +33,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <TelemetricProvider>{children}</TelemetricProvider>
         </ThemeProvider>
         <Toaster />
       </body>
