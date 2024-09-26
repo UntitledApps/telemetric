@@ -1,35 +1,9 @@
 "use client";
+import { Button } from "@/components/shadcn/button";
 import { createClient } from "@/utils/supabase/client";
-import { redirect } from "next/navigation";
-import { useEffect } from "react";
 
 const LoginPage = () => {
   const supabase = createClient();
-  useEffect(() => {
-    const autoLoginWithGoogle = async () => {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-      });
-
-      if (error) {
-        console.error("Error logging in with Google:", error);
-      } else {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        supabase.from("customers").upsert([
-          {
-            id: user?.id,
-            createdAt: new Date(),
-          },
-        ]);
-        redirect("/dashboard");
-      }
-    };
-
-    autoLoginWithGoogle();
-  }, []);
 
   return (
     <div
@@ -40,8 +14,31 @@ const LoginPage = () => {
         height: "100vh",
       }}
     >
-      <h1>Sign in with Google</h1>
-      {/* Add your login form or UI here */}
+      <Button
+        variant="outline"
+        onClick={async () => {
+          const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: "apple",
+          });
+
+          if (error) {
+            console.error("Error logging in with Google:", error);
+          } else {
+            const {
+              data: { user },
+            } = await supabase.auth.getUser();
+
+            supabase.from("customers").upsert([
+              {
+                id: user?.id,
+                createdAt: new Date(),
+              },
+            ]);
+          }
+        }}
+      >
+        Continue With Apple
+      </Button>
     </div>
   );
 };

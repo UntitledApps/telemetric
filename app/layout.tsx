@@ -1,5 +1,5 @@
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/components/shadcn/sonner";
+import { ThemeProvider } from "@/components/shadcn/theme-provider";
 import { createClient } from "@supabase/supabase-js";
 import type { Metadata } from "next";
 

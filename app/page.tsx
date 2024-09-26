@@ -1,4 +1,4 @@
-import { EmailForm } from "@/components/emailform";
+import { EmailForm } from "@/components/landingpage/emailform";
 import { createClient } from "@/utils/supabase/server";
 import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
@@ -12,7 +12,7 @@ export default async function Home({ query }: GetServerSidePropsContext) {
   const showHomePage = query?.showHomePage === "true";
 
   if (data?.user && !showHomePage) {
-    redirect("/dashboard");
+    redirect("/app");
   }
   return (
     <div className="min-h-screen font-inter text-gray-900 bg-white">

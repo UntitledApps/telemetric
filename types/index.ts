@@ -18,7 +18,6 @@ export interface Revenue {
 }
 export enum SelectedNavItem {
   PROJECTS = "PROJECTS",
-  EVENTS = "EVENTS",
   METRICS = "METRICS",
   DATA_EXPLORER = "DATA_EXPLORER",
   SETUP = "SETUP",

@@ -45,6 +45,7 @@
     "cmdk": "^1.0.0",
     "countries-map": "^4.10.0",
     "date-fns": "^3.6.0",
+    "deno": "^0.1.1",
     "embla-carousel-react": "^8.2.1",
     "framer-motion": "^11.5.4",
     "input-otp": "^1.2.4",
