@@ -19,6 +19,7 @@ import { createClient } from "@/utils/supabase/client";
 import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
+import { loginWithOAuth } from "./actions";
 
 const FormSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -28,6 +29,8 @@ const LoginPage = () => {
   const supabase = createClient();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [buttonText, setButtonText] = useState<string | null>(null);
+
+  const redirect = window.location.origin + "/app";
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -40,8 +43,10 @@ const LoginPage = () => {
     setIsLoading(true);
     const { error } = await supabase.auth.signInWithOtp({
       email: data.email,
+
       options: {
-        emailRedirectTo: window.location.origin + "/app",
+
+        // emailRedirectTo: redirect,
       },
     });
 
@@ -75,9 +80,7 @@ const LoginPage = () => {
               variant="outline"
               className="w-full"
               onClick={() => {
-                const {} = supabase.auth.signInWithOAuth({
-                  provider: "apple",
-                });
+                loginWithOAuth("apple", redirect);
               }}
             >
               <Image
@@ -93,9 +96,7 @@ const LoginPage = () => {
               variant="outline"
               className="w-full"
               onClick={() => {
-                const {} = supabase.auth.signInWithOAuth({
-                  provider: "google",
-                });
+                loginWithOAuth("google", redirect);
               }}
             >
               <Image
@@ -111,9 +112,7 @@ const LoginPage = () => {
               variant="outline"
               className="w-full"
               onClick={() => {
-                const {} = supabase.auth.signInWithOAuth({
-                  provider: "twitter",
-                });
+                loginWithOAuth("twitter", redirect);
               }}
             >
               <Image
@@ -127,9 +126,7 @@ const LoginPage = () => {
             </Button>
             <Button
               onClick={() => {
-                const {} = supabase.auth.signInWithOAuth({
-                  provider: "github",
-                });
+                loginWithOAuth("github", redirect);
               }}
               variant="outline"
               className="w-full"
@@ -175,8 +172,10 @@ const LoginPage = () => {
                     buttonText || "Send Magic Link"
                   )}
                 </Button>
+
               </form>
             </Form>
+            
           </div>
         </div>
       </div>
