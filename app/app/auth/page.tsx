@@ -1,5 +1,3 @@
-"use client";
-
 import Button from "@/components/ui/button";
 import Input from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
@@ -65,7 +63,7 @@ const LoginPage = () => {
                 type="email"
                 placeholder="Enter your email"
                 value={email}
-                onChange={(e: any) => setEmail(e.target.value)}
+                onChange={(e) => setEmail(e.target.value)}
                 required
               />
               <Button type="submit" disabled={isLoading}>

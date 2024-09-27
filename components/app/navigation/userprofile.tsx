@@ -1,6 +1,6 @@
 "use client";
 
-import { logout } from "@/app/auth/actions";
+import { logout } from "@/app/dashboard/auth/actions";
 import { Avatar, AvatarFallback } from "@/components/shadcn/avatar";
 import { Button } from "@/components/shadcn/button";
 import { Dialog } from "@/components/shadcn/dialog";

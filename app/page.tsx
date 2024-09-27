@@ -1,16 +1,19 @@
-import { EmailForm } from "@/components/landingpage/emailform";
 import { createClient } from "@/utils/supabase/server";
-import { GetServerSidePropsContext } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-export default async function Home({ query }: GetServerSidePropsContext) {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const supabase = createClient();
 
   const { data, error } = await supabase.auth.getUser();
 
-  const showHomePage = query?.showHomePage === "true";
+  const showHomePage = searchParams?.showHomePage === "true";
 
+  // If the user is authenticated and showHomePage is not true, redirect to the app page
   if (data?.user && !showHomePage) {
     redirect("/app");
   }
@@ -39,9 +42,7 @@ export default async function Home({ query }: GetServerSidePropsContext) {
           apps, and websites. Tired of all the mediocre analytics platforms out
           there? Telemetric is here to change that.
         </p>
-        <div className="flex justify-center space-x-4 mb-4">
-          <EmailForm />
-        </div>
+        <div className="flex justify-center space-x-4 mb-4"></div>
 
         <p className="text-gray-500">Made for Apps, Webapps & Websites</p>
 
