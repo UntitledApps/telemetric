@@ -68,7 +68,7 @@ const LoginPage = () => {
                 onChange={(e: any) => setEmail(e.target.value)}
                 required
               />
-              <Button type="submit" disabled={isLoading}>
+              <Button type="submit" disabled={!isLoading} loading={isLoading}>
                 {isLoading ? "Sending..." : "Send Login Link"}
               </Button>
             </form>
@@ -76,13 +76,6 @@ const LoginPage = () => {
           </div>
         </div>
       </div>
-      <div
-        className="hidden lg:block"
-        style={{
-          height: "100vh",
-          backgroundColor: "#E5F2FF",
-        }}
-      ></div>
     </div>
   );
 };

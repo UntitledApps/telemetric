@@ -1,24 +1,28 @@
 import React from "react";
+import "./button.css";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "default" | "primary" | "secondary";
+  loading?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
   variant = "default",
   children,
+  className,
+  loading = false,
+  disabled,
   ...props
 }) => {
-  const baseStyles = "px-4 py-2 rounded focus:outline-none";
-  const variantStyles = {
-    default: "bg-gray-300 text-black",
-    primary: "bg-blue-500 text-white",
-    secondary: "bg-gray-500 text-white",
-  };
-
   return (
-    <button className={`${baseStyles} ${variantStyles[variant]}`} {...props}>
-      {children}
+    <button
+      className={`button ${variant} ${loading ? "loading" : ""} ${
+        className || ""
+      }`}
+      disabled={disabled || loading}
+      {...props}
+    >
+      {loading ? <span className="loading-spinner"></span> : children}
     </button>
   );
 };

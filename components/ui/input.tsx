@@ -1,4 +1,5 @@
 import React from "react";
+import "./Input.css";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -6,9 +7,9 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const Input: React.FC<InputProps> = ({ label, ...props }) => {
   return (
-    <div className="flex flex-col">
-      {label && <label className="mb-1">{label}</label>}
-      <input className="border rounded p-2" {...props} />
+    <div className="input-container">
+      <input className="input" placeholder=" " {...props} />
+      {label && <label className="input-label">{label}</label>}
     </div>
   );
 };
