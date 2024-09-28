@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Metadata } from "next";
 import { Inter, Lora } from "next/font/google"; // {{ edit_1 }}
+import { Toaster } from "sonner";
 
 import "./globals.css";
 
@@ -25,7 +26,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {" "}
+        <Toaster position="top-center" richColors closeButton />
+        {children}
+      </body>
     </html>
   );
 }

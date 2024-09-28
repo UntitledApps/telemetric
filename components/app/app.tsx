@@ -241,7 +241,14 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="sticky top-0 grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        height: "100%",
+        maxHeight: "100vh",
+      }}
+    >
       <Navigation
         selectedNavItem={selectedNavItem}
         handleNavItemClick={handleNavItemClick}
@@ -249,7 +256,16 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         projects={projects}
         selectedProject={selectedProject}
       />
-      <div className="flex flex-col">
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+          width: "100%",
+          alignItems: "start",
+          justifyContent: "start",
+        }}
+      >
         <Header
           dateRange={dateRange}
           handleEnvironmentChange={setEnvironment}

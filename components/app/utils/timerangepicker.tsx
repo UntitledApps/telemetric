@@ -1,17 +1,3 @@
-// TimeRangePicker.tsx
-import { Button } from "@/components/shadcn/button";
-import {
-  Command,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/shadcn/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/shadcn/popover";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import * as React from "react";
 import { DateRange } from "react-day-picker";
@@ -114,32 +100,5 @@ export function TimeRangePicker({
     setOpen(false);
   };
 
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button variant="outline" className="w-26">
-          {selectedRange
-            ? statuses.find((status) => status.value === selectedRange)?.label
-            : "Select time range"}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent>
-        <Command>
-          <CommandInput placeholder="Search time range..." />
-          <CommandList>
-            <CommandGroup>
-              {statuses.map((status) => (
-                <CommandItem
-                  key={status.value}
-                  onSelect={() => handleRangeSelection(status.value)}
-                >
-                  {status.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
-  );
+  return <p>sdsds</p>;
 }

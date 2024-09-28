@@ -1,21 +1,13 @@
 // components/Navigation.tsx
 "use client";
-import {
-  FolderInput,
-  HeartPulse,
-  LineChart,
-  Milestone,
-  Package2,
-  Settings,
-  Telescope,
-} from "lucide-react";
-import Link from "next/link";
+import { LineChart, MessageCircle } from "lucide-react";
 
+import Button from "@/components/ui/button";
+import { Navbar } from "@/components/ui/navbar";
 import { Project, SelectedNavItem } from "@/types/";
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 import ProjectSelect from "./projectselect";
-import { UserProfile } from "../account/userprofile";
 
 interface NavigationProps {
   selectedNavItem: SelectedNavItem;
@@ -34,7 +26,35 @@ export function Navigation({
 }: NavigationProps) {
   const supabase = createClient();
   const [userEmail, setUserEmails] = useState<string>("");
-
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const sections = [
+    {
+      header: "Metrics",
+      items: [
+        {
+          icon: <LineChart size={16} />,
+          text: "Metrics",
+        },
+        {
+          icon: <LineChart size={16} />,
+          text: "Events",
+        },
+      ],
+    },
+    {
+      header: "Settings",
+      items: [
+        {
+          icon: <LineChart size={16} />,
+          text: "User Settings",
+        },
+        {
+          icon: <LineChart size={16} />,
+          text: "App Settings",
+        },
+      ],
+    },
+  ];
   useEffect(() => {
     const fetchData = async () => {
       const {
@@ -45,125 +65,99 @@ export function Navigation({
     fetchData();
   }, []);
   return (
-    <div className="sticky top-0 hidden border-r bg-white md:block">
-      <div className="sticky top-0 flex h-full max-h-screen flex-col gap-2">
-        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-          <ProjectSelect
-            projects={projects}
-            selectedProject={selectedProject?.id || ""}
-            onProjectChange={handleProjectChange}
-          />
-        </div>
-        <div className="flex-1">
-          <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
-            <Link
-              href="#"
-              onClick={() => handleNavItemClick(SelectedNavItem.PROJECTS)}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                selectedNavItem === SelectedNavItem.PROJECTS
-                  ? "bg-muted text-primary"
-                  : "text-muted-foreground hover:text-primary"
-              }`}
-            >
-              <Package2 className="h-4 w-4" />
-              Projects
-            </Link>
-            <div className="h-3"></div>
-            <p className="text-muted-foreground text-xs font-medium px-3 py-2">
-              Data
-            </p>
-            <Link
-              href="#"
-              onClick={() => handleNavItemClick(SelectedNavItem.METRICS)}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                selectedNavItem === SelectedNavItem.METRICS
-                  ? "bg-muted text-primary"
-                  : "text-muted-foreground hover:text-primary"
-              }`}
-            >
-              <LineChart className="h-4 w-4" />
-              Metrics
-            </Link>
+    <div
+      style={{
+        display: "flex",
+        height: "100vh",
+        maxHeight: "100vh",
+        padding: "0px",
+        flexDirection: "column",
+        alignItems: "center",
 
+        justifyContent: "start",
+        borderRight: "1px solid #e0e0e0",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          height: "54px",
+          minHeight: "54px",
+          borderBottom: "1px solid #e5e5e5",
+        }}
+      >
 
-            <Link
-              href="#"
-              onClick={() => handleNavItemClick(SelectedNavItem.DATA_EXPLORER)}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                selectedNavItem === SelectedNavItem.DATA_EXPLORER
-                  ? "bg-muted text-primary"
-                  : "text-muted-foreground hover:text-primary"
-              }`}
-            >
-              <Telescope className="h-4 w-4" />
-              Data Explorer
-            </Link>
-            <Link
-              href="#"
-              onClick={() => handleNavItemClick(SelectedNavItem.SETUP)}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                selectedNavItem === SelectedNavItem.SETUP
-                  ? "bg-muted text-primary"
-                  : "text-muted-foreground hover:text-primary"
-              }`}
-            >
-              <Milestone className="h-4 w-4" />
-              Setup
-            </Link>
-            <Link
-              href="#"
-              onClick={() => handleNavItemClick(SelectedNavItem.SETTINGS)}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                selectedNavItem === SelectedNavItem.SETTINGS
-                  ? "bg-muted text-primary"
-                  : "text-muted-foreground hover:text-primary"
-              }`}
-            >
-              <Settings className="h-4 w-4" />
-              Settings
-            </Link>
-            <Link
-              href="#"
-              onClick={() =>
-                handleNavItemClick(SelectedNavItem.IMPORT_EXPORT_DATA)
-              }
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 transition-all ${
-                selectedNavItem === SelectedNavItem.IMPORT_EXPORT_DATA
-                  ? "bg-muted text-primary"
-                  : "text-muted-foreground hover:text-primary"
-              }`}
-            >
-              <FolderInput className="h-4 w-4" />
-              Import/Export Data
-            </Link>
-          </nav>
-        </div>
-        <UserProfile
-          selectedNavItem={selectedNavItem}
-          handleNavItemClick={handleNavItemClick}
-          handleProjectChange={handleProjectChange}
+        <ProjectSelect
           projects={projects}
-          selectedProject={selectedProject}
-        ></UserProfile>
-        <div className="flex flex-col h-14 items-center justify-center border-t px-4 lg:h-[60px] lg:px-6">
-          <Link
-            href="https://untitledapps.net/telemetric"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 text-muted-foreground text-xs text-align-center"
+          selectedProject={selectedProject?.id || ""}
+          onProjectChange={handleProjectChange}
+        />
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          padding: "8px",
+          width: "100%",
+
+          height: "100%",
+          maxHeight: "90%",
+          gap: "8px",
+        }}
+      >
+        <Navbar
+          sections={sections}
+          onDestinationSelected={(index) => {
+            setSelectedIndex(index);
+          }}
+          selectedIndex={selectedIndex}
+        />
+
+        <div>
+          <Button
+            variant="outline"
+            style={{
+              justifyContent: "center",
+              display: "flex",
+              width: "100%",
+
+              gap: "4px",
+              alignItems: "center",
+            }}
           >
-            Imprint & Privacy
-          </Link>
-          <Link
-            href="https://untitledapps.net"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 text-muted-foreground text-xs text-center"
+            <MessageCircle className="mr-2 h-4 w-4" size={16} />
+            Feedback
+          </Button>
+          <Button
+            variant="ghost"
+            style={{
+              justifyContent: "center",
+              display: "flex",
+              width: "100%",
+
+              gap: "4px",
+              alignItems: "center",
+            }}
           >
-            &copy; 2024 UNTITLEDAPPS e.U. | All rights reserved.
-          </Link>
+            Docs
+          </Button>
+          <Button
+            variant="ghost"
+            style={{
+              justifyContent: "center",
+              display: "flex",
+              width: "100%",
+
+              gap: "4px",
+              alignItems: "center",
+            }}
+          >
+            Help
+          </Button>
         </div>
       </div>
     </div>
   );
 }
+

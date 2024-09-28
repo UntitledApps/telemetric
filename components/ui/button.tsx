@@ -2,7 +2,7 @@ import React from "react";
 import "./button.css";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "default" | "primary" | "secondary";
+  variant?: "default" | "outline" | "secondary" | "text" | "ghost";
   loading?: boolean;
 }
 

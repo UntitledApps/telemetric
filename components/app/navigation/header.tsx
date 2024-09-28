@@ -1,24 +1,16 @@
 "use client";
-import { Button } from "@/components/shadcn/button";
-import { Dialog } from "@/components/shadcn/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/shadcn/dropdown-menu";
+import Button from "@/components/ui/button";
+
+import { Project } from "@/types";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/shadcn/select";
-import { Project } from "@/types";
-import { Mail, MessageCircle } from "lucide-react";
-import Image from "next/image";
+} from "@radix-ui/react-select";
 import { DateRange } from "react-day-picker";
-import { DatePickerWithRange } from "../utils/custometimerange";
+
 import { TimeRangePicker } from "../utils/timerangepicker";
 
 interface HeaderProps {
@@ -38,11 +30,24 @@ export function Header({
   const showEnvironmentSelect = selectedProject?.metadata?.type === "app";
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-white px-4 lg:h-[60px] lg:px-6">
+    <header
+      style={{
+        width: "100%",
+        borderBottom: "1px solid #e5e5e5",
+        height: "54px",
+      }}
+    >
       <div
-        className="sticky top-0 z-30 flex h-14 items-center gap-4"
         style={{
           marginLeft: "auto",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "end",
+          width: "100%",
+          minWidth: "100%",
+          gap: "8px",
+          height: "100%",
         }}
       >
         {selectedProject && (
@@ -66,13 +71,9 @@ export function Header({
               onDateRangeChange={handleDateRangeChange}
               dateRange={dateRange}
             />
-            <DatePickerWithRange
-              onDateRangeChange={handleDateRangeChange}
-              dateRange={dateRange}
-            />
           </>
         )}
-        <Dialog>
+        {/* <Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="secondary">
@@ -103,8 +104,8 @@ export function Header({
                 Per E-Mail
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
-        </Dialog>
+          </DropdownMenu> */}
+        {/* </Dialog>
         <Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -136,9 +137,16 @@ export function Header({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </Dialog>
+        </Dialog> */}
         <Button
-          variant="ghost"
+          onClick={() =>
+            window.open("https://telemetric.untitledapps.net/docs", "_blank")
+          }
+        >
+          Docs{" "}
+        </Button>
+        +
+        <Button
           onClick={() =>
             window.open("https://telemetric.untitledapps.net/docs", "_blank")
           }

@@ -1,12 +1,4 @@
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/shadcn/select";
+import RadixSelect from "@/components/ui/select"; // {{ edit_1 }}
 import { countryNameMap } from "@/utils/countryDefs";
 import { useEffect, useState } from "react";
 
@@ -72,22 +64,10 @@ const LocationCard = ({ activities }: LocationCardProps) => {
       <div className="p-2">
         <div className="flex items-center justify-between mb-2">
           <div className="text-lg font-bold">Locations Overview</div>
-          <Select
+          <RadixSelect // {{ edit_2 }}
             onValueChange={setSelectedLocationType}
             defaultValue="country"
-          >
-            <SelectTrigger className="w-32">
-              <SelectValue placeholder="Select a type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectLabel>Location Type</SelectLabel>
-                <SelectItem value="country">Country</SelectItem>
-                <SelectItem value="region">Region</SelectItem>
-                <SelectItem value="city">City</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+          />
         </div>
         {selectedLocationType === "city" && (
           <>

@@ -1,12 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Lora:wght@400;700&display=swap");
 
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
   --bg-gold: #ffee8b;
+  --foreground: #000; /* Default text color */
+  --background: #fff; /* Default background color */
+  --muted-foreground: #6b7280; /* Muted text color */
+  --balance: #1e3a8a; /* Custom color for balance text */
 }
 
 .primary-button {
@@ -34,78 +36,6 @@
   background-color: #ffee8b;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
-
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-  }
-  .dark {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
-    --secondary-foreground: 0 0% 9%;
-    --muted: 0 0% 96.1%;
-    --muted-foreground: 0 0% 45.1%;
-    --accent: 0 0% 96.1%;
-    --accent-foreground: 0 0% 9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 89.8%;
-    --input: 0 0% 89.8%;
-    --ring: 0 0% 3.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
 .container {
   display: flex;
   flex-direction: column;
@@ -127,6 +57,7 @@
 .random-color-container {
   display: none;
 }
+
 .background-image-container {
   background-image: url("/images/a.png");
   background-position: center;
@@ -187,4 +118,247 @@
   50% {
     transform: scale(0.5);
   }
+}
+
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.max-w-\[350px\] {
+  max-width: 350px;
+}
+
+.px-4 {
+  padding-left: 1rem; /* 16px */
+  padding-right: 1rem; /* 16px */
+}
+
+.grid {
+  display: grid;
+}
+
+.gap-6 {
+  gap: 10px;
+}
+
+.gap-4 {
+  gap: 1rem; /* 16px */
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-3xl {
+  font-size: 1.875rem; /* 30px */
+  line-height: 2.25rem; /* 36px */
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-balance {
+  color: var(--balance);
+}
+
+.text-muted-foreground {
+  color: var(--muted-foreground);
+}
+
+.text-sm {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem; /* 20px */
+}
+
+/* Additional text styles */
+h1 {
+  font-family: "Lora", sans-serif; /* Example font */
+  font-size: 36px;
+  line-height: 18px;
+  font-weight: 600;
+}
+
+p {
+  font-family: "Inter", sans-serif; /* Example font */
+  font-size: 14px;
+  font-weight: 400;
+}
+/* Additional styles for DashboardLayout */
+.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10; /* Ensure it stays above other content */
+}
+
+.grid {
+  display: grid;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
+.h-screen {
+  height: 100vh;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  font-weight: bold;
+}
+/* Additional styles for DashboardLayout */
+.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10; /* Ensure it stays above other content */
+}
+
+.grid {
+  display: grid;
+}
+
+.flex-1 {
+  flex: 1;
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
+.h-screen {
+  height: 100vh;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.error-message {
+  color: red;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Flexbox utilities */
+.flex {
+  display: flex;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+/* Sizing utilities */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.max-w-\[350px\] {
+  max-width: 350px;
+}
+
+/* Padding utilities */
+.px-4 {
+  padding-left: 1rem; /* 16px */
+  padding-right: 1rem; /* 16px */
+}
+
+/* Gap utilities */
+.gap-6 {
+  gap: 10px;
+}
+
+.gap-4 {
+  gap: 1rem; /* 16px */
+}
+
+/* Text alignment */
+.text-center {
+  text-align: center;
+}
+
+/* Font sizes */
+.text-3xl {
+  font-size: 1.875rem; /* 30px */
+  line-height: 2.25rem; /* 36px */
+}
+
+.text-sm {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem; /* 20px */
+}
+
+/* Font weights */
+.font-bold {
+  font-weight: 700;
+}
+
+/* Custom text colors */
+.text-balance {
+  color: var(--balance);
+}
+
+.text-muted-foreground {
+  color: var(--muted-foreground);
+}
+
+/* Additional text styles */
+h1 {
+  font-family: "Lora", sans-serif; /* Example font */
+  font-size: 36px;
+  line-height: 18px;
+  font-weight: 600;
+}
+
+h3 {
+  font-family: "Inter", sans-serif; /* Example font */
+  font-size: 18px;
+  line-height: 3px;
+  font-weight: 600;
+}
+
+p {
+  font-family: "Inter", sans-serif; /* Example font */
+  font-size: 14px;
+  font-weight: 400;
 }

@@ -1,14 +1,5 @@
 "use client";
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/shadcn/select";
 import { FC } from "react";
 
 interface ProjectSelectProps {
@@ -23,21 +14,26 @@ const ProjectSelect: FC<ProjectSelectProps> = ({
   onProjectChange,
 }) => {
   return (
-    <Select onValueChange={onProjectChange} value={selectedProject || ""}>
-      <SelectTrigger className="w-full">
-        <SelectValue placeholder="Select a project" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectLabel>Your Projects</SelectLabel>
-          {projects.map((project) => (
-            <SelectItem key={project.id} value={project.id}>
-              {project.metadata.name}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+    <div className="w-full">
+      <select
+        id="project-select"
+        value={selectedProject || ""}
+        onChange={(e) => onProjectChange(e.target.value)}
+        style={{
+          width: "100px",
+          height: "60px",
+        }}
+      >
+        <option value="" disabled>
+          Select a project
+        </option>
+        {projects.map((project) => (
+          <option key={project.id} value={project.id}>
+            {project.metadata.name}
+          </option>
+        ))}
+      </select>
+    </div>
   );
 };
 

@@ -15,7 +15,7 @@ export default async function Home({
 
   // If the user is authenticated and showHomePage is not true, redirect to the app page
   if (data?.user && !showHomePage) {
-    redirect("/app");
+    redirect("/dashboard");
   }
 
   return (

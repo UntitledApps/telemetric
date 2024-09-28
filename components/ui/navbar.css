@@ -1,0 +1,48 @@
+/* Add this CSS to your styles file */
+.navbar {
+  width: 220px; /* Adjust width as needed */
+  background-color: #ffffff; /* Background color */
+
+  display: flex;
+  gap: 6px;
+  flex-direction: column;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+
+  padding: 8px; /* Padding for each item */
+  color: #525252; /* Default text color */
+  text-decoration: none; /* Remove underline */
+  border-radius: 4px; /* Rounded corners */
+  transition: all 0.3s;
+  margin-bottom: 4px;
+}
+
+.nav-section {
+  margin-bottom: 0px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-item:hover {
+  background-color: #ededed4e; /* Background color on hover */
+  color: #6b7280; /* Text color on hover */
+}
+
+.nav-item.active {
+  background-color: #ededed9f; /* Background color for active item */
+  color: #000000; /* Text color for active item */
+  font-weight: 600;
+
+  box-shadow: 0 0 3px 0px rgba(0, 0, 0, 0.1);
+}
+
+.nav-text {
+  margin-left: 8px; /* Space between icon and text */
+  font-weight: 500;
+  font-family: "Inter", sans-serif;
+  font-size: 14px; /* Font size for text */
+}

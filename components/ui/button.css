@@ -1,11 +1,28 @@
 .button {
   padding: 0.5rem 1rem;
-  min-height: 48px;
+
   transition: all 0.3s ease;
   border-radius: 10px;
   font-size: 14px;
   position: relative;
+
   cursor: pointer;
+}
+
+.ghost {
+  background-color: transparent;
+  color: #000000;
+  border: none;
+}
+
+.ghost:hover {
+  background-color: #00000016;
+  color: #000000;
+}
+
+.ghost:active {
+  background-color: #00000016;
+  color: #000000;
 }
 
 .button:focus {
@@ -40,7 +57,7 @@
   left: 50%;
   transform: translate(-50%, -50%);
   box-sizing: border-box;
-  animation: rotation  2s linear infinite;
+  animation: rotation 2s linear infinite;
 }
 
 @keyframes rotation {
@@ -75,6 +92,31 @@
 .primary:active:not(:disabled) {
   background-color: #1d4ed8;
   outline: 3px solid #3b82f645;
+}
+
+.outline {
+  background-color: transparent;
+  color: #000000;
+
+  border: 1px solid #ebebeb;
+}
+
+.outline:hover:not(:disabled) {
+  background-color: #00000016;
+  color: #000000;
+}
+.text {
+  background-color: transparent;
+  color: #0057ff;
+  border: none;
+  width: fit-content;
+  text-decoration: underline;
+}
+
+.text:hover:not(:disabled) {
+  background-color: transparent;
+  color: #0043c9;
+  text-decoration: underline;
 }
 
 .secondary {

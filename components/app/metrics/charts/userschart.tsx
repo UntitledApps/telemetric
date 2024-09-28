@@ -1,9 +1,4 @@
 import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-} from "@/components/shadcn/chart";
-import {
   endOfDay,
   format,
   isToday,
@@ -11,7 +6,14 @@ import {
   startOfDay,
 } from "date-fns";
 import { DateRange } from "react-day-picker";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 interface MainChartProps {
   data: Record<string, { os: string; browser: string }>;
@@ -23,7 +25,7 @@ const chartConfig = {
     label: "Users",
     color: "#0057FF",
   },
-} satisfies ChartConfig;
+};
 
 const formatNumber = (num: number) => {
   return num.toLocaleString();
@@ -149,12 +151,7 @@ export function MainChart({ data, dateRange }: MainChartProps) {
           }}
         ></div>
 
-        <ChartContainer
-          config={chartConfig}
-          style={{
-            maxHeight: "65vh",
-          }}
-        >
+        <ResponsiveContainer width="100%" height="100%">
           <AreaChart
             data={transformedData}
             margin={{
@@ -194,32 +191,8 @@ export function MainChart({ data, dateRange }: MainChartProps) {
               strokeWidth={1.5}
               animationDuration={0}
             />
-            <ChartTooltip
-              cursor={false}
-              content={({ active, payload, label }) => {
-                if (active && payload && payload.length) {
-                  const date = new Date(label);
-                  const formattedDate = isTodayRange
-                    ? formatHour(date)
-                    : formatDate(date);
-                  return (
-                    <div
-                      style={{
-                        backgroundColor: "#fff",
-                        padding: "10px",
-                        border: "1px solid #ccc",
-                      }}
-                    >
-                      <h4>{formattedDate}</h4>
-                      <p>Users: {payload[0].value}</p>
-                    </div>
-                  );
-                }
-                return null;
-              }}
-            />
           </AreaChart>
-        </ChartContainer>
+        </ResponsiveContainer>
       </div>
     </div>
   );
