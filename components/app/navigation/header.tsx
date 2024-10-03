@@ -1,5 +1,4 @@
 "use client";
-import Button from "@/components/ui/button";
 
 import { Project } from "@/types";
 import {
@@ -11,6 +10,7 @@ import {
 } from "@radix-ui/react-select";
 import { DateRange } from "react-day-picker";
 
+import Avatar from "@/components/ui/avatar/avatar";
 import { TimeRangePicker } from "../utils/timerangepicker";
 
 interface HeaderProps {
@@ -138,21 +138,8 @@ export function Header({
             </DropdownMenuContent>
           </DropdownMenu>
         </Dialog> */}
-        <Button
-          onClick={() =>
-            window.open("https://telemetric.untitledapps.net/docs", "_blank")
-          }
-        >
-          Docs{" "}
-        </Button>
-        +
-        <Button
-          onClick={() =>
-            window.open("https://telemetric.untitledapps.net/docs", "_blank")
-          }
-        >
-          Docs{" "}
-        </Button>
+
+        <Avatar />
       </div>
     </header>
   );

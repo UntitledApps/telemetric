@@ -1,0 +1,52 @@
+/* Avatar.css */
+.avatar-container {
+  position: relative;
+}
+
+.avatar {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #333;
+  color: white;
+}
+
+.overlay {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  width: 200px; /* Adjust as needed */
+}
+
+.overlay-content {
+  padding: 10px;
+}
+
+.overlay-content h3 {
+  margin: 0;
+}
+
+.overlay-content ul {
+  list-style: none;
+  padding: 0;
+}
+
+.overlay-content li {
+  margin: 5px 0;
+}
+
+.upgrade-button {
+  background-color: #333;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}

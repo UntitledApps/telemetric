@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Lora:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Inter:wght@400;700&display=swap");
 
 :root {
   --foreground-rgb: 0, 0, 0;
@@ -189,7 +189,7 @@
 
 /* Additional text styles */
 h1 {
-  font-family: "Lora", sans-serif; /* Example font */
+  font-family: "Inter", sans-serif; /* Example font */
   font-size: 36px;
   line-height: 18px;
   font-weight: 600;
@@ -344,7 +344,7 @@ p {
 
 /* Additional text styles */
 h1 {
-  font-family: "Lora", sans-serif; /* Example font */
+  font-family: "Inter", sans-serif; /* Example font */
   font-size: 36px;
   line-height: 18px;
   font-weight: 600;

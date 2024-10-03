@@ -1,4 +1,4 @@
-import RadixSelect from "@/components/ui/select"; // {{ edit_1 }}
+import RadixSelect from "@/components/ui/select/select"; // {{ edit_1 }}
 import { countryNameMap } from "@/utils/countryDefs";
 import { useEffect, useState } from "react";
 

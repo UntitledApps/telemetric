@@ -1,9 +1,16 @@
 // components/Navigation.tsx
 "use client";
-import { LineChart, MessageCircle } from "lucide-react";
+import {
+  BarChart3,
+  Box,
+  Flag,
+  LineChart,
+  MessageCircle,
+  Settings,
+} from "lucide-react";
 
-import Button from "@/components/ui/button";
-import { Navbar } from "@/components/ui/navbar";
+import Button from "@/components/ui/button/button";
+import { Navbar } from "@/components/ui/navbar/navbar";
 import { Project, SelectedNavItem } from "@/types/";
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
@@ -29,6 +36,15 @@ export function Navigation({
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const sections = [
     {
+      header: "Projects",
+      items: [
+        {
+          icon: <Box size={16} />,
+          text: "Projects",
+        },
+      ],
+    },
+    {
       header: "Metrics",
       items: [
         {
@@ -36,7 +52,7 @@ export function Navigation({
           text: "Metrics",
         },
         {
-          icon: <LineChart size={16} />,
+          icon: <BarChart3 size={16} />,
           text: "Events",
         },
       ],
@@ -45,12 +61,12 @@ export function Navigation({
       header: "Settings",
       items: [
         {
-          icon: <LineChart size={16} />,
-          text: "User Settings",
+          icon: <Settings size={16} />,
+          text: "Settings",
         },
         {
-          icon: <LineChart size={16} />,
-          text: "App Settings",
+          icon: <Flag size={16} />,
+          text: "Setup",
         },
       ],
     },
@@ -86,7 +102,6 @@ export function Navigation({
           borderBottom: "1px solid #e5e5e5",
         }}
       >
-
         <ProjectSelect
           projects={projects}
           selectedProject={selectedProject?.id || ""}
@@ -114,7 +129,15 @@ export function Navigation({
           selectedIndex={selectedIndex}
         />
 
-        <div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "8px",
+            marginTop: "auto",
+            width: "100%",
+          }}
+        >
           <Button
             variant="outline"
             style={{
@@ -160,4 +183,3 @@ export function Navigation({
     </div>
   );
 }
-

@@ -1,13 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Metadata } from "next";
-import { Inter, Lora } from "next/font/google"; // {{ edit_1 }}
+import { Inter } from "next/font/google"; // {{ edit_1 }}
 import { Toaster } from "sonner";
 
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const lora = Lora({ subsets: ["latin"] });
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
