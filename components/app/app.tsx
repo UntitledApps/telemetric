@@ -4,16 +4,15 @@ import { DateRange } from "react-day-picker";
 
 import { Activity, Project, Revenue, SelectedNavItem, User } from "@/types";
 
-import { Navigation } from "./navigation/navbar";
-
 import { createClient } from "@/utils/supabase/client";
 import { Settings } from "lucide-react";
 import Metrics from "./metrics/metrics";
-import { Header } from "./navigation/header";
+
 import DataExplorer from "./navigation/navitems/data_explorer";
 import DataImportExport from "./navigation/navitems/import_export_data";
 import Projects from "./navigation/navitems/projects";
 import Setup from "./navigation/navitems/setup";
+import { Navbar } from "../ui/navbar/navbar";
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
@@ -37,147 +36,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [revenueData, setRevenueData] = useState<Revenue[]>([]);
 
   useEffect(() => {
-    const fetchProjectsAndActivities = async () => {
-      setLoading(true);
-      try {
-        const {
-          data: { user },
-          error: authError,
-        } = await supabase.auth.getUser();
-        if (authError) throw authError;
-        if (!user) throw new Error("Unauthorized access");
-
-        const { data: customerData, error: customerError } = await supabase
-          .from("customers")
-          .select("projects")
-          .eq("id", user.id)
-          .single();
-
-        if (customerError) throw customerError;
-        if (customerData && customerData.projects) {
-          const { data: projectsData, error: projectsError } = await supabase
-            .from("projects")
-            .select("*")
-            .in("id", customerData.projects);
-
-          if (projectsError) throw projectsError;
-          setProjects(projectsData || []);
-
-          const projectIds = projectsData?.map((project) => project.id) || [];
-          if (projectIds.length > 0) {
-            const { data: activitiesData, error: activitiesError } =
-              await supabase
-                .from("activities")
-                .select("id, user_id, timestamp, project_id")
-                .in("project_id", projectIds);
-
-            if (activitiesError) throw activitiesError;
-
-            const activityIds =
-              activitiesData?.map((activity: Activity) => activity.id) || [];
-            setActivitiesIds(activityIds);
-
-            const userIds =
-              activitiesData?.map((activity: Activity) => activity.user_id) ||
-              [];
-            if (userIds.length > 0) {
-              const { data: usersData, error: usersError } = await supabase
-                .from("users")
-                .select("id, os, browser, location")
-                .in("id", userIds);
-
-              if (usersError) throw usersError;
-
-              const usersMap =
-                usersData?.reduce((acc: { [id: string]: User }, user: User) => {
-                  acc[user.id] = user;
-                  return acc;
-                }, {}) || {};
-
-              const activitiesMap =
-                activitiesData?.reduce(
-                  (
-                    acc: {
-                      [timestamp: string]: {
-                        os: string;
-                        browser: string;
-                        location: {
-                          city?: string;
-                          region?: string;
-                          country?: string;
-                        };
-                      };
-                    },
-                    activity: Activity
-                  ) => {
-                    const user = usersMap[activity.user_id];
-                    if (user) {
-                      acc[activity.timestamp] = {
-                        os: user.os!,
-                        browser: user.browser!,
-                        location: user.location!,
-                      };
-                    }
-                    return acc;
-                  },
-                  {}
-                ) || {};
-
-              setInitialActivitiesMap(activitiesMap);
-              setCurrentActivitiesMap(
-                filterActivitiesByDateRange(activitiesMap, dateRange)
-              );
-            }
-
-            // Fetch revenue data
-            const { data: revenueData, error: revenueError } = await supabase
-              .from("revenue")
-              .select("id, user_id, timestamp, project_id, total")
-              .in("project_id", projectIds);
-
-            if (revenueError) throw revenueError;
-            setRevenueData(revenueData || []);
-          }
-        }
-      } catch (error) {
-        setError((error as Error).message);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const fetchProjectsAndActivities = async () => {};
 
     fetchProjectsAndActivities();
   }, [supabase]);
-
-  useEffect(() => {
-    setCurrentActivitiesMap(
-      filterActivitiesByDateRange(initialActivitiesMap, dateRange)
-    );
-  }, [dateRange, initialActivitiesMap]);
-
-  const filterActivitiesByDateRange = (
-    activitiesMap: { [timestamp: string]: { os: string; browser: string } },
-    range: DateRange | undefined
-  ) => {
-    console.log("initialActivitiesMap", activitiesMap);
-    if (!range || !range.from || !range.to) return activitiesMap;
-
-    const { from, to } = range;
-
-    // Convert range boundaries to dates with time set to 00:00:00 for start and 23:59:59 for end
-    const startDate = new Date(from);
-    startDate.setHours(0, 0, 0, 0);
-
-    const endDate = new Date(to);
-    endDate.setHours(23, 59, 59, 999);
-
-    return Object.fromEntries(
-      Object.entries(activitiesMap).filter(([timestamp]) => {
-        const date = new Date(timestamp);
-        return date >= startDate && date <= endDate;
-      })
-    );
-  };
 
   const handleDateRangeChange = (range: DateRange | undefined) => {
     setDateRange(range);
@@ -210,14 +72,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         );
       case SelectedNavItem.DATA_EXPLORER:
         return <DataExplorer />;
-      case SelectedNavItem.SETUP:
-        return <Setup />;
-      case SelectedNavItem.SETTINGS:
-        return <Settings />;
-      case SelectedNavItem.IMPORT_EXPORT_DATA:
-        return <DataImportExport />;
-      case SelectedNavItem.PROFILE:
-        return <div>Profile</div>;
+
       default:
         return null;
     }
@@ -249,7 +104,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         maxHeight: "100vh",
       }}
     >
-      <Navigation
+      <Navbar
         selectedNavItem={selectedNavItem}
         handleNavItemClick={handleNavItemClick}
         handleProjectChange={handleProjectChange}

@@ -1,34 +1,22 @@
+import useProjects from "@/app/dashboard/dashboard";
 import { Project } from "@/types";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DateRange } from "react-day-picker";
+// Import the useProjects hook
 
 interface ProjectsProps {
   onProjectSelect: (projectId: string) => void;
-  projects: Project[];
   dateRange?: DateRange; // Added dateRange prop for filtering
+  projects: Project[];
 }
 
-const Projects: React.FC<ProjectsProps> = ({
-  onProjectSelect,
-  projects,
-  dateRange,
-}) => {
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+const Projects: React.FC<ProjectsProps> = ({ onProjectSelect, dateRange }) => {
 
-  const handleOpenDialog = () => {
-    setIsDialogOpen(true);
-  };
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
 
-  const handleCloseDialog = () => {
-    setIsDialogOpen(false);
-  };
 
-  // Function to get total users from activities data
-
-  // Function to get the latest revenue (for consistency with previous code)
-
-  if (projects.length === 0)
+  if (filteredProjects.length === 0) {
     return (
       <div
         style={{
@@ -42,6 +30,7 @@ const Projects: React.FC<ProjectsProps> = ({
         No projects found
       </div>
     );
+  }
 
   return (
     <div
@@ -52,7 +41,7 @@ const Projects: React.FC<ProjectsProps> = ({
         padding: "16px",
       }}
     >
-      {projects.map((project) => (
+      {filteredProjects.map((project) => (
         <motion.div
           key={project.id}
           initial={{ opacity: 0 }}
@@ -79,7 +68,10 @@ const Projects: React.FC<ProjectsProps> = ({
                 padding: "16px",
                 flexShrink: 0,
               }}
-            ></div>
+            >
+              <h3>{project.name}</h3> {/* Display project name */}
+              {/* Add more project details as needed */}
+            </div>
           </div>
         </motion.div>
       ))}

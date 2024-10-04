@@ -1,12 +1,19 @@
 // types/index.ts
 export interface Project {
   id: string;
-  metadata: {
-    name: string;
-    type: string;
-    favIconURL: string;
-    ogImageURL: string;
-  };
+
+  name: string;
+  type: string;
+  favIconURL: string;
+  ogImageURL: string;
+}
+
+export interface Activity {
+  id: string;
+  user_id: string;
+  timestamp: string;
+  project_id: string;
+  version: string;
 }
 
 export interface Revenue {
@@ -19,11 +26,7 @@ export interface Revenue {
 export enum SelectedNavItem {
   PROJECTS = "PROJECTS",
   METRICS = "METRICS",
-  DATA_EXPLORER = "DATA_EXPLORER",
-  SETUP = "SETUP",
-  SETTINGS = "SETTINGS",
-  IMPORT_EXPORT_DATA = "IMPORT_EXPORT_DATA",
-  PROFILE = "PROFILE",
+  DATA_EXPLORER = "ACCOUNT",
 }
 export interface User {
   id: string;

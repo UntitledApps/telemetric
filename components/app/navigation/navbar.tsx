@@ -1,185 +1,146 @@
-// components/Navigation.tsx
 "use client";
+
+import { Project } from "@/types";
 import {
-  BarChart3,
-  Box,
-  Flag,
-  LineChart,
-  MessageCircle,
-  Settings,
-} from "lucide-react";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@radix-ui/react-select";
+import { DateRange } from "react-day-picker";
 
-import Button from "@/components/ui/button/button";
-import { Navbar } from "@/components/ui/navbar/navbar";
-import { Project, SelectedNavItem } from "@/types/";
-import { createClient } from "@/utils/supabase/client";
-import { useEffect, useState } from "react";
-import ProjectSelect from "./projectselect";
+import Avatar from "@/components/ui/avatar/avatar";
+import { TimeRangePicker } from "../utils/timerangepicker";
 
-interface NavigationProps {
-  selectedNavItem: SelectedNavItem;
-  handleNavItemClick: (navItem: SelectedNavItem) => void;
-  handleProjectChange: (projectId: string) => void;
-  projects: Project[];
+interface HeaderProps {
+  handleEnvironmentChange: (value: string) => void;
+  handleDateRangeChange: (range: DateRange | undefined) => void;
+  dateRange: DateRange | undefined;
   selectedProject: Project | null;
 }
 
-export function Navigation({
-  selectedNavItem,
-  handleNavItemClick,
-  handleProjectChange,
-  projects,
+export function Header({
+  handleEnvironmentChange,
+  handleDateRangeChange,
   selectedProject,
-}: NavigationProps) {
-  const supabase = createClient();
-  const [userEmail, setUserEmails] = useState<string>("");
-  const [selectedIndex, setSelectedIndex] = useState<number>(0);
-  const sections = [
-    {
-      header: "Projects",
-      items: [
-        {
-          icon: <Box size={16} />,
-          text: "Projects",
-        },
-      ],
-    },
-    {
-      header: "Metrics",
-      items: [
-        {
-          icon: <LineChart size={16} />,
-          text: "Metrics",
-        },
-        {
-          icon: <BarChart3 size={16} />,
-          text: "Events",
-        },
-      ],
-    },
-    {
-      header: "Settings",
-      items: [
-        {
-          icon: <Settings size={16} />,
-          text: "Settings",
-        },
-        {
-          icon: <Flag size={16} />,
-          text: "Setup",
-        },
-      ],
-    },
-  ];
-  useEffect(() => {
-    const fetchData = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUserEmails(user?.email ? user.email : "");
-    };
-    fetchData();
-  }, []);
-  return (
-    <div
-      style={{
-        display: "flex",
-        height: "100vh",
-        maxHeight: "100vh",
-        padding: "0px",
-        flexDirection: "column",
-        alignItems: "center",
+  dateRange,
+}: HeaderProps) {
+  // Check if the selected project has a metadata type of 'app'
+  const showEnvironmentSelect = selectedProject?.type === "app";
 
-        justifyContent: "start",
-        borderRight: "1px solid #e0e0e0",
+  return (
+    <header
+      style={{
+        width: "100%",
+        borderBottom: "1px solid #e5e5e5",
+        height: "54px",
       }}
     >
       <div
         style={{
-          width: "100%",
-          height: "54px",
-          minHeight: "54px",
-          borderBottom: "1px solid #e5e5e5",
-        }}
-      >
-        <ProjectSelect
-          projects={projects}
-          selectedProject={selectedProject?.id || ""}
-          onProjectChange={handleProjectChange}
-        />
-      </div>
-
-      <div
-        style={{
+          marginLeft: "auto",
           display: "flex",
-          flexDirection: "column",
-          padding: "8px",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "end",
           width: "100%",
-
-          height: "100%",
-          maxHeight: "90%",
+          minWidth: "100%",
           gap: "8px",
+          height: "100%",
         }}
       >
-        <Navbar
-          sections={sections}
-          onDestinationSelected={(index) => {
-            setSelectedIndex(index);
-          }}
-          selectedIndex={selectedIndex}
-        />
+        {selectedProject && (
+          <>
+            {/* Conditionally render the Select component */}
 
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "8px",
-            marginTop: "auto",
-            width: "100%",
-          }}
-        >
-          <Button
-            variant="outline"
-            style={{
-              justifyContent: "center",
-              display: "flex",
-              width: "100%",
+            {showEnvironmentSelect && (
+              <Select onValueChange={handleEnvironmentChange}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select environment" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Debug/Development">
+                    Debug/Development
+                  </SelectItem>
+                  <SelectItem value="Production">Production</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+            <TimeRangePicker
+              onDateRangeChange={handleDateRangeChange}
+              dateRange={dateRange}
+            />
+          </>
+        )}
+        {/* <Dialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary">
+                <MessageCircle className="mr-2 h-4 w-4" />
+                Feedback
+              </Button>
+            </DropdownMenuTrigger>
 
-              gap: "4px",
-              alignItems: "center",
-            }}
-          >
-            <MessageCircle className="mr-2 h-4 w-4" size={16} />
-            Feedback
-          </Button>
-          <Button
-            variant="ghost"
-            style={{
-              justifyContent: "center",
-              display: "flex",
-              width: "100%",
+            <DropdownMenuContent className="w-46">
+              <DropdownMenuItem
+                onClick={() =>
+                  window.open("https://x.com/i/communities/1834566987483082773")
+                }
+              >
+                <Image
+                  src="/images/x.svg"
+                  alt="X"
+                  className="mr-2 h-4 w-4"
+                  width={16}
+                  height={16}
+                />
+                In the X Community
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => window.open("mailto:team@untitledapps.net")}
+              >
+                <Mail className="mr-2 h-4 w-4" />
+                Per E-Mail
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu> */}
+        {/* </Dialog>
+        <Dialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost">Support/Help</Button>
+            </DropdownMenuTrigger>
 
-              gap: "4px",
-              alignItems: "center",
-            }}
-          >
-            Docs
-          </Button>
-          <Button
-            variant="ghost"
-            style={{
-              justifyContent: "center",
-              display: "flex",
-              width: "100%",
+            <DropdownMenuContent className="w-46">
+              <DropdownMenuItem
+                onClick={() =>
+                  window.open(
+                    "https://x.com/messages/compose?recipient_id=1680911613988073473"
+                  )
+                }
+              >
+                <Image
+                  src="/images/x.svg"
+                  alt="X"
+                  className="mr-2 h-4 w-4"
+                  width={16}
+                  height={16}
+                />
+                Send me an DM on X
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => window.open("mailto:team@untitledapps.net")}
+              >
+                <Mail className="mr-2 h-4 w-4" />
+                Per E-Mail
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </Dialog> */}
 
-              gap: "4px",
-              alignItems: "center",
-            }}
-          >
-            Help
-          </Button>
-        </div>
+        <Avatar />
       </div>
-    </div>
+    </header>
   );
 }
