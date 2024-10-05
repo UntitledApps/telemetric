@@ -1,4 +1,4 @@
-import useProjects from "@/app/dashboard/dashboard";
+import useProjects from "@/app/dashboard";
 import { Project } from "@/types";
 import { motion } from "framer-motion";
 import React, { useState, useEffect } from "react";

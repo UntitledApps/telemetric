@@ -1,1 +1,0 @@
- supabase functions deploy init --no-verify-jwt

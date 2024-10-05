@@ -1,14 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Inter:wght@400;700&display=swap");
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-  --bg-gold: #ffee8b;
-  --foreground: #000; /* Default text color */
-  --background: #fff; /* Default background color */
-  --muted-foreground: #6b7280; /* Muted text color */
-  --balance: #1e3a8a; /* Custom color for balance text */
 }
 
 .primary-button {
@@ -346,7 +338,7 @@ p {
 h1 {
   font-family: "Inter", sans-serif; /* Example font */
   font-size: 36px;
-  line-height: 18px;
+  line-height: 46px;
   font-weight: 600;
 }
 

@@ -1,5 +1,3 @@
-import RadixSelect from "@/components/ui/select/select"; // {{ edit_1 }}
-import { countryNameMap } from "@/utils/countryDefs";
 import { useEffect, useState } from "react";
 
 interface LocationUsage {
@@ -64,94 +62,7 @@ const LocationCard = ({ activities }: LocationCardProps) => {
       <div className="p-2">
         <div className="flex items-center justify-between mb-2">
           <div className="text-lg font-bold">Locations Overview</div>
-          <RadixSelect // {{ edit_2 }}
-            onValueChange={setSelectedLocationType}
-            defaultValue="country"
-          />
         </div>
-        {selectedLocationType === "city" && (
-          <>
-            {locationUsage.map((location) => (
-              <div
-                key={location.city}
-                className="relative flex items-center py-1 border-gray-200"
-              >
-                <div
-                  className="absolute bg-blue-200 opacity-50"
-                  style={{
-                    width: `${location.percentage}%`,
-                    zIndex: -1,
-                    insetBlockEnd: 4,
-                    insetBlockStart: 4,
-                    borderRadius: "8px",
-                  }}
-                />
-                <div className="flex items-center gap-2 w-full p-2">
-                  <span className="flex-1 text-sm">{location.city}</span>
-                  <span className="text-sm">{location.count} users</span>
-                </div>
-              </div>
-            ))}
-          </>
-        )}
-        {selectedLocationType === "region" && (
-          <>
-            {locationUsage.map((location) => (
-              <div
-                key={location.region}
-                className="relative flex items-center py-1 border-gray-200"
-              >
-                <div
-                  className="absolute bg-blue-200 opacity-50"
-                  style={{
-                    width: `${location.percentage}%`,
-                    zIndex: -1,
-                    insetBlockEnd: 4,
-                    insetBlockStart: 4,
-                    borderRadius: "8px",
-                  }}
-                />
-                <div className="flex items-center gap-2 w-full p-2">
-                  <span className="flex-1 text-sm">{location.region}</span>
-                  <span className="text-sm">{location.count} users</span>
-                </div>
-              </div>
-            ))}
-          </>
-        )}
-        {selectedLocationType === "country" && (
-          <>
-            {locationUsage.map((location) => (
-              <div
-                key={location.country}
-                className="relative flex items-center py-1 border-gray-200"
-              >
-                <div
-                  className="absolute bg-blue-200 opacity-50"
-                  style={{
-                    width: `${location.percentage}%`,
-                    zIndex: -1,
-                    insetBlockEnd: 4,
-                    insetBlockStart: 4,
-                    borderRadius: "8px",
-                  }}
-                />
-                <div className="flex items-center gap-2 w-full p-2">
-                  <img
-                    src={`/images/countries/${location.country}.svg`}
-                    alt={location.country}
-                    style={{ borderRadius: "6px" }}
-                    className="w-5 h-5" // Adjust the width and height as needed
-                  />
-                  <span className="text-sm flex-1">
-                    {countryNameMap[location.country!] || location.country}
-                  </span>
-                  <span className="text-sm">{location.count} users</span>
-                </div>
-              </div>
-            ))}
-          </>
-        )}
       </div>
     </div>
   );

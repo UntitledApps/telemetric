@@ -1,13 +1,14 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import Button from "@/components/ui/button/button";
 import Input from "@/components/ui/input/input";
+import "@/components/ui/input/input.css"; // Import your CSS file
 import { createClient } from "@/utils/supabase/client";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import OTPInput from "react-otp-input";
+import { toast } from "sonner";
 
-import { OTPInput } from "input-otp";
-import OtpInput from "@/components/ui/otpinput/otpinput";
 const LoginPage = () => {
   const [email, setEmail] = useState(""); // {{ edit_1 }}
   const [password, setPassword] = useState(""); // {{ edit_2 }}
@@ -23,7 +24,7 @@ const LoginPage = () => {
       data: { session },
     } = await supabase.auth.getSession();
     if (session) {
-      router.push("/dashboard");
+      router.push("/");
     }
   };
 
@@ -34,9 +35,8 @@ const LoginPage = () => {
 
   const sendOtpToEmail = async () => {
     setIsLoading(true);
-    // Simulate sending OTP to email
 
-    const { data, error } = await supabase.auth.signInWithOtp({
+    const { error } = await supabase.auth.signInWithOtp({
       email: email,
     });
 
@@ -44,83 +44,125 @@ const LoginPage = () => {
     setIsLoading(false);
   };
 
-  const handleVerifyCode = async () => {
-    // Simulate verifying the OTP
-    setIsLoading(true);
-    const { data, error } = await supabase.auth.verifyOtp({
-      email,
-      token: otp,
+  const handleVerifyCode = async (value: string) => {
+    console.log("value", value);
+    const { error } = await supabase.auth.verifyOtp({
+      email: email,
+      token: value,
       type: "email",
     });
 
     if (error) {
-      setMessage(error.message);
+      setMessage(
+        "This ain't the code we're looking for. Try again." +
+          " " +
+          error.message
+      );
+      setOtp(""); // Clear the OTP input
+      // Set focus back to the first input after 10ms
+      setTimeout(() => {
+        setOtp(""); // Clear the OTP input
+      }, 10);
     } else {
-      router.push("/dashboard");
+      const promise = () =>
+        new Promise((resolve) =>
+          setTimeout(() => resolve({ name: "Sonner" }), 2000)
+        );
+
+      toast.promise(promise, {
+        loading: "Logging in...",
+        success: (data) => {
+          return "Logged in!";
+        },
+        error: "Error",
+      });
+      router.push("/");
     }
     setIsLoading(false);
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen w-full">
-      <div className="w-full px-4" style={{ maxWidth: "400px" }}>
-        <div className="grid ">
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100vh",
+      }}
+    >
+      <div style={{ maxWidth: "300px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "0px" }}>
           <div>
-            <h1>{isCodeSent ? "Enter OTP" : "Login to Telemetric"}</h1>
             <p>
               {isCodeSent
-                ? "Please enter the code sent to your email."
-                : "Welcome! Please enter your email and password to continue."}
+                ? "Code has been sent! Give it a few minutes to arrive and then enter the code you received down below."
+                : "Welcome! Enter your email and we'll send you a code to login."}
             </p>
           </div>
-          <form
-            onSubmit={
-              isCodeSent
-                ? (e) => {
-                    e.preventDefault();
-                    handleVerifyCode();
+          {isCodeSent ? (
+            <form>
+              <OTPInput
+                renderInput={(props, index) => (
+                  <input
+                    {...props}
+                    className="input"
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      textAlign: "center",
+                    }}
+                  />
+                )}
+                value={otp}
+                onChange={(value) => {
+                  setOtp(value);
+                  if (value.length === 6) {
+                    handleVerifyCode(value); // Call handleVerifyCode directly
                   }
-                : (e) => {
-                    e.preventDefault();
-                    sendOtpToEmail();
-                  }
-            }
-            className="grid gap-4"
-          >
-            {!isCodeSent ? (
-              <>
-                <Input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  required
-                />
+                }}
+                numInputs={6}
+                renderSeparator={<span style={{ margin: "0 5px" }}></span>}
+                shouldAutoFocus={true} // Automatically focus on the first input
+              />
+            </form>
+          ) : (
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                sendOtpToEmail();
+              }}
+              style={{ display: "flex", flexDirection: "column", gap: "10px" }}
+            >
+              <Input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Your coolest email address goes here"
+                required
+              />
 
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  loading={isLoading}
-                  style={{ width: "100%" }}
-                >
-                  {isLoading ? "Logging in..." : "Login"}
-                </Button>
-              </>
-            ) : (
-              <>
-                <OtpInput
-                  onChange={(value) => {
-                    setOtp(value);
-                    if (value.length === 6) {
-                      handleVerifyCode();
-                    }
-                  }}
-                  length={6}
-                />
-              </>
-            )}
-          </form>
-          {message && <p>{message}</p>} {/* Display message if any */}
+              <Button
+                type="submit"
+                disabled={isLoading}
+                loading={isLoading}
+                style={{ width: "100%", height: "44px" }}
+              >
+                {isLoading ? "Sending code..." : "Send code"}
+              </Button>
+            </form>
+          )}
+          {message && (
+            <p
+              style={{
+                color: "red",
+                textAlign: "center",
+                fontSize: "12px",
+                marginTop: "10px",
+              }}
+            >
+              {message}
+            </p>
+          )}{" "}
         </div>
       </div>
     </div>

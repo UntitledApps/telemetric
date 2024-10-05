@@ -1,4 +1,5 @@
 import React from "react";
+import LoadingSpinner from "../spinner/spinner";
 import "./button.css";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -22,7 +23,7 @@ const Button: React.FC<ButtonProps> = ({
       disabled={disabled || loading}
       {...props}
     >
-      {loading ? <span className="loading-spinner"></span> : children}
+      {loading ? <LoadingSpinner /> : children}
     </button>
   );
 };

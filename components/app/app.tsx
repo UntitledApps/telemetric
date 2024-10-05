@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { DateRange } from "react-day-picker";
+
 
 import { Activity, Project, Revenue, SelectedNavItem, User } from "@/types";
 
@@ -19,7 +19,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [selectedNavItem, setSelectedNavItem] = useState<SelectedNavItem>(
     SelectedNavItem.METRICS
   );
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [loadingProjects, setLoadingProjects] = useState<boolean>(true);
@@ -41,9 +41,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     fetchProjectsAndActivities();
   }, [supabase]);
 
-  const handleDateRangeChange = (range: DateRange | undefined) => {
-    setDateRange(range);
-  };
 
   const handleNavItemClick = (navItem: SelectedNavItem) => {
     setSelectedNavItem(navItem);
@@ -66,7 +63,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <Metrics
             selectedProject={selectedProject}
             environment={environment}
-            dateRange={dateRange}
+
             activities={currentActivitiesMap}
           />
         );
@@ -104,13 +101,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         maxHeight: "100vh",
       }}
     >
-      <Navbar
-        selectedNavItem={selectedNavItem}
-        handleNavItemClick={handleNavItemClick}
-        handleProjectChange={handleProjectChange}
-        projects={projects}
-        selectedProject={selectedProject}
-      />
+     
       <div
         style={{
           display: "flex",
@@ -121,12 +112,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           justifyContent: "start",
         }}
       >
-        <Header
-          dateRange={dateRange}
-          handleEnvironmentChange={setEnvironment}
-          handleDateRangeChange={handleDateRangeChange}
-          selectedProject={selectedProject}
-        />
+
         <main className="flex-1 overflow-auto">{renderContent()}</main>
       </div>
     </div>
