@@ -4,7 +4,7 @@ const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
   Deno.env.get("SUPABASE_ANON_KEY")!,
 );
-// supabase functions deploy init --no-verify-jwt
+
 function setCORSHeaders(response: Response): Response {
   response.headers.set("Access-Control-Allow-Origin", "*"); // Replace '*' with specific origin if needed
   response.headers.set("Access-Control-Allow-Methods", "POST, OPTIONS");
@@ -36,6 +36,40 @@ async function getLocation(ip: string): Promise<LocationData> {
   };
 }
 
+// Function to get OS from User-Agent
+function getOSFromUserAgent(userAgent: string): string {
+  if (userAgent.includes("Windows")) return "Windows";
+  if (userAgent.includes("Mac OS")) return "Mac OS";
+  if (userAgent.includes("X11")) return "UNIX";
+  if (userAgent.includes("Linux")) return "Linux";
+  if (userAgent.includes("Android")) return "Android";
+  if (userAgent.includes("iPhone") || userAgent.includes("iPad")) return "iOS";
+  return "Unknown";
+}
+
+// Function to get Browser from User-Agent
+function getBrowserFromUserAgent(userAgent: string): string {
+  if (userAgent.includes("Edge") || userAgent.includes("Edg")) {
+    return "Edge";
+  }
+  if (userAgent.includes("Opera") || userAgent.includes("OPR")) {
+    return "Opera";
+  }
+  if (userAgent.includes("Chrome")) {
+    return "Chrome";
+  }
+  if (userAgent.includes("Firefox")) {
+    return "Firefox";
+  }
+  if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
+    return "Safari";
+  }
+  if (userAgent.includes("MSIE") || userAgent.includes("Trident")) {
+    return "Internet Explorer";
+  }
+  return "Unknown";
+}
+
 async function handleRequest(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") {
     // Handle CORS preflight request
@@ -48,12 +82,15 @@ async function handleRequest(req: Request): Promise<Response> {
     const {
       projectID,
       userID,
-      os,
-      browser,
       debugData,
       referrer,
       version,
     } = requestBody;
+
+    // Extract User-Agent from request headers
+    const userAgent = req.headers.get("User-Agent") || "";
+    const os = getOSFromUserAgent(userAgent);
+    const browser = getBrowserFromUserAgent(userAgent);
 
     // Upsert user data
     const ip = req.headers.get("cf-connecting-ip") || "127.0.0.1";
@@ -114,8 +151,6 @@ async function handleRequest(req: Request): Promise<Response> {
       if (userError) {
         throw userError;
       }
-
-      //
 
       const activityID = globalThis.crypto.randomUUID();
       const { error: activityError } = await supabase
