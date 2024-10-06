@@ -1,6 +1,27 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Inter:wght@400;700&display=swap");
 
 :root {
+  --accent: #0057ff;
+  --subtitle: #666666;
+  --dominant: #fafafa;
+  --onDominant: #ffffff;
+  --secondary: #171717;
+  --outline: #e1e1e1;
+  --unselected: #8e8e8e;
+  --outlineHover: #c9c9c9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --accent: #4d8eff;
+    --subtitle: #a0a0a0;
+    --dominant: #1a1a1a;
+    --onDominant: #2c2c2c;
+    --secondary: #f0f0f0;
+    --outline: #3a3a3a;
+    --unselected: #707070;
+    --outlineHover: #4d4d4d;
+  }
 }
 
 .primary-button {

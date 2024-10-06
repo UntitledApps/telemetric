@@ -26,7 +26,7 @@ export interface Revenue {
 export enum SelectedNavItem {
   PROJECTS = "PROJECTS",
   METRICS = "METRICS",
-  DATA_EXPLORER = "ACCOUNT",
+  ACCOUNT = "ACCOUNT",
 }
 export interface User {
   id: string;

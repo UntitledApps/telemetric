@@ -1,12 +1,25 @@
 export default class Telemetric {
   static projectID = null;
   static userID = null;
+  static version = null;
+  static trackOnLocalhost = false;
+  static initial = false;
 
-  static async init(projectID) {
+  static async init(projectID, version, trackOnLocalhost = false) {
     this.projectID = projectID;
+    this.version = version;
+    this.trackOnLocalhost = trackOnLocalhost;
+
     await this._initializeUserID();
     const url = "https://hkromzwdaxhcragbcnmw.supabase.co/functions/v1/init";
 
+    // Check if we should track on localhost
+    if (window.location.hostname === "localhost" && !this.trackOnLocalhost) {
+      console.log(
+        "Telemetric: Not tracking on localhost. You can change this by setting trackOnLocalhost to true."
+      );
+      return;
+    }
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -15,9 +28,9 @@ export default class Telemetric {
         },
         body: JSON.stringify({
           projectID: this.projectID,
-          userID: this.userID,
-          os: this.getOSFromUserAgent(navigator.userAgent),
-          browser: this.getBrowserFromUserAgent(navigator.userAgent),
+          initial: this.initial,
+          version: this.version,
+
           referrer: document.referrer,
         }),
       });
@@ -30,7 +43,12 @@ export default class Telemetric {
 
   static async event(name) {
     if (!this.safetyCheck(`Event '${name}'`)) return;
-
+    if (window.location.hostname === "localhost" && !this.trackOnLocalhost) {
+      console.log(
+        "Telemetric: Not tracking on localhost. You can change this by setting trackOnLocalhost to true."
+      );
+      return;
+    }
     const url = "https://hkromzwdaxhcragbcnmw.supabase.co/functions/v1/event";
 
     try {
@@ -41,9 +59,9 @@ export default class Telemetric {
         },
         body: JSON.stringify({
           projectID: this.projectID,
-          userID: this.userID,
+
           name: name,
-          debugData: window.location.hostname === "localhost",
+          version: this.version,
         }),
       });
 
@@ -57,7 +75,12 @@ export default class Telemetric {
 
   static async revenue(amount) {
     if (!this.safetyCheck("Revenue")) return;
-
+    if (window.location.hostname === "localhost" && !this.trackOnLocalhost) {
+      console.log(
+        "Telemetric: Not tracking on localhost. You can change this by setting trackOnLocalhost to true."
+      );
+      return;
+    }
     const url = "https://hkromzwdaxhcragbcnmw.supabase.co/functions/v1/revenue";
 
     try {
@@ -68,9 +91,9 @@ export default class Telemetric {
         },
         body: JSON.stringify({
           projectID: this.projectID,
-          userID: this.userID,
+          version: this.version,
+
           total: amount,
-          debugData: window.location.hostname === "localhost",
         }),
       });
 
@@ -101,10 +124,11 @@ export default class Telemetric {
   }
 
   static async _initializeUserID() {
-    this.userID = localStorage.getItem("user_id");
+    this.userID = localStorage.getItem("telemetric_user_id");
     if (!this.userID) {
+      this.initial = true;
       this.userID = this._generateUserID();
-      localStorage.setItem("user_id", this.userID);
+      localStorage.setItem("telemetric_user_id", this.userID);
     }
   }
 
@@ -117,36 +141,12 @@ export default class Telemetric {
   }
 
   static async saveUserID(userID) {
-    localStorage.setItem("user_id", userID);
+    localStorage.setItem("telemetric_user_id", userID);
     this.userID = userID;
   }
 
   static async getUserID() {
-    this.userID = localStorage.getItem("user_id");
+    this.userID = localStorage.getItem("telemetric_user_id");
     return this.userID;
-  }
-
-  static getOSFromUserAgent(userAgent) {
-    if (userAgent.includes("Windows")) return "Windows";
-    if (userAgent.includes("Mac OS")) return "Mac OS";
-    if (userAgent.includes("X11")) return "UNIX";
-    if (userAgent.includes("Linux")) return "Linux";
-    if (userAgent.includes("Android")) return "Android";
-    if (userAgent.includes("iPhone") || userAgent.includes("iPad"))
-      return "iOS";
-    return "Unknown";
-  }
-
-  static getBrowserFromUserAgent(userAgent) {
-    if (userAgent.includes("Edge") || userAgent.includes("Edg")) return "Edge";
-    if (userAgent.includes("Opera") || userAgent.includes("OPR"))
-      return "Opera";
-    if (userAgent.includes("Chrome")) return "Chrome";
-    if (userAgent.includes("Firefox")) return "Firefox";
-    if (userAgent.includes("Safari") && !userAgent.includes("Chrome"))
-      return "Safari";
-    if (userAgent.includes("MSIE") || userAgent.includes("Trident"))
-      return "Internet Explorer";
-    return "Unknown";
   }
 }

@@ -1,23 +1,19 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-
-import { Activity, Project, Revenue, SelectedNavItem, User } from "@/types";
+import { Project, Revenue, SelectedNavItem } from "@/types";
 
 import { createClient } from "@/utils/supabase/client";
-import { Settings } from "lucide-react";
 import Metrics from "./metrics/metrics";
 
+import { Navbar } from "./navigation/navbar";
 import DataExplorer from "./navigation/navitems/data_explorer";
-import DataImportExport from "./navigation/navitems/import_export_data";
 import Projects from "./navigation/navitems/projects";
-import Setup from "./navigation/navitems/setup";
-import { Navbar } from "../ui/navbar/navbar";
 
-export function DashboardLayout({ children }: { children: React.ReactNode }) {
+export function DashboardLayout() {
   const supabase = createClient();
   const [selectedNavItem, setSelectedNavItem] = useState<SelectedNavItem>(
-    SelectedNavItem.METRICS
+    SelectedNavItem.PROJECTS
   );
 
   const [projects, setProjects] = useState<Project[]>([]);
@@ -41,7 +37,6 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     fetchProjectsAndActivities();
   }, [supabase]);
 
-
   const handleNavItemClick = (navItem: SelectedNavItem) => {
     setSelectedNavItem(navItem);
   };
@@ -63,11 +58,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <Metrics
             selectedProject={selectedProject}
             environment={environment}
-
             activities={currentActivitiesMap}
           />
         );
-      case SelectedNavItem.DATA_EXPLORER:
+      case SelectedNavItem.ACCOUNT:
         return <DataExplorer />;
 
       default:
@@ -96,25 +90,30 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
     <div
       style={{
         display: "flex",
-        flexDirection: "row",
+        flexDirection: "column",
         height: "100%",
-        maxHeight: "100vh",
+
+        alignItems: "start",
+        justifyContent: "start",
       }}
     >
-     
-      <div
+      <Navbar
+        selectedProject={selectedProject}
+        onDestinationSelected={handleNavItemClick}
+        selectedIndex={selectedNavItem}
+      />
+      <main
         style={{
-          display: "flex",
-          flexDirection: "column",
-          height: "100%",
+          backgroundColor: "var(--dominant)",
+
+          flex: 1,
           width: "100%",
-          alignItems: "start",
-          justifyContent: "start",
+          height: "100%",
+          overflowY: "auto",
         }}
       >
-
-        <main className="flex-1 overflow-auto">{renderContent()}</main>
-      </div>
+        {renderContent()}
+      </main>
     </div>
   );
 }

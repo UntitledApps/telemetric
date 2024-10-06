@@ -2,11 +2,13 @@ library telemetric;
 
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 import 'dart:math' hide log;
 
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'platform.dart';
 
 /// The Telemetric class provides methods to track events and revenue.
 class Telemetric {
@@ -18,12 +20,10 @@ class Telemetric {
   static String? _version = '1.0.0';
 
   /// Initializes the Telemetric with a [projectID].
-  /// Always await this method to make sure the initialization is complete. After initialization, you can start tracking events or revenue.
-  /// This method should be called once when the app starts for example in the main method.
   static Future<void> init(String projectID,
       {String? version, bool trackInDebug = false}) async {
     _projectID = projectID;
-    trackInDebug = trackInDebug;
+    Telemetric.trackInDebug = trackInDebug; // Fixed assignment
     _version = version;
 
     // Check if user ID exists in storage, if not create a new one
@@ -45,24 +45,17 @@ class Telemetric {
       );
 
       // Check the status code
-      if (response.statusCode == 200) {
-        // Read the response
-      } else {
-        // Handle non-200 status code
+      if (response.statusCode != 200) {
+        log('Failed to initialize: ${response.statusCode}');
       }
     } catch (e) {
-      return log(
-          '[This might be due to no internet connection]. Telemetric Init Error: $e');
+      log('[This might be due to no internet connection]. Telemetric Init Error: $e');
     }
   }
 
   /// Tracks an event with a [name]
-  /// You can use whitespaces and emojis in the event name.
-  /// E.g. 'App Opened', '🚀 Launched'
   static Future<void> event(String name) async {
-    if (!safetyCheck(
-      "Event '$name'",
-    )) return;
+    if (!safetyCheck("Event '$name'")) return;
     if (kDebugMode && !trackInDebug) return;
     const url = 'https://hkromzwdaxhcragbcnmw.supabase.co/functions/v1/event';
 
@@ -72,16 +65,14 @@ class Telemetric {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'projectID': _projectID,
-          'userID': _userID,
           'name': name,
-          "debugData": kDebugMode,
-          'referrer':
-              kIsWeb ? html.document.referrer : packageInfo.installerStore,
-          "version": packageInfo.version,
+          "version": _version,
+          "os": _getOS(),
         }),
       );
 
       if (response.statusCode == 200) {
+        // Handle successful response
       } else {
         log('Failed to send event: ${response.statusCode}');
       }
@@ -91,8 +82,6 @@ class Telemetric {
   }
 
   /// Tracks revenue with an [amount]
-  /// Send as a double. We'll handle the conversion.
-  /// E.g 0.99 for $0.99
   static Future<void> revenue(double amount) async {
     if (!safetyCheck('Revenue')) return;
     if (kDebugMode && !trackInDebug) return;
@@ -104,17 +93,14 @@ class Telemetric {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'projectID': _projectID,
-          'userID': _userID,
           'total': amount,
-          "debugData": kDebugMode,
           "os": _getOS(),
-          'referrer':
-              kIsWeb ? html.document.referrer : packageInfo.installerStore,
-          "version": packageInfo.version,
+          "version": _version,
         }),
       );
 
       if (response.statusCode == 200) {
+        // Handle successful response
       } else {
         log('Failed to send revenue: ${response.statusCode}');
       }
@@ -145,6 +131,7 @@ class Telemetric {
     final prefs = await SharedPreferences.getInstance();
     _userID = prefs.getString('telemetric_user_id');
     if (_userID == null) {
+      initial = true;
       _userID = _generateUserID();
       await prefs.setString('telemetric_user_id', _userID!);
     }
@@ -185,22 +172,6 @@ class Telemetric {
   }
 
   static String _getOS() {
-    if (kIsWeb) {
-      return 'web';
-    } else if (Platform.isAndroid) {
-      return 'android';
-    } else if (Platform.isIOS) {
-      return 'ios';
-    } else if (Platform.isLinux) {
-      return 'linux';
-    } else if (Platform.isMacOS) {
-      return 'macos';
-    } else if (Platform.isWindows) {
-      return 'windows';
-    } else if (Platform.isFuchsia) {
-      return 'fuchsia';
-    } else {
-      return 'unknown';
-    }
+    return PlatformUtils.getOS();
   }
 }

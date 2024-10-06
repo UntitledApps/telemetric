@@ -1,20 +1,17 @@
-import useProjects from "@/app/dashboard";
 import { Project } from "@/types";
 import { motion } from "framer-motion";
-import React, { useState, useEffect } from "react";
-import { DateRange } from "react-day-picker";
+import React, { useState } from "react";
+
 // Import the useProjects hook
 
 interface ProjectsProps {
   onProjectSelect: (projectId: string) => void;
-  dateRange?: DateRange; // Added dateRange prop for filtering
+
   projects: Project[];
 }
 
-const Projects: React.FC<ProjectsProps> = ({ onProjectSelect, dateRange }) => {
-
+const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
-
 
   if (filteredProjects.length === 0) {
     return (

@@ -49,6 +49,9 @@ function getOSFromUserAgent(userAgent: string): string {
 
 // Function to get Browser from User-Agent
 function getBrowserFromUserAgent(userAgent: string): string {
+  if (userAgent.includes("Ddg")) {
+    return "DuckDuckGo Browser";
+  }
   if (userAgent.includes("Edge") || userAgent.includes("Edg")) {
     return "Edge";
   }
@@ -67,9 +70,11 @@ function getBrowserFromUserAgent(userAgent: string): string {
   if (userAgent.includes("MSIE") || userAgent.includes("Trident")) {
     return "Internet Explorer";
   }
-  return "Unknown";
+
+  return "app";
 }
 
+// Never remove this!: supabase functions deploy init --no-verify-jwt
 async function handleRequest(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") {
     // Handle CORS preflight request
@@ -81,99 +86,49 @@ async function handleRequest(req: Request): Promise<Response> {
     const requestBody = await req.json();
     const {
       projectID,
-      userID,
-      debugData,
+      initial,
       referrer,
+      os,
       version,
     } = requestBody;
 
+    // Set default values for optional fields
+    const safeOs = os || null;
+
     // Extract User-Agent from request headers
     const userAgent = req.headers.get("User-Agent") || "";
-    const os = getOSFromUserAgent(userAgent);
-    const browser = getBrowserFromUserAgent(userAgent);
-
     // Upsert user data
     const ip = req.headers.get("cf-connecting-ip") || "127.0.0.1";
 
     // Fetch location data
     const location = await getLocation(ip);
-    if (debugData == true) {
-      const { error: userError } = await supabase
-        .from("debugUsers") // Replace with your actual table name
-        .upsert([
-          {
-            id: userID, // Replace with the actual column name for user ID
-            os: os,
-            browser: browser,
-            location: location,
-            referrer: referrer,
-          },
-        ]);
 
-      if (userError) {
-        throw userError;
-      }
+    const activityID = globalThis.crypto.randomUUID();
+    const { error: activityError } = await supabase
+      .from("activities") // Replace with your actual table name
+      .upsert([
+        {
+          id: activityID, // Replace with the actual column name for activity ID
 
-      const activityID = globalThis.crypto.randomUUID();
-      const { error: activityError } = await supabase
-        .from("debugActivities") // Replace with your actual table name
-        .upsert([
-          {
-            id: activityID, // Replace with the actual column name for activity ID
-            user_id: userID,
-            project_id: projectID,
-            version: version,
-            timestamp: new Date().toISOString(),
-          },
-        ]);
+          project_id: projectID,
+          browser: getBrowserFromUserAgent(userAgent),
+          initial: initial,
+          os: safeOs === null ? getOSFromUserAgent(userAgent) : safeOs,
+          referrer: referrer,
+          location: location,
+          timestamp: new Date().toISOString(),
+          version: version,
+        },
+      ]);
 
-      if (activityError) {
-        throw activityError;
-      }
-      const jsonResponse = new Response("", {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-      return setCORSHeaders(jsonResponse);
-    } else {
-      const { error: userError } = await supabase
-        .from("users") // Replace with your actual table name
-        .upsert([
-          {
-            id: userID, // Replace with the actual column name for user ID
-            os: os,
-            browser: browser,
-            location: location,
-            referrer: referrer,
-          },
-        ]);
-
-      if (userError) {
-        throw userError;
-      }
-
-      const activityID = globalThis.crypto.randomUUID();
-      const { error: activityError } = await supabase
-        .from("activities") // Replace with your actual table name
-        .upsert([
-          {
-            id: activityID, // Replace with the actual column name for activity ID
-            user_id: userID,
-            project_id: projectID,
-            timestamp: new Date().toISOString(),
-            version: version,
-          },
-        ]);
-
-      if (activityError) {
-        throw activityError;
-      }
-      const jsonResponse = new Response("", {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      });
-      return setCORSHeaders(jsonResponse);
+    if (activityError) {
+      throw activityError;
     }
+    const jsonResponse = new Response("", {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+    return setCORSHeaders(jsonResponse);
   } catch (error) {
     console.error("Error:", error);
     const errorResponse = new Response(error.message, {

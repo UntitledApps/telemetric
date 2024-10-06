@@ -13,7 +13,7 @@ export default async function Home() {
 
   return (
     <DashboardLayout>
-      <p>Hello {data.user.email}</p>
+   
     </DashboardLayout>
   );
 }

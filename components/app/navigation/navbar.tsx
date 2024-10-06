@@ -1,30 +1,20 @@
 "use client";
 
-import { Project } from "@/types";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@radix-ui/react-select";
-import { DateRange } from "react-day-picker";
+import { Project, SelectedNavItem } from "@/types";
 
 import Avatar from "@/components/ui/avatar/avatar";
-import { TimeRangePicker } from "../utils/timerangepicker";
+import Image from "next/image";
 
 interface HeaderProps {
-  handleEnvironmentChange: (value: string) => void;
-  handleDateRangeChange: (range: DateRange | undefined) => void;
-  dateRange: DateRange | undefined;
   selectedProject: Project | null;
+  onDestinationSelected: (navItem: SelectedNavItem) => void; // Change type to SelectedNavItem
+  selectedIndex: SelectedNavItem; // Change type to SelectedNavItem
 }
 
-export function Header({
-  handleEnvironmentChange,
-  handleDateRangeChange,
+export function Navbar({
   selectedProject,
-  dateRange,
+  onDestinationSelected,
+  selectedIndex,
 }: HeaderProps) {
   // Check if the selected project has a metadata type of 'app'
   const showEnvironmentSelect = selectedProject?.type === "app";
@@ -32,48 +22,68 @@ export function Header({
   return (
     <header
       style={{
-        width: "100%",
-        borderBottom: "1px solid #e5e5e5",
-        height: "54px",
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "start",
+        flex: "1",
+        gap: "8px",
+        padding: "8px",
+        height: "100%",
       }}
     >
+      <Image
+        src="/images/logo.png"
+        alt="Logo"
+        style={{
+          borderRadius: "12px",
+          border: "2px solid #DAEBFD",
+          cursor: "pointer",
+          boxShadow: "0px 1px 2px 0px rgba(16, 24, 40, 0.06)",
+        }}
+        onClick={() => {
+          onDestinationSelected(SelectedNavItem.PROJECTS);
+        }}
+        width={30}
+        height={30}
+      />
       <div
         style={{
-          marginLeft: "auto",
           display: "flex",
           flexDirection: "row",
           alignItems: "center",
-          justifyContent: "end",
-          width: "100%",
-          minWidth: "100%",
+          justifyContent: "start",
+          flex: "1",
           gap: "8px",
-          height: "100%",
+          padding: "8px",
         }}
       >
-        {selectedProject && (
-          <>
-            {/* Conditionally render the Select component */}
-
-            {showEnvironmentSelect && (
-              <Select onValueChange={handleEnvironmentChange}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Select environment" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Debug/Development">
-                    Debug/Development
-                  </SelectItem>
-                  <SelectItem value="Production">Production</SelectItem>
-                </SelectContent>
-              </Select>
-            )}
-            <TimeRangePicker
-              onDateRangeChange={handleDateRangeChange}
-              dateRange={dateRange}
-            />
-          </>
-        )}
-        {/* <Dialog>
+        <select
+          style={{
+            padding: "4px 8px",
+            borderRadius: "4px",
+            border: "1px solid #e5e5e5",
+            backgroundColor: "white",
+            fontSize: "14px",
+            cursor: "pointer",
+            color: "#333",
+          }}
+          onChange={(e) =>
+            onDestinationSelected(e.target.value as SelectedNavItem)
+          }
+          value={selectedIndex}
+        >
+          <option value={SelectedNavItem.PROJECTS}>Projects</option>
+          <option value={SelectedNavItem.METRICS}>Metrics</option>
+          <option value={SelectedNavItem.ACCOUNT}>Account</option>
+        </select>
+      </div>
+      <div
+        style={{
+          marginLeft: "auto",
+        }}
+      ></div>
+      {/* <Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="secondary">
@@ -105,7 +115,7 @@ export function Header({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu> */}
-        {/* </Dialog>
+      {/* </Dialog>
         <Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -139,8 +149,11 @@ export function Header({
           </DropdownMenu>
         </Dialog> */}
 
-        <Avatar />
-      </div>
+      <Avatar
+        onClick={() => {
+          onDestinationSelected(SelectedNavItem.ACCOUNT);
+        }}
+      />
     </header>
   );
 }

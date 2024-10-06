@@ -17,7 +17,7 @@ interface NavbarProps {
   selectedIndex: number;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({
+export const Tab: React.FC<NavbarProps> = ({
   sections,
   onDestinationSelected,
   selectedIndex,
