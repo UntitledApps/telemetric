@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 
 import { Project, Revenue, SelectedNavItem } from "@/types";
+import { Alert, Button } from "@lemonsqueezy/wedges";
 
 import { createClient } from "@/utils/supabase/client";
 import Metrics from "./metrics/metrics";
@@ -133,6 +134,7 @@ export function DashboardLayout() {
         onDestinationSelected={handleNavItemClick}
         selectedIndex={selectedNavItem}
       />
+      <Alert>Hello</Alert>
       <main
         style={{
           backgroundColor: "var(--dominant)",
