@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 
 import { Project, Revenue, SelectedNavItem } from "@/types";
-import { Alert, Button } from "@lemonsqueezy/wedges";
 
 import { createClient } from "@/utils/supabase/client";
 import Metrics from "./metrics/metrics";
@@ -19,6 +18,7 @@ export function DashboardLayout() {
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [selectedProjectIndex, setSelectedProjectIndex] = useState<number>(0);
   const [loadingProjects, setLoadingProjects] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [environment, setEnvironment] = useState<string>("Production");
@@ -47,21 +47,57 @@ export function DashboardLayout() {
       if (error) {
         setError(error.message);
       } else {
+        const fetchedProjects: Project[] = []; // Temporary array to hold fetched projects
+        const projectIdsSet = new Set<string>(); // Set to track unique project IDs
+
         for (const projectID of data.projects) {
-          console.log(projectID);
           const { data: projectData, error: projectError } = await supabase
             .from("projects")
             .select("*")
             .eq("id", projectID)
             .single();
-          console.log(projectData);
+
+          const { data: activitiesData, error: activitiesError } =
+            await supabase
+              .from("activities")
+              .select("*")
+              .eq("project_id", projectID)
+              .gte(
+                "timestamp",
+                new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+              ); // Filter for last 30 days
+          const { data: revenueData, error: revenueError } = await supabase
+            .from("revenue")
+            .select("*")
+            .eq("project_id", projectID)
+            .gte(
+              "timestamp",
+              new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+            ); // Filter for last 30 days
+          const { data: eventsData, error: eventsError } = await supabase
+            .from("events")
+            .select("*")
+            .eq("project_id", projectID)
+            .gte(
+              "timestamp",
+              new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+            ); // Filter for last 30 days
+
+          const project = {
+            ...projectData,
+            activities: activitiesData,
+            revenue: revenueData,
+            events: eventsData,
+          };
           if (projectError) {
             setError(projectError.message);
           } else if (projectData) {
-            setProjects((prevProjects) => [...prevProjects, projectData]);
+            fetchedProjects.push(project);
           }
         }
-        console.log(projects);
+
+        console.log(fetchedProjects);
+        setProjects((prevProjects) => [...prevProjects, ...fetchedProjects]);
       }
     };
 
@@ -74,7 +110,9 @@ export function DashboardLayout() {
 
   const handleProjectChange = (projectId: string) => {
     const project = projects.find((p) => p.id === projectId) || null;
+    const index = projects.findIndex((p) => p.id === projectId);
     setSelectedProject(project);
+    setSelectedProjectIndex(index);
     setSelectedNavItem(SelectedNavItem.METRICS);
   };
 
@@ -87,9 +125,8 @@ export function DashboardLayout() {
       case SelectedNavItem.METRICS:
         return (
           <Metrics
-            selectedProject={selectedProject}
-            environment={environment}
-            activities={currentActivitiesMap}
+            selectedProjectIndex={selectedProjectIndex}
+            projects={projects}
           />
         );
       case SelectedNavItem.ACCOUNT:
@@ -134,7 +171,7 @@ export function DashboardLayout() {
         onDestinationSelected={handleNavItemClick}
         selectedIndex={selectedNavItem}
       />
-      <Alert>Hello</Alert>
+
       <main
         style={{
           backgroundColor: "var(--dominant)",

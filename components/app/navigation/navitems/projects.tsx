@@ -1,6 +1,7 @@
+import ProjectCard from "@/components/ui/projectcard/projectcard";
 import { Project } from "@/types";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Import the useProjects hook
 
@@ -10,8 +11,12 @@ interface ProjectsProps {
   projects: Project[];
 }
 
-const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
+const Projects: React.FC<ProjectsProps> = ({ onProjectSelect, projects }) => {
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+
+  useEffect(() => {
+    setFilteredProjects(projects);
+  }, [projects]);
 
   return (
     <div
@@ -30,30 +35,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
           transition={{ duration: 0.5 }}
           exit={{ opacity: 0 }}
         >
-          <div
-            onClick={() => onProjectSelect(project.id)}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              padding: "0px",
-              cursor: "pointer",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                gap: "5px",
-                justifyContent: "center",
-                padding: "16px",
-                flexShrink: 0,
-              }}
-            >
-              <h3>{project.name}</h3> {/* Display project name */}
-              {/* Add more project details as needed */}
-            </div>
-          </div>
+          <ProjectCard project={project} onClick={onProjectSelect} />
         </motion.div>
       ))}
     </div>

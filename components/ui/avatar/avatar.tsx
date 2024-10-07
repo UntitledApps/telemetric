@@ -1,9 +1,10 @@
 // Avatar.js
 import { createClient } from "@/utils/supabase/client";
+import { Avatar } from "@lemonsqueezy/wedges";
 import { useEffect, useRef, useState } from "react";
 import "./Avatar.css";
 
-const Avatar = ({ onClick }: { onClick?: () => void }) => {
+const UserAccount = ({ onClick }: { onClick?: () => void }) => {
   // {{ edit_1 }}
   const [isOpen, setIsOpen] = useState(false);
   const supabase = createClient();
@@ -34,18 +35,11 @@ const Avatar = ({ onClick }: { onClick?: () => void }) => {
   const overlayRef = useRef<HTMLDivElement>(null); // {{ edit_1 }}
 
   return (
-    <div className="avatar-container">
-      <div
-        className="avatar"
-        onClick={() => {
-          toggleOverlay();
-          onClick && onClick();
-        }}
-      >
-        <p>{avatarLetter}</p>
-      </div>
-    </div>
+    <Avatar
+      alt="Image alt text"
+      src="https://images.unsplas.com/photo-1517841905240-472988babdf9?w=250&h=250&auto=format&fit=crop"
+    />
   );
 };
 
-export default Avatar;
+export default UserAccount;

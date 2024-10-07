@@ -8,7 +8,7 @@
   --secondary: #171717;
   --outline: #e1e1e1;
   --unselected: #8e8e8e;
-  --outlineHover: #c9c9c9;
+  --outline-hover: #c9c9c9;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -20,7 +20,7 @@
     --secondary: #f0f0f0;
     --outline: #212121;
     --unselected: #707070;
-    --outlineHover: #4d4d4d;
+    --outline-hover: #4d4d4d;
   }
 }
 
@@ -373,5 +373,6 @@ h3 {
 p {
   font-family: "Inter", sans-serif; /* Example font */
   font-size: 14px;
+  margin: 0;
   font-weight: 400;
 }

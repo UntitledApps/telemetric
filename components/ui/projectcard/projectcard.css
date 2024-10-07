@@ -1,0 +1,11 @@
+.project-card {
+  border-radius: 12px;
+  border: 1px solid var(--outline);
+  color: var(--secondary);
+  background-color: var(--on-dominant);
+  transition: border 0.3s ease;
+  cursor: pointer;
+  &:hover {
+    border: 1px solid var(--outline-hover);
+  }
+}

@@ -1,3 +1,4 @@
+import { Activity } from "@/types";
 import { useEffect, useState } from "react";
 
 interface OSUsage {
@@ -5,11 +6,7 @@ interface OSUsage {
   percentage: number;
 }
 
-const OperatingSystemCard = ({
-  activities,
-}: {
-  activities: Record<string, { os: string; browser: string }>;
-}) => {
+const OperatingSystemCard = ({ activities }: { activities: Activity[] }) => {
   const [osUsage, setOsUsage] = useState<OSUsage[]>([]);
 
   useEffect(() => {
@@ -46,7 +43,6 @@ const OperatingSystemCard = ({
           className="relative flex items-center py-1 border-gray-200"
         >
           <div
-            className="absolute bg-blue-200 opacity-50"
             style={{
               width: `${os.percentage}%`,
               zIndex: -1,
@@ -55,11 +51,18 @@ const OperatingSystemCard = ({
               borderRadius: "8px",
             }}
           />
-          <div className="flex items-center gap-2 w-full p-2">
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "5px",
+              marginLeft: "10px",
+            }}
+          >
             <img
-              src={`/images/os/${os.os.toLowerCase()}.png`}
+              src={`/images/os/${os.os.toLowerCase().replace(/\s+/g, "")}.png`}
               alt={`${os.os} logo`}
-              className="w-5 h-5"
+              style={{ width: "20px", height: "20px" }}
             />
             <div
               className="text-sm"
