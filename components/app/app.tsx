@@ -32,7 +32,37 @@ export function DashboardLayout() {
   const [revenueData, setRevenueData] = useState<Revenue[]>([]);
 
   useEffect(() => {
-    const fetchProjectsAndActivities = async () => {};
+    const fetchProjectsAndActivities = async () => {
+      const { data: userData, error: userError } =
+        await supabase.auth.getUser();
+      const { data, error } = await supabase
+        .from("customers")
+        .select("projects")
+        .eq("id", userData?.user?.id)
+        .single();
+
+      console.log(data);
+
+      if (error) {
+        setError(error.message);
+      } else {
+        for (const projectID of data.projects) {
+          console.log(projectID);
+          const { data: projectData, error: projectError } = await supabase
+            .from("projects")
+            .select("*")
+            .eq("id", projectID)
+            .single();
+          console.log(projectData);
+          if (projectError) {
+            setError(projectError.message);
+          } else if (projectData) {
+            setProjects((prevProjects) => [...prevProjects, projectData]);
+          }
+        }
+        console.log(projects);
+      }
+    };
 
     fetchProjectsAndActivities();
   }, [supabase]);
@@ -92,6 +122,7 @@ export function DashboardLayout() {
         display: "flex",
         flexDirection: "column",
         height: "100%",
+        padding: "0px",
 
         alignItems: "start",
         justifyContent: "start",
@@ -105,10 +136,9 @@ export function DashboardLayout() {
       <main
         style={{
           backgroundColor: "var(--dominant)",
-
-          flex: 1,
           width: "100%",
           height: "100%",
+          minHeight: "100vh",
           overflowY: "auto",
         }}
       >

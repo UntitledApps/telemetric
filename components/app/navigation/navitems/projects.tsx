@@ -13,22 +13,6 @@ interface ProjectsProps {
 const Projects: React.FC<ProjectsProps> = ({ onProjectSelect }) => {
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
 
-  if (filteredProjects.length === 0) {
-    return (
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100%",
-        }}
-      >
-        No projects found
-      </div>
-    );
-  }
-
   return (
     <div
       style={{

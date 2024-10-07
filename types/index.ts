@@ -1,7 +1,6 @@
 // types/index.ts
 export interface Project {
   id: string;
-
   name: string;
   type: string;
   favIconURL: string;

@@ -24,8 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        {" "}
+      <body className={inter.className} style={{ margin: "0px" }}>
         <Toaster position="top-center" richColors closeButton />
         {children}
       </body>

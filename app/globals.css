@@ -4,7 +4,7 @@
   --accent: #0057ff;
   --subtitle: #666666;
   --dominant: #fafafa;
-  --onDominant: #ffffff;
+  --on-dominant: #ffffff;
   --secondary: #171717;
   --outline: #e1e1e1;
   --unselected: #8e8e8e;
@@ -15,10 +15,10 @@
   :root {
     --accent: #4d8eff;
     --subtitle: #a0a0a0;
-    --dominant: #1a1a1a;
-    --onDominant: #2c2c2c;
+    --dominant: #000000;
+    --on-dominant: #0a0a0a;
     --secondary: #f0f0f0;
-    --outline: #3a3a3a;
+    --outline: #212121;
     --unselected: #707070;
     --outlineHover: #4d4d4d;
   }

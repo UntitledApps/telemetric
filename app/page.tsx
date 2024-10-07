@@ -11,9 +11,5 @@ export default async function Home() {
     redirect("/auth");
   }
 
-  return (
-    <DashboardLayout>
-   
-    </DashboardLayout>
-  );
+  return <DashboardLayout></DashboardLayout>;
 }

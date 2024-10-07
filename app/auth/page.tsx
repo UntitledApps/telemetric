@@ -64,6 +64,22 @@ const LoginPage = () => {
         setOtp(""); // Clear the OTP input
       }, 10);
     } else {
+      const { data, error } = await supabase.from("users").upsert(
+        {
+          id: supabase.auth.getUser().then(({ data }) => data.user?.id),
+        },
+        { onConflict: "id" }
+      );
+
+      if (error) {
+        console.error("Error upserting user data:", error);
+        setMessage(
+          "Successfully logged in, but there was an error saving your data. Please try again."
+        );
+      } else {
+        console.log("User data upserted successfully");
+      }
+
       const promise = () =>
         new Promise((resolve) =>
           setTimeout(() => resolve({ name: "Sonner" }), 2000)
@@ -102,7 +118,7 @@ const LoginPage = () => {
           {isCodeSent ? (
             <form>
               <OTPInput
-                renderInput={(props, index) => (
+                renderInput={(props: any, index: any) => (
                   <input
                     {...props}
                     className="input"
@@ -114,7 +130,7 @@ const LoginPage = () => {
                   />
                 )}
                 value={otp}
-                onChange={(value) => {
+                onChange={(value: any) => {
                   setOtp(value);
                   if (value.length === 6) {
                     handleVerifyCode(value); // Call handleVerifyCode directly

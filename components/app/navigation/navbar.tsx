@@ -27,7 +27,12 @@ export function Navbar({
         alignItems: "center",
         justifyContent: "start",
         flex: "1",
+
         gap: "8px",
+        width: "100%",
+        backgroundColor: "var(--on-dominant)",
+        borderBottom: "1px solid var(--outline)",
+        color: "var(--text-primary)",
         padding: "8px",
         height: "100%",
       }}
@@ -66,6 +71,7 @@ export function Navbar({
             backgroundColor: "white",
             fontSize: "14px",
             cursor: "pointer",
+
             color: "#333",
           }}
           onChange={(e) =>
@@ -81,8 +87,11 @@ export function Navbar({
       <div
         style={{
           marginLeft: "auto",
+          display: "flex",
+          width: "100%",
         }}
       ></div>
+
       {/* <Dialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
