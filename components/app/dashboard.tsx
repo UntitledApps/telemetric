@@ -1,4 +1,5 @@
 "use client";
+
 import { useEffect, useState } from "react";
 
 import { Project, Revenue, SelectedNavItem } from "@/types";
@@ -6,11 +7,12 @@ import { Project, Revenue, SelectedNavItem } from "@/types";
 import { createClient } from "@/utils/supabase/client";
 import Metrics from "./metrics/metrics";
 
+import { useSearchParams } from "next/navigation";
 import { Navbar } from "./navigation/navbar";
 import DataExplorer from "./navigation/navitems/data_explorer";
 import Projects from "./navigation/navitems/projects";
 
-export function DashboardLayout() {
+export async function Dashboard() {
   const supabase = createClient();
   const [selectedNavItem, setSelectedNavItem] = useState<SelectedNavItem>(
     SelectedNavItem.PROJECTS
@@ -31,9 +33,12 @@ export function DashboardLayout() {
     [timestamp: string]: { os: string; browser: string };
   }>({});
   const [revenueData, setRevenueData] = useState<Revenue[]>([]);
+  const searchParams = useSearchParams();
+
+  const search = searchParams.get("nativeapp");
+  const isNativeApp = search === "true";
 
   useEffect(() => {
-    console.log("useEffect called");
     const fetchProjectsAndActivities = async () => {
       const { data: userData, error: userError } =
         await supabase.auth.getUser();

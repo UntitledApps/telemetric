@@ -1,4 +1,4 @@
-import { DashboardLayout } from "@/components/app/app";
+import { Dashboard } from "@/components/app/dashboard";
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 
@@ -11,5 +11,5 @@ export default async function Home() {
     redirect("/auth");
   }
 
-  return <DashboardLayout></DashboardLayout>;
+  return <Dashboard />;
 }

@@ -46,11 +46,12 @@ const OperatingSystemCard = ({ activities }: { activities: Activity[] }) => {
         padding: "10px",
         display: "flex",
         alignItems: "start",
-        justifyContent: "center",
-        width: "100%",
+
+        minWidth: "300px",
+        justifyContent: "start",
         backgroundColor: "var(--on-dominant)",
         flexDirection: "column",
-        gap: "15px",
+        gap: "8px",
       }}
     >
       <p
@@ -68,8 +69,12 @@ const OperatingSystemCard = ({ activities }: { activities: Activity[] }) => {
           style={{
             display: "flex",
             alignItems: "center",
-            width: "100%",
+            maxWidth: "100%",
+            minWidth: "100%",
+            background: `linear-gradient(to right, var(--dominant) ${os.percentage}%, transparent ${os.percentage}%)`,
             gap: "10px",
+            padding: "5px",
+            borderRadius: "8px",
           }}
         >
           <img

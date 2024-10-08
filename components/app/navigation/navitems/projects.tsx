@@ -24,6 +24,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect, projects }) => {
         display: "grid",
         gridTemplateColumns: "repeat(auto-fill, minmax(200px, 200px))",
         gap: "16px",
+        overflow: "auto",
         padding: "16px",
       }}
     >

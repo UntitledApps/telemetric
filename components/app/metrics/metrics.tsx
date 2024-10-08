@@ -1,10 +1,11 @@
-import { Project } from "@/types";
+import { Activity, Project } from "@/types";
 import { motion } from "framer-motion";
-import React from "react";
+import React, { useState } from "react";
 
+import BrowsersCard from "./browsers";
+import UserChart from "./charts/userschart";
 import OperatingSystemCard from "./operatingsystems";
 import Tabs from "./tabs";
-import UserChart from "./charts/userschart";
 
 interface MetricsProps {
   selectedProjectIndex: number;
@@ -15,23 +16,41 @@ const Metrics: React.FC<MetricsProps> = ({
   selectedProjectIndex,
   projects,
 }) => {
+  const [uniqueActivitiesArray, setUniqueActivitiesArray] = useState<
+    Activity[]
+  >([]);
+
+  React.useEffect(() => {
+    if (projects[selectedProjectIndex]) {
+      const uniqueUserSet = new Set();
+      projects[selectedProjectIndex].activities.forEach((activity) => {
+        if (activity.initial) {
+          uniqueUserSet.add(activity);
+        }
+      });
+      setUniqueActivitiesArray(Array.from(uniqueUserSet) as Activity[]);
+    }
+  }, [projects, selectedProjectIndex]);
   const tabs = [
     {
       label: "Unique Visitors",
       content: (
         <UserChart activities={projects[selectedProjectIndex].activities} />
       ),
+      count: uniqueActivitiesArray.length,
     },
     {
       label: "Revenue",
       content: <div>Revenue data goes here.</div>,
+      count: 100,
     },
     {
       label: "Events",
       content: <div>Referrer data goes here.</div>,
+      count: 100,
     },
   ];
-  console.log(projects[selectedProjectIndex]);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -40,28 +59,24 @@ const Metrics: React.FC<MetricsProps> = ({
     >
       <div
         style={{
-          padding: "8px",
-          width: "60%",
+          padding: "10px",
+
           display: "flex",
-          flexDirection: "column",
+          gap: "10px",
+          flexDirection: "row",
         }} // Add margin or adjust styles as needed
       >
-        <div className="flex flex-col gap-4">
-          <Tabs tabs={tabs} />
-        </div>
+        <Tabs tabs={tabs} />
+
         <div
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: "1rem",
+            display: "flex",
+            gap: "10px",
+            flexDirection: "column",
           }}
         >
-          <OperatingSystemCard
-            activities={projects[selectedProjectIndex].activities}
-          />
-          <OperatingSystemCard
-            activities={projects[selectedProjectIndex].activities}
-          />
+          <OperatingSystemCard activities={uniqueActivitiesArray} />
+          <BrowsersCard activities={uniqueActivitiesArray} />
         </div>
       </div>
     </motion.div>

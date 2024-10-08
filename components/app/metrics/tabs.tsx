@@ -4,6 +4,7 @@ import React, { useState } from "react";
 interface Tab {
   label: string;
   content: React.ReactNode;
+  count: number;
 }
 
 interface TabsProps {
@@ -34,7 +35,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTabIndex = 0 }) => {
                 fontWeight: "700",
               }}
             >
-              20
+              {tab.count}
             </p>
           </button>
         ))}
@@ -45,7 +46,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTabIndex = 0 }) => {
         .tabs-container {
           display: flex;
           flex-direction: column;
-          width: 100%;
+          flex: 1;
           position: sticky;
           top: 0;
           z-index: 10;
@@ -84,7 +85,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTabIndex = 0 }) => {
           font-weight: 500;
           flex: 1;
           padding: 10px;
-          background: transparent;
+          background: var(--dominant);
           border: none;
           cursor: pointer;
           color: var(
@@ -97,7 +98,7 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTabIndex = 0 }) => {
           font-weight: 500;
         }
         .tab.active {
-          border-bottom: 2px solid var(--secondary); /* Use your accent color variable */
+          border-bottom: 5px solid var(--secondary); /* Use your accent color variable */
           font-weight: bold;
           color: var(--secondary);
 
