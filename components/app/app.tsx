@@ -33,9 +33,11 @@ export function DashboardLayout() {
   const [revenueData, setRevenueData] = useState<Revenue[]>([]);
 
   useEffect(() => {
+    console.log("useEffect called");
     const fetchProjectsAndActivities = async () => {
       const { data: userData, error: userError } =
         await supabase.auth.getUser();
+      console.log(userData);
       const { data, error } = await supabase
         .from("customers")
         .select("projects")
@@ -102,7 +104,7 @@ export function DashboardLayout() {
     };
 
     fetchProjectsAndActivities();
-  }, [supabase]);
+  }, []);
 
   const handleNavItemClick = (navItem: SelectedNavItem) => {
     setSelectedNavItem(navItem);
@@ -136,13 +138,6 @@ export function DashboardLayout() {
         return null;
     }
   }
-
-  useEffect(() => {
-    const mainElement = document.querySelector("main");
-    if (mainElement) {
-      mainElement.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }, [selectedNavItem]);
 
   if (loading) {
     return (

@@ -13,6 +13,7 @@ export interface Project {
 
 export interface Activity {
   id: string;
+  initial: boolean;
   referrer: string;
   timestamp: string;
   project_id: string;

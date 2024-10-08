@@ -27,6 +27,9 @@ export function Navbar({
         alignItems: "center",
         justifyContent: "start",
         flex: "1",
+        position: "sticky",
+        top: 0,
+        zIndex: 1000,
 
         gap: "8px",
         width: "100%",

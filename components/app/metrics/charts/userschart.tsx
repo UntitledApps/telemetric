@@ -1,199 +1,82 @@
+"use client";
+import React from "react";
 import {
-  endOfDay,
-  format,
-  isToday,
-  isWithinInterval,
-  startOfDay,
-} from "date-fns";
-import { DateRange } from "react-day-picker";
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  Area,
+  AreaChart,
 } from "recharts";
 
-interface MainChartProps {
-  data: Record<string, { os: string; browser: string }>;
-  dateRange?: DateRange;
+interface Activity {
+  timestamp: string; // Assuming the timestamp is in string format
 }
 
-const chartConfig = {
-  users: {
-    label: "Users",
-    color: "#0057FF",
-  },
-};
+interface AggregatedData {
+  name: string; // Date label (e.g., "2023-10-01")
+  users: number; // Count of users for that day
+}
 
-const formatNumber = (num: number) => {
-  return num.toLocaleString();
-};
+interface UserChartProps {
+  activities: Activity[];
+}
 
-// Function to format dates in "20th Feb" style
-const formatDate = (dateString: any) => {
-  const date = new Date(dateString);
-  const day = date.getDate();
-  const month = date.toLocaleString("default", { month: "short" });
+const UserChart: React.FC<UserChartProps> = ({ activities }) => {
+  // Transform activities into the format required by the chart
+  const data = activities.map((activity) => ({
+    name: new Date(activity.timestamp).toISOString().split("T")[0], // Get the date in YYYY-MM-DD format
+    users: 1, // Each activity represents a unique user
+  }));
 
-  const ordinal = (n: any) => {
-    const s = ["th", "st", "nd", "rd"],
-      v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
-  };
-
-  return `${ordinal(day)} ${month}`;
-};
-
-// Function to format hours in "HH:00" style
-const formatHour = (dateString: any) => {
-  const date = new Date(dateString);
-  return `${date.getHours()}:00`;
-};
-
-// Function to transform activities map into chart data format
-const transformActivitiesMap = (
-  activitiesMap: Record<string, { os: string; browser: string }> = {},
-  dateRange?: DateRange
-) => {
-  const { from, to } = dateRange || {};
-  const data = Object.entries(activitiesMap).reduce(
-    (acc, [timestamp, value]) => {
-      const activityDate = new Date(timestamp);
-      const dateKey =
-        from && to && isToday(new Date(from)) && isToday(new Date(to))
-          ? formatHour(timestamp)
-          : format(activityDate, "yyyy-MM-dd");
-
-      if (
-        dateRange &&
-        (from || to) &&
-        !isWithinInterval(activityDate, {
-          start: from ? startOfDay(new Date(from)) : new Date(0),
-          end: to ? endOfDay(new Date(to)) : new Date(),
-        })
-      ) {
-        return acc;
-      }
-
-      const existing = acc.find((item) => item.date === dateKey);
-      if (existing) {
-        existing.users += 1;
+  // Aggregate users by date
+  const aggregatedData: AggregatedData[] = data.reduce(
+    (acc: AggregatedData[], curr) => {
+      const existingEntry = acc.find((item) => item.name === curr.name);
+      if (existingEntry) {
+        existingEntry.users += curr.users; // Increment user count
       } else {
-        acc.push({ date: dateKey, users: 1 });
+        acc.push({ name: curr.name, users: curr.users }); // Push new entry
       }
-
       return acc;
     },
-    [] as { date: string; users: number }[]
+    []
   );
 
-  return data;
-};
-
-export function MainChart({ data, dateRange }: MainChartProps) {
-  const transformedData = transformActivitiesMap(data, dateRange);
-  const totalUsers = transformedData.reduce(
-    (total, entry) => total + entry.users,
-    0
+  // Sort the aggregated data by date
+  aggregatedData.sort(
+    (a, b) => new Date(a.name).getTime() - new Date(b.name).getTime()
   );
-
-  const isTodayRange =
-    dateRange &&
-    dateRange.from &&
-    dateRange.to &&
-    isToday(new Date(dateRange.from)) &&
-    isToday(new Date(dateRange.to));
 
   return (
-    <div
-      className="border-r border-gray-200 overflow-hidden"
-      style={{ height: "80vh" }}
-    >
-      <div className="p-2">
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "start",
-            justifyItems: "center",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyItems: "center",
-              padding: "16px",
-            }}
-          >
-            <div className="text-lg font-bold">{formatNumber(totalUsers)}</div>
-            <div className="text-sm text-gray-600">Unique Users</div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyItems: "center",
-              padding: "16px",
-            }}
-          >
-            <div className="text-lg font-bold">{formatNumber(totalUsers)}</div>
-            <div className="text-sm text-gray-600">Revenue</div>
-          </div>
-        </div>
-        <div
-          style={{
-            height: "16px",
-          }}
-        ></div>
-
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={transformedData}
-            margin={{
-              top: 5,
-              left: -30,
-              right: 0,
-              bottom: 0,
-            }}
-          >
-            <CartesianGrid strokeDasharray="5 5" />
-            <XAxis
-              dataKey="date"
-              tickLine={false}
-              axisLine={false}
-              tickMargin={8}
-              tickFormatter={(tick) => {
-                if (isTodayRange) {
-                  return formatHour(tick);
-                }
-                return formatDate(tick);
-              }}
-            />
-            <YAxis />
-            <defs>
-              <linearGradient id="userGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#0057FF" stopOpacity={1} />
-                <stop offset="95%" stopColor="#0057FF" stopOpacity={0} />
-              </linearGradient>
-            </defs>
-
-            <Area
-              dataKey="users"
-              type="linear"
-              fill="url(#userGradient)"
-              fillOpacity={1}
-              stroke="#0057FF"
-              strokeWidth={1.5}
-              animationDuration={0}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
+    <ResponsiveContainer width="100%" height={300}>
+      <AreaChart data={aggregatedData}>
+        <CartesianGrid vertical={false} stroke="#e1e1e1" />{" "}
+        {/* Only horizontal grid */}
+        <XAxis dataKey="name" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <defs>
+          <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#0057ff" stopOpacity={0.4} />
+            <stop offset="100%" stopColor="#ffffff" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <Area
+          type="monotone"
+          dataKey="users"
+          stroke="#0057ff"
+          fill="url(#gradient)"
+        />
+        <Line type="linear" dataKey="users" stroke="#0057ff" />
+      </AreaChart>
+    </ResponsiveContainer>
   );
-}
+};
+
+export default UserChart;
