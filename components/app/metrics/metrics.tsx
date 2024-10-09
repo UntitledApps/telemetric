@@ -137,7 +137,9 @@ const Metrics: React.FC<MetricsProps> = ({
           }}
         >
           <OperatingSystemCard activities={currentUserData} />
-          <BrowsersCard activities={currentUserData} />
+          {projects[selectedProjectIndex].type === "website" && (
+            <BrowsersCard activities={currentUserData} />
+          )}
         </div>
       </div>
     </motion.div>

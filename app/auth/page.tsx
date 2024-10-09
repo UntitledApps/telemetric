@@ -45,7 +45,7 @@ const LoginPage = () => {
   };
 
   const handleVerifyCode = async (value: string) => {
-    console.log("value", value);
+  
     const { error } = await supabase.auth.verifyOtp({
       email: email,
       token: value,
@@ -77,7 +77,7 @@ const LoginPage = () => {
           "Successfully logged in, but there was an error saving your data. Please try again."
         );
       } else {
-        console.log("User data upserted successfully");
+   
       }
 
       const promise = () =>

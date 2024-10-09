@@ -35,34 +35,37 @@ export function Dashboard() {
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
   const [revenueData, setRevenueData] = useState<Revenue[]>([]);
 
+  var hasLoadedProjects = false;
+
   useEffect(() => {
     const fetchProjectsAndActivities = async () => {
+      hasLoadedProjects = true;
       const { data: userData, error: userError } =
         await supabase.auth.getUser();
-      console.log(userData);
+
       const { data, error } = await supabase
         .from("customers")
         .select("projects")
         .eq("id", userData?.user?.id)
         .single();
 
-      console.log(data);
-
       if (error) {
         setError(error.message);
       } else {
         const fetchedProjects: Project[] = []; // Temporary array to hold fetched projects
-        const projectIdsSet = new Set<string>();
+
         // Set to track unique project IDs
 
         for (const projectID of data.projects) {
           // Check if the project ID already exists in the set
-          if (projectIdsSet.has(projectID)) {
+
+          if (projects.find((project) => project.id === projectID)) {
+
             continue; // Skip to the next iteration if the ID already exists
           }
 
           // Add the project ID to the set
-          projectIdsSet.add(projectID);
+
           const { data: projectData, error: projectError } = await supabase
             .from("projects")
             .select("*")
@@ -71,9 +74,6 @@ export function Dashboard() {
 
           if (projectError) {
             setError(projectError.message);
-          } else if (projectData) {
-            setProjects((prevProjects) => [...prevProjects, projectData]);
-            console.log(projects);
           }
 
           const { data: activitiesData, error: activitiesError } =
@@ -115,13 +115,13 @@ export function Dashboard() {
           }
         }
 
-        console.log(fetchedProjects);
-        setHasLoaded(true);
         setProjects((prevProjects) => [...prevProjects, ...fetchedProjects]);
+        setHasLoaded(true);
       }
     };
-
-    fetchProjectsAndActivities();
+    if (!hasLoadedProjects) {
+      fetchProjectsAndActivities();
+    }
   }, []);
 
   const handleNavItemClick = (navItem: SelectedNavItem) => {

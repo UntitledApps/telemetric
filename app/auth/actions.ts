@@ -12,13 +12,3 @@ export async function logout() {
   redirect("/");
 }
 
-export async function loginWithOAuth(provider: Provider, redirectTo: string) {
-  const supabase = createClient();
-  console.log(redirectTo);
-
-  await supabase.auth.signInWithOAuth({
-    provider: provider,
-
-    options: { redirectTo: redirectTo },
-  });
-}

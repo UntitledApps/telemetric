@@ -19,9 +19,6 @@ const OperatingSystemCard = ({ activities }: { activities: User[] }) => {
   useEffect(() => {
     const osCounts: { [key: string]: number } = {};
 
-    // Log the activities to check their structure
-    console.log("Activities:", activities);
-
     activities.forEach((activity) => {
       const os = activity.os; // Access the OS from activities
       if (os) {

@@ -13,9 +13,7 @@ const BrowsersCard = ({ activities }: { activities: User[] }) => {
   React.useEffect(() => {
     const browserCounts: { [key: string]: number } = {};
 
-    // Log the activities to check their structure
-    console.log("Activities:", activities);
-
+  
     activities.forEach((activity) => {
       const browser = activity.browser; // Access the browser from activities
       if (browser) {
