@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 
 import { Project, Revenue, SelectedNavItem } from "@/types";
@@ -12,7 +11,8 @@ import { Navbar } from "./navigation/navbar";
 import DataExplorer from "./navigation/navitems/data_explorer";
 import Projects from "./navigation/navitems/projects";
 
-export async function Dashboard() {
+export function Dashboard() {
+  // Change this to a regular function
   const supabase = createClient();
   const [selectedNavItem, setSelectedNavItem] = useState<SelectedNavItem>(
     SelectedNavItem.PROJECTS
@@ -32,11 +32,8 @@ export async function Dashboard() {
   const [currentActivitiesMap, setCurrentActivitiesMap] = useState<{
     [timestamp: string]: { os: string; browser: string };
   }>({});
+  const [hasLoaded, setHasLoaded] = useState<boolean>(false);
   const [revenueData, setRevenueData] = useState<Revenue[]>([]);
-  const searchParams = useSearchParams();
-
-  const search = searchParams.get("nativeapp");
-  const isNativeApp = search === "true";
 
   useEffect(() => {
     const fetchProjectsAndActivities = async () => {
@@ -55,14 +52,29 @@ export async function Dashboard() {
         setError(error.message);
       } else {
         const fetchedProjects: Project[] = []; // Temporary array to hold fetched projects
-        const projectIdsSet = new Set<string>(); // Set to track unique project IDs
+        const projectIdsSet = new Set<string>();
+        // Set to track unique project IDs
 
         for (const projectID of data.projects) {
+          // Check if the project ID already exists in the set
+          if (projectIdsSet.has(projectID)) {
+            continue; // Skip to the next iteration if the ID already exists
+          }
+
+          // Add the project ID to the set
+          projectIdsSet.add(projectID);
           const { data: projectData, error: projectError } = await supabase
             .from("projects")
             .select("*")
             .eq("id", projectID)
             .single();
+
+          if (projectError) {
+            setError(projectError.message);
+          } else if (projectData) {
+            setProjects((prevProjects) => [...prevProjects, projectData]);
+            console.log(projects);
+          }
 
           const { data: activitiesData, error: activitiesError } =
             await supabase
@@ -104,6 +116,7 @@ export async function Dashboard() {
         }
 
         console.log(fetchedProjects);
+        setHasLoaded(true);
         setProjects((prevProjects) => [...prevProjects, ...fetchedProjects]);
       }
     };
@@ -167,9 +180,12 @@ export async function Dashboard() {
       }}
     >
       <Navbar
-        selectedProject={selectedProject}
+        selectedProject={selectedProject!}
+        projects={projects}
+        onProjectChange={handleProjectChange}
         onDestinationSelected={handleNavItemClick}
         selectedIndex={selectedNavItem}
+        hasLoaded={hasLoaded}
       />
 
       <main

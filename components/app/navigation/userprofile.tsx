@@ -1,4 +1,4 @@
-// "use client";
+
 
 import { Project, SelectedNavItem } from "@/types";
 

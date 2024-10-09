@@ -1,12 +1,14 @@
-"use client";
-
 import { Project, SelectedNavItem } from "@/types";
 
 import Avatar from "@/components/ui/avatar/avatar";
 import Image from "next/image";
+import ProjectSelect from "./projectselect";
 
 interface HeaderProps {
-  selectedProject: Project | null;
+  projects: Project[];
+  hasLoaded: boolean;
+  onProjectChange: (value: string) => void;
+  selectedProject: Project;
   onDestinationSelected: (navItem: SelectedNavItem) => void; // Change type to SelectedNavItem
   selectedIndex: SelectedNavItem; // Change type to SelectedNavItem
 }
@@ -15,6 +17,9 @@ export function Navbar({
   selectedProject,
   onDestinationSelected,
   selectedIndex,
+  projects,
+  onProjectChange,
+  hasLoaded,
 }: HeaderProps) {
   // Check if the selected project has a metadata type of 'app'
   const showEnvironmentSelect = selectedProject?.type === "app";
@@ -66,26 +71,12 @@ export function Navbar({
           padding: "8px",
         }}
       >
-        <select
-          style={{
-            padding: "4px 8px",
-            borderRadius: "4px",
-            border: "1px solid #e5e5e5",
-            backgroundColor: "white",
-            fontSize: "14px",
-            cursor: "pointer",
-
-            color: "#333",
-          }}
-          onChange={(e) =>
-            onDestinationSelected(e.target.value as SelectedNavItem)
-          }
-          value={selectedIndex}
-        >
-          <option value={SelectedNavItem.PROJECTS}>Projects</option>
-          <option value={SelectedNavItem.METRICS}>Metrics</option>
-          <option value={SelectedNavItem.ACCOUNT}>Account</option>
-        </select>
+        <ProjectSelect
+          projects={projects}
+          selectedProject={selectedProject!}
+          onProjectChange={onProjectChange}
+          hasLoaded={hasLoaded}
+        />
       </div>
       <div
         style={{

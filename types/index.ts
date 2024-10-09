@@ -27,12 +27,39 @@ export interface Activity {
   version: string;
 }
 
+export interface User {
+  browser: string;
+  os: string;
+  location: {
+    city: string;
+    region: string;
+    country: string;
+  };
+  version: string;
+}
+
 export interface Revenue {
   id: string;
 
   timestamp: string;
   project_id: string;
   total: string;
+  browser: string;
+  os: string;
+  referrer: string;
+  location: {
+    city: string;
+    region: string;
+    country: string;
+  };
+  version: string;
+}
+export interface Event {
+  id: string;
+
+  timestamp: string;
+  project_id: string;
+  name: string;
   browser: string;
   os: string;
   referrer: string;

@@ -1,6 +1,4 @@
-"use client";
-
-import { Activity } from "@/types";
+import { Activity, User } from "@/types";
 import React from "react";
 
 interface BrowserUsage {
@@ -9,7 +7,7 @@ interface BrowserUsage {
   count: number; // Add count to the BrowserUsage interface
 }
 
-const BrowsersCard = ({ activities }: { activities: Activity[] }) => {
+const BrowsersCard = ({ activities }: { activities: User[] }) => {
   const [browserUsage, setBrowserUsage] = React.useState<BrowserUsage[]>([]);
 
   React.useEffect(() => {
@@ -47,37 +45,60 @@ const BrowsersCard = ({ activities }: { activities: Activity[] }) => {
       style={{
         border: "1px solid var(--outline)",
         borderRadius: "10px",
-        padding: "10px",
+        overflow: "hidden",
         display: "flex",
         alignItems: "start",
-        minWidth: "300px",
+        minWidth: "500px",
         justifyContent: "start",
-
         backgroundColor: "var(--on-dominant)",
         flexDirection: "column",
-        gap: "8px",
+        gap: "0px",
       }}
     >
-      <p
+      <div
         style={{
-          fontSize: "14px",
-          color: "var(--secondary)",
-          fontWeight: "600",
+          display: "flex",
+          alignItems: "space-between",
+          justifyContent: "space-between",
         }}
       >
-        Browsers
-      </p>
+        <h4
+          style={{
+            color: "var(--secondary)",
+            padding: "10px",
+          }}
+        >
+          Browsers
+        </h4>
+        <p
+          style={{
+            color: "var(--subtitle)",
+            padding: "10px",
+          }}
+        >
+          Users & Percentage
+        </p>
+      </div>
+      <div
+        style={{
+          height: "1px",
+          width: "100%",
+          borderBottom: "1px solid var(--outline)",
+        }}
+      ></div>
       {browserUsage.map((browser) => (
         <div
           key={browser.browser}
           style={{
             display: "flex",
             alignItems: "center",
-            width: "100%",
+            maxWidth: "100%",
+            minWidth: "100%",
             background: `linear-gradient(to right, var(--dominant) ${browser.percentage}%, transparent ${browser.percentage}%)`,
             gap: "10px",
-            padding: "5px",
-            borderRadius: "8px",
+            marginBottom: "4px",
+            padding: "10px",
+            borderRadius: "0px",
           }}
         >
           <img
@@ -88,10 +109,7 @@ const BrowsersCard = ({ activities }: { activities: Activity[] }) => {
 
           <p
             style={{
-              textTransform: "capitalize",
               color: "var(--secondary)",
-              fontWeight: "400",
-              fontFamily: "Inter",
             }}
           >
             {browser.browser}
@@ -99,8 +117,6 @@ const BrowsersCard = ({ activities }: { activities: Activity[] }) => {
           <p
             style={{
               color: "var(--secondary)",
-              fontWeight: "400",
-              fontFamily: "Inter",
               marginLeft: "auto",
             }}
           >

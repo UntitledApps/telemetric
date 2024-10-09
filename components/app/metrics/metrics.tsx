@@ -1,4 +1,4 @@
-import { Activity, Project } from "@/types";
+import { Activity, Project, Revenue, Event, User } from "@/types";
 import { motion } from "framer-motion";
 import React, { useState } from "react";
 
@@ -19,6 +19,10 @@ const Metrics: React.FC<MetricsProps> = ({
   const [uniqueActivitiesArray, setUniqueActivitiesArray] = useState<
     Activity[]
   >([]);
+  const [currentUserData, setCurrentUserData] = useState<User[]>([]); // Change to User[]
+  const [revenueData, setRevenueData] = useState<Revenue[]>([]);
+  const [revenueTotal, setRevenueTotal] = useState<number>(0);
+  const [eventsData, setEventsData] = useState<Event[]>([]);
 
   React.useEffect(() => {
     if (projects[selectedProjectIndex]) {
@@ -29,6 +33,24 @@ const Metrics: React.FC<MetricsProps> = ({
         }
       });
       setUniqueActivitiesArray(Array.from(uniqueUserSet) as Activity[]);
+      setRevenueData(projects[selectedProjectIndex].revenue);
+      setEventsData(projects[selectedProjectIndex].events);
+      setRevenueTotal(
+        projects[selectedProjectIndex].revenue.reduce(
+          (total, revenue) => total + parseFloat(revenue.total),
+          0
+        )
+      );
+      setCurrentUserData(
+        projects[selectedProjectIndex].activities.map((activity) => {
+          return {
+            browser: activity.browser,
+            os: activity.os,
+            location: activity.location,
+            version: activity.version,
+          };
+        })
+      );
     }
   }, [projects, selectedProjectIndex]);
   const tabs = [
@@ -37,19 +59,58 @@ const Metrics: React.FC<MetricsProps> = ({
       content: (
         <UserChart activities={projects[selectedProjectIndex].activities} />
       ),
-      count: uniqueActivitiesArray.length,
+      count: uniqueActivitiesArray.length.toString(),
     },
     {
       label: "Revenue",
       content: <div>Revenue data goes here.</div>,
-      count: 100,
+      count: revenueTotal + "€",
     },
     {
       label: "Events",
       content: <div>Referrer data goes here.</div>,
-      count: 100,
+      count: eventsData.length.toString(),
     },
   ];
+
+  const onSelectedTabChanged = (index: number) => {
+    if (index === 0) {
+      setCurrentUserData(
+        projects[selectedProjectIndex].activities.map((activity) => {
+          return {
+            browser: activity.browser,
+            os: activity.os,
+            location: activity.location,
+            version: activity.version,
+          };
+        })
+      );
+    }
+    if (index === 1) {
+      setCurrentUserData(
+        projects[selectedProjectIndex].revenue.map((revenue) => {
+          return {
+            browser: revenue.browser,
+            os: revenue.os,
+            location: revenue.location,
+            version: revenue.version,
+          };
+        })
+      );
+    }
+    if (index === 2) {
+      setCurrentUserData(
+        projects[selectedProjectIndex].events.map((event) => {
+          return {
+            browser: event.browser,
+            os: event.os,
+            location: event.location,
+            version: event.version,
+          };
+        })
+      );
+    }
+  };
 
   return (
     <motion.div
@@ -66,7 +127,7 @@ const Metrics: React.FC<MetricsProps> = ({
           flexDirection: "row",
         }} // Add margin or adjust styles as needed
       >
-        <Tabs tabs={tabs} />
+        <Tabs tabs={tabs} onSelectedTabChanged={onSelectedTabChanged} />
 
         <div
           style={{
@@ -75,8 +136,8 @@ const Metrics: React.FC<MetricsProps> = ({
             flexDirection: "column",
           }}
         >
-          <OperatingSystemCard activities={uniqueActivitiesArray} />
-          <BrowsersCard activities={uniqueActivitiesArray} />
+          <OperatingSystemCard activities={currentUserData} />
+          <BrowsersCard activities={currentUserData} />
         </div>
       </div>
     </motion.div>

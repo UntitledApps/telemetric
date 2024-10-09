@@ -1,18 +1,22 @@
-"use client";
 import React, { useState } from "react";
 
 interface Tab {
   label: string;
   content: React.ReactNode;
-  count: number;
+  count: string;
 }
 
 interface TabsProps {
   tabs: Tab[];
   activeTabIndex?: number;
+  onSelectedTabChanged?: (index: number) => void;
 }
 
-const Tabs: React.FC<TabsProps> = ({ tabs, activeTabIndex = 0 }) => {
+const Tabs: React.FC<TabsProps> = ({
+  tabs,
+  activeTabIndex = 0,
+  onSelectedTabChanged,
+}) => {
   const [activeIndex, setActiveIndex] = useState(activeTabIndex);
 
   const handleTabClick = (index: number) => {
@@ -26,7 +30,12 @@ const Tabs: React.FC<TabsProps> = ({ tabs, activeTabIndex = 0 }) => {
           <button
             key={index}
             className={`tab ${activeIndex === index ? "active" : ""}`}
-            onClick={() => handleTabClick(index)}
+            onClick={() => {
+              handleTabClick(index);
+              if (onSelectedTabChanged) {
+                onSelectedTabChanged(index);
+              }
+            }}
           >
             {tab.label}
             <p

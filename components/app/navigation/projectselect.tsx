@@ -1,19 +1,56 @@
-"use client";
-
-import { FC } from "react";
+import * as React from "react";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Project } from "@/types";
 
 interface ProjectSelectProps {
-  projects: { id: string; metadata: { name: string } }[];
-  selectedProject: string | null;
+  projects: Project[];
+  hasLoaded: boolean;
+  selectedProject: Project;
   onProjectChange: (value: string) => void;
 }
 
-const ProjectSelect: FC<ProjectSelectProps> = ({
+const ProjectSelect: React.FC<ProjectSelectProps> = ({
   projects,
+  hasLoaded,
   selectedProject,
   onProjectChange,
 }) => {
-  return <div></div>;
+  if (!hasLoaded) {
+    return (
+      <p
+        style={{
+          color: "var(--subtitle)",
+        }}
+      >
+        Loading...
+      </p>
+    );
+  }
+  return (
+    <Select onValueChange={onProjectChange} value={projects[0].id}>
+      <SelectTrigger className="w-[180px]">
+        <SelectValue placeholder="Select a project" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Projects</SelectLabel>
+          {projects.map((project) => (
+            <SelectItem key={project.id} value={project.id}>
+              {project.name}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  );
 };
 
 export default ProjectSelect;

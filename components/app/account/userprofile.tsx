@@ -1,13 +1,7 @@
-"use client";
-
-
-
-
 import { Project, SelectedNavItem } from "@/types";
 import { createClient } from "@/utils/supabase/client"; // Adjust the import path as necessary
 import { CircleUserRound, Ellipsis, Link, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
-
 
 interface NavigationProps {
   selectedNavItem: SelectedNavItem;
@@ -20,12 +14,10 @@ interface NavigationProps {
 export function UserProfile({ handleNavItemClick }: NavigationProps) {
   // const [userEmail, setUserEmail] = useState<string | null>(null);
   // const [initials, setInitials] = useState<string>("");
-
   // useEffect(() => {
   //   async function fetchUser() {
   //     const supabase = createClient();
   //     const { data, error } = await supabase.auth.getUser();
-
   //     if (data?.user?.email) {
   //       setUserEmail(data.user.email);
   //       const emailInitials = data.user.email
@@ -37,10 +29,8 @@ export function UserProfile({ handleNavItemClick }: NavigationProps) {
   //       setInitials(emailInitials);
   //     }
   //   }
-
   //   fetchUser();
   // }, []);
-
   // return (
   //   <Dialog>
   //     <DropdownMenu>
@@ -80,7 +70,6 @@ export function UserProfile({ handleNavItemClick }: NavigationProps) {
   //           <CircleUserRound className="h-4 w-4" />
   //           Profile
   //         </DropdownMenuItem>
-
   //         <DropdownMenuSeparator />
   //         <DropdownMenuItem
   //           onClick={() => {
