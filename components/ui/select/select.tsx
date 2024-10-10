@@ -4,7 +4,7 @@ import "./select.css";
 interface SelectProps {
   options: string[]; // Array of option values
   itemNames: string[]; // Array of corresponding display names
-  selectedOption: string; // Currently selected option
+  selectedOption: string | null; // Currently selected option
   onOptionChange: (value: string) => void; // Callback for option change
 }
 
@@ -16,7 +16,7 @@ const Select: React.FC<SelectProps> = ({
 }) => {
   return (
     <select
-      value={selectedOption} // Set the selected value
+      value={selectedOption || ""} // Set the selected value
       onChange={(e) => onOptionChange(e.target.value)}
       className="select"
     >

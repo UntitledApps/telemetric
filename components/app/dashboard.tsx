@@ -6,7 +6,6 @@ import { Project, Revenue, SelectedNavItem } from "@/types";
 import { createClient } from "@/utils/supabase/client";
 import Metrics from "./metrics/metrics";
 
-import { useSearchParams } from "next/navigation";
 import { Navbar } from "./navigation/navbar";
 import DataExplorer from "./navigation/navitems/data_explorer";
 import Projects from "./navigation/navitems/projects";
@@ -20,7 +19,7 @@ export function Dashboard() {
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [selectedProjectIndex, setSelectedProjectIndex] = useState<number>(0);
+
   const [loadingProjects, setLoadingProjects] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [environment, setEnvironment] = useState<string>("Production");
@@ -60,7 +59,6 @@ export function Dashboard() {
           // Check if the project ID already exists in the set
 
           if (projects.find((project) => project.id === projectID)) {
-
             continue; // Skip to the next iteration if the ID already exists
           }
 
@@ -132,7 +130,7 @@ export function Dashboard() {
     const project = projects.find((p) => p.id === projectId) || null;
     const index = projects.findIndex((p) => p.id === projectId);
     setSelectedProject(project);
-    setSelectedProjectIndex(index);
+
     setSelectedNavItem(SelectedNavItem.METRICS);
   };
 
@@ -144,10 +142,7 @@ export function Dashboard() {
         );
       case SelectedNavItem.METRICS:
         return (
-          <Metrics
-            selectedProjectIndex={selectedProjectIndex}
-            projects={projects}
-          />
+          <Metrics selectedProject={selectedProject!} projects={projects} />
         );
       case SelectedNavItem.ACCOUNT:
         return <DataExplorer />;

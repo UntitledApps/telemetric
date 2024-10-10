@@ -2,6 +2,7 @@ import ProjectCard from "@/components/ui/projectcard/projectcard";
 import { Project } from "@/types";
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
+import "./projects.css"; // Import your CSS file
 
 // Import the useProjects hook
 
@@ -19,15 +20,7 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect, projects }) => {
   }, [projects]);
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(200px, 200px))",
-        gap: "16px",
-        overflow: "auto",
-        padding: "16px",
-      }}
-    >
+    <div className="projects-container">
       {filteredProjects.map((project) => (
         <motion.div
           key={project.id}

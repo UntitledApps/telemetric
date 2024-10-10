@@ -11,7 +11,7 @@ export interface Project {
 }
 
 export interface Location {
-  countryCode: string;
+  country_code: string;
   city: string;
   region: string;
   country: string;

@@ -1,6 +1,6 @@
-import * as React from "react";
-import { Project } from "@/types";
 import Select from "@/components/ui/select/select";
+import { Project } from "@/types";
+import * as React from "react";
 
 interface ProjectSelectProps {
   projects: Project[];
@@ -33,7 +33,7 @@ const ProjectSelect: React.FC<ProjectSelectProps> = ({
     <Select
       options={projects.map((project) => project.id)}
       itemNames={projects.map((project) => project.name)}
-      selectedOption={"selectedProject.id"}
+      selectedOption={selectedProject?.id || null}
       onOptionChange={(value) => onProjectChange(value)}
     />
   );

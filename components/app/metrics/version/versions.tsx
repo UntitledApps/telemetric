@@ -1,39 +1,41 @@
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import React from "react";
 
-interface OSUsage {
-  os: string;
+interface VersionUsage {
+  version: string;
   percentage: number;
-  count: number; // Add count to the OSUsage interface
+  count: number; // Add count to the VersionUsage interface
 }
 
-const OperatingSystemCard = ({ activities }: { activities: string[] }) => {
-  const [osUsage, setOsUsage] = useState<OSUsage[]>([]);
+const VersionsCard = ({ versions }: { versions: string[] }) => {
+  const [versionUsage, setVersionUsage] = React.useState<VersionUsage[]>([]);
 
-  useEffect(() => {
-    const osCounts: { [key: string]: number } = {};
+  React.useEffect(() => {
+    const versionCounts: { [key: string]: number } = {};
 
-    activities.forEach((activity) => {
-      const os = activity; // Access the OS from activities
-      if (os) {
-        osCounts[os] = (osCounts[os] || 0) + 1;
-      }
+    // Count occurrences of each version
+    versions.forEach((version) => {
+      versionCounts[version] = (versionCounts[version] || 0) + 1;
     });
 
-    const totalActivities = activities.length; // Use activities.length directly
-    const calculatedOsUsage = Object.entries(osCounts).map(([os, count]) => ({
-      os,
-      percentage: Number(((count / totalActivities) * 100).toFixed(1)),
-      count, // Include the count
-    }));
+    const totalVersions = versions.length; // Total number of versions
+
+    // Prepare the version usage data
+    const calculatedVersionUsage = Object.entries(versionCounts).map(
+      ([version, count]) => ({
+        version: version === "null" ? "Not Specified" : version,
+        percentage: Number(((count / totalVersions) * 100).toFixed(1)),
+        count, // Include the count
+      })
+    );
 
     // Sort by percentage in descending order
-    const sortedOsUsage = calculatedOsUsage.sort(
+    const sortedVersionUsage = calculatedVersionUsage.sort(
       (a, b) => b.percentage - a.percentage
     );
 
-    setOsUsage(sortedOsUsage);
-  }, [activities]);
+    setVersionUsage(sortedVersionUsage);
+  }, [versions]);
 
   return (
     <div
@@ -41,11 +43,9 @@ const OperatingSystemCard = ({ activities }: { activities: string[] }) => {
         border: "1px solid var(--outline)",
         borderRadius: "10px",
         overflow: "hidden",
-
         display: "flex",
         alignItems: "start",
-
-        minWidth: "500px",
+        width: "100%",
         justifyContent: "start",
         backgroundColor: "var(--on-dominant)",
         flexDirection: "column",
@@ -67,9 +67,8 @@ const OperatingSystemCard = ({ activities }: { activities: string[] }) => {
             padding: "10px",
           }}
         >
-          Operating Systems
+          Versions
         </h4>
-
         <p
           style={{
             color: "var(--subtitle)",
@@ -86,7 +85,7 @@ const OperatingSystemCard = ({ activities }: { activities: string[] }) => {
           borderBottom: "1px solid var(--outline)",
         }}
       ></div>
-      {osUsage.length === 0 ? (
+      {versionUsage.length === 0 ? (
         <div
           style={{
             color: "var(--subtitle)",
@@ -99,65 +98,46 @@ const OperatingSystemCard = ({ activities }: { activities: string[] }) => {
           No data. Yet.
         </div>
       ) : (
-        osUsage.map((os) => (
+        versionUsage.map((version) => (
           <motion.div
+            style={{
+              width: "100%",
+            }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: osUsage.indexOf(os) * 0.1 }}
+            transition={{ delay: versionUsage.indexOf(version) * 0.01 }}
           >
             <div
-              key={os.os}
+              key={version.version}
               style={{
                 display: "flex",
                 alignItems: "center",
                 maxWidth: "100%",
                 minWidth: "100%",
-                background: `linear-gradient(to right, var(--dominant) ${os.percentage}%, transparent ${os.percentage}%)`,
+                background: `linear-gradient(to right, var(--dominant) ${version.percentage}%, transparent ${version.percentage}%)`,
                 gap: "10px",
                 marginBottom:
-                  osUsage.indexOf(os) === osUsage.length - 1 ? "0" : "4px",
+                  versionUsage.indexOf(version) === versionUsage.length - 1
+                    ? "0"
+                    : "4px",
                 padding: "10px",
                 borderRadius: "0px",
               }}
             >
-              <img
-                src={`/images/os/${os.os
-                  .toLowerCase()
-                  .replace(/\s+/g, "")}.png`}
-                alt={`${os.os} logo`}
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  filter:
-                    os.os.toLowerCase() === "ios" &&
-                    typeof window !== "undefined" &&
-                    window.matchMedia &&
-                    window.matchMedia("(prefers-color-scheme: dark)").matches
-                      ? "invert(1)"
-                      : "none",
-                }}
-              />
-
               <p
                 style={{
                   color: "var(--secondary)",
                 }}
               >
-                {os.os === "ios"
-                  ? "iOS"
-                  : os.os.toLowerCase() === "mac os"
-                  ? "macOS"
-                  : os.os.charAt(0).toUpperCase() +
-                    os.os.slice(1).toLowerCase()}
+                {version.version === "" ? "Unknown" : version.version}
               </p>
               <p
                 style={{
                   color: "var(--secondary)",
-
                   marginLeft: "auto",
                 }}
               >
-                {os.count} ({os.percentage}%){" "}
+                {version.count} ({version.percentage}%){" "}
                 {/* Display count and percentage */}
               </p>
             </div>
@@ -168,4 +148,4 @@ const OperatingSystemCard = ({ activities }: { activities: string[] }) => {
   );
 };
 
-export default OperatingSystemCard;
+export default VersionsCard;

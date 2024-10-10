@@ -36,6 +36,8 @@ const UserAccount = ({ onClick }: { onClick?: () => void }) => {
 
   return (
     <img
+      height={40}
+      width={40}
       alt="Image alt text"
       src="https://images.unsplas.com/photo-1517841905240-472988babdf9?w=250&h=250&auto=format&fit=crop"
     />

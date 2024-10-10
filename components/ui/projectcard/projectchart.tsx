@@ -1,16 +1,4 @@
 import React from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Area,
-  AreaChart,
-} from "recharts";
 
 interface Activity {
   timestamp: string; // Assuming the timestamp is in string format
@@ -51,28 +39,7 @@ const ProjectChart: React.FC<UserChartProps> = ({ activities }) => {
     (a, b) => new Date(a.name).getTime() - new Date(b.name).getTime()
   );
 
-  return (
-    <ResponsiveContainer width="100%" height="100%">
-      <AreaChart data={aggregatedData}>
-        {/* Removed CartesianGrid, XAxis, and YAxis */}
-        <Tooltip />
-
-        <defs>
-          <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#0057ff" stopOpacity={0.4} />
-            <stop offset="100%" stopColor="#ffffff" stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <Area
-          type="monotone"
-          dataKey="users"
-          stroke="#0057ff"
-          fill="url(#gradient)"
-        />
-        <Line type="linear" dataKey="users" stroke="#0057ff" />
-      </AreaChart>
-    </ResponsiveContainer>
-  );
+  return <div></div>;
 };
 
 export default ProjectChart;

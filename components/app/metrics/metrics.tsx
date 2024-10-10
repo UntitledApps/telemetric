@@ -1,117 +1,124 @@
-import { Activity, Project, Revenue, Event, User } from "@/types";
+import { Activity, Event, Project, Revenue, User } from "@/types";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
 import BrowsersCard from "./browsers";
-import UserChart from "./charts/userschart";
-import OperatingSystemCard from "./operatingsystems";
-import Tabs from "./tabs";
 import LocationsCard from "./location/locationscard";
+import "./metrics.css";
+import Tabs from "./metricstab";
+import OperatingSystemCard from "./operatingsystems";
+import ReferrersCard from "./referrer/referrers";
+import VersionsCard from "./version/versions";
 
 interface MetricsProps {
-  selectedProjectIndex: number;
+  selectedProject: Project;
   projects: Project[];
 }
 
-const Metrics: React.FC<MetricsProps> = ({
-  selectedProjectIndex,
-  projects,
-}) => {
+const Metrics: React.FC<MetricsProps> = ({ selectedProject, projects }) => {
   const [uniqueActivitiesArray, setUniqueActivitiesArray] = useState<
     Activity[]
   >([]);
-  const [currentUserData, setCurrentUserData] = useState<User[]>([]); // Change to User[]
+  const [currentUserData, setCurrentUserData] = useState<User[]>([]);
   const [revenueData, setRevenueData] = useState<Revenue[]>([]);
   const [revenueTotal, setRevenueTotal] = useState<number>(0);
   const [eventsData, setEventsData] = useState<Event[]>([]);
+  const [currentSelectTabIndex, setCurrentSelectTabIndex] = useState<number>(0);
 
-  React.useEffect(() => {
-    if (projects[selectedProjectIndex]) {
+  useEffect(() => {
+    if (selectedProject) {
       const uniqueUserSet = new Set();
-      projects[selectedProjectIndex].activities.forEach((activity) => {
+      selectedProject.activities.forEach((activity) => {
         if (activity.initial) {
           uniqueUserSet.add(activity);
         }
       });
       setUniqueActivitiesArray(Array.from(uniqueUserSet) as Activity[]);
-      setRevenueData(projects[selectedProjectIndex].revenue);
-      setEventsData(projects[selectedProjectIndex].events);
+    
+      setRevenueData(selectedProject.revenue);
+      setEventsData(selectedProject.events);
       setRevenueTotal(
-        projects[selectedProjectIndex].revenue.reduce(
+        selectedProject.revenue.reduce(
           (total, revenue) => total + parseFloat(revenue.total),
           0
         )
       );
+      updateCurrentUserData(currentSelectTabIndex, selectedProject);
+    }
+  }, [selectedProject]); // Update when selectedProject changes
+
+  useEffect(() => {
+    if (selectedProject) {
+      updateCurrentUserData(currentSelectTabIndex, selectedProject);
+    }
+  }, [currentSelectTabIndex, selectedProject]); // Update when tab index or selected project changes
+
+  const updateCurrentUserData = (tabIndex: number, project: Project) => {
+    if (tabIndex === 0) {
       setCurrentUserData(
-        uniqueActivitiesArray.map((activity) => {
-          return {
-            browser: activity.browser,
-            os: activity.os,
-            location: activity.location,
-            version: activity.version,
-          };
-        })
+        uniqueActivitiesArray.map((activity) => ({
+          browser: activity.browser,
+          os: activity.os,
+          location: activity.location,
+          version: activity.version,
+        }))
+      );
+    } else if (tabIndex === 1) {
+      setCurrentUserData(
+        project.revenue.map((revenue) => ({
+          browser: revenue.browser,
+          os: revenue.os,
+          location: revenue.location,
+          version: revenue.version,
+        }))
+      );
+    } else if (tabIndex === 2) {
+      setCurrentUserData(
+        project.events.map((event) => ({
+          browser: event.browser,
+          os: event.os,
+          location: event.location,
+          version: event.version,
+        }))
       );
     }
-  }, [projects, selectedProjectIndex]);
+  };
+
+  const handleTabChange = (index: number) => {
+    setCurrentSelectTabIndex(index);
+  };
   const tabs = [
     {
       label: "Unique Visitors",
-      content: (
-        <UserChart activities={projects[selectedProjectIndex].activities} />
-      ),
+      activities: uniqueActivitiesArray,
       count: uniqueActivitiesArray.length.toString(),
     },
     {
       label: "Revenue",
-      content: <div>Revenue data goes here.</div>,
+      activities: uniqueActivitiesArray,
       count: revenueTotal + "€",
     },
     {
       label: "Events",
-      content: <div>Referrer data goes here.</div>,
+      activities: uniqueActivitiesArray,
       count: eventsData.length.toString(),
     },
   ];
 
-  const onSelectedTabChanged = (index: number) => {
-    if (index === 0) {
-      setCurrentUserData(
-        uniqueActivitiesArray.map((activity) => {
-          return {
-            browser: activity.browser,
-            os: activity.os,
-            location: activity.location,
-            version: activity.version,
-          };
-        })
-      );
-    }
-    if (index === 1) {
-      setCurrentUserData(
-        projects[selectedProjectIndex].revenue.map((revenue) => {
-          return {
-            browser: revenue.browser,
-            os: revenue.os,
-            location: revenue.location,
-            version: revenue.version,
-          };
-        })
-      );
-    }
-    if (index === 2) {
-      setCurrentUserData(
-        projects[selectedProjectIndex].events.map((event) => {
-          return {
-            browser: event.browser,
-            os: event.os,
-            location: event.location,
-            version: event.version,
-          };
-        })
-      );
-    }
-  };
+  const osData = tabs[currentSelectTabIndex].activities.map(
+    (activity) => activity.os
+  );
+  const browserData = tabs[currentSelectTabIndex].activities.map(
+    (activity) => activity.browser
+  );
+  const locationData = tabs[currentSelectTabIndex].activities.map(
+    (activity) => activity.location
+  );
+  const versionData = tabs[currentSelectTabIndex].activities.map(
+    (activity) => activity.version
+  );
+  const referrerData = tabs[currentSelectTabIndex].activities.map(
+    (activity) => activity.referrer
+  );
 
   return (
     <motion.div
@@ -125,25 +132,31 @@ const Metrics: React.FC<MetricsProps> = ({
 
           display: "flex",
           gap: "10px",
-          flexDirection: "row",
-        }} // Add margin or adjust styles as needed
+          flexDirection: "column",
+        }}
       >
-        <Tabs tabs={tabs} onSelectedTabChanged={onSelectedTabChanged} />
+        <div className="metrics-container">
+          <Tabs tabs={tabs} onSelectedTabChanged={handleTabChange} />
 
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            flexDirection: "column",
-          }}
-        >
-          <OperatingSystemCard activities={currentUserData} />
-          {projects[selectedProjectIndex].type === "website" && (
-            <BrowsersCard activities={currentUserData} />
+          <div className="metrics-container-item">
+            <OperatingSystemCard activities={osData} />
+            {selectedProject.type === "website" && (
+              <BrowsersCard activities={browserData} />
+            )}
+          </div>
+        </div>
+        <div className="metrics-container-item-2">
+          <LocationsCard locationsPassed={locationData} />
+          {selectedProject.type === "website" && (
+            <>
+              <ReferrersCard referrers={referrerData} />
+            </>
           )}
         </div>
+        <div className="metrics-container-item-2">
+          <VersionsCard versions={versionData} />
+        </div>
       </div>
-      <LocationsCard activities={currentUserData} />
     </motion.div>
   );
 };

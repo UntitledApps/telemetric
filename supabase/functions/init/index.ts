@@ -73,7 +73,7 @@ function getBrowserFromUserAgent(userAgent: string): string {
     return "Internet Explorer";
   }
 
-  return "app";
+  return "Unknown";
 }
 
 // Never remove this!: supabase functions deploy init --no-verify-jwt

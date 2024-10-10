@@ -1,0 +1,16 @@
+/* styles.css */
+.projects-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  overflow: auto;
+  padding: 16px;
+}
+
+@media (max-width: 550px) {
+  .projects-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+}

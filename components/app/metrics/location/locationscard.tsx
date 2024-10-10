@@ -1,32 +1,71 @@
-import { Activity, Location, User } from "@/types";
+import Alttabs from "@/components/app/metrics/location/locationstabs";
 import React from "react";
-import Alttabs from "@/components/ui/alttabs/alttabs";
+
+import { Location } from "@/types";
+import "./locationscard.css";
 import LocationsList from "./locationslist";
 
-const LocationsCard = ({ activities }: { activities: User[] }) => {
+const LocationsCard = ({
+  locationsPassed,
+}: {
+  locationsPassed: Location[];
+}) => {
   const [selectedTab, setSelectedTab] = React.useState<string>("countries");
-  const [locations, setLocations] = React.useState<Location[]>([]);
+
+  const [countries, setCountries] = React.useState<string[]>([]);
+  const [cities, setCities] = React.useState<string[]>([]);
+  const [regions, setRegions] = React.useState<string[]>([]);
+  const [countryCodes, setCountryCodes] = React.useState<{
+    [key: string]: string;
+  }>({});
 
   React.useEffect(() => {
     const locationCounts: { [key: string]: number } = {};
 
-    activities.forEach((activity) => {
-      const location = activity.location;
+    locationsPassed.forEach((location) => {
+      setCountries(
+        locationsPassed
+          .filter((location) => location.country)
+          .map((location) => location.country)
+      );
+      setCities(
+        locationsPassed
+          .filter((location) => location.city)
+          .map((location) => location.city)
+      );
+      setRegions(
+        locationsPassed
+          .filter((location) => location.region)
+          .map((location) => location.region)
+      );
+      setCountryCodes(
+        locationsPassed
+          .filter((location) => location.country_code)
+          .reduce((acc, location) => {
+            acc[location.country] = location.country_code;
+            return acc;
+          }, {} as { [key: string]: string }) // Initialize as an empty object
+      );
+      
     });
-  }, [activities, selectedTab]);
+
+  }, [locationsPassed, selectedTab]);
 
   const tabs = [
     {
       label: "Countries",
-      content: <LocationsList locations={locations} type="country" />,
-    },
-    {
-      label: "Cities",
-      content: <LocationsList locations={locations} type="city" />,
+
+      content: (
+        <LocationsList locations={countries} countryCodes={countryCodes} />
+      ),
     },
     {
       label: "Regions",
-      content: <LocationsList locations={locations} type="region" />,
+      content: <LocationsList locations={regions} />,
+    },
+    {
+      label: "Cities",
+      content: <LocationsList locations={cities} />,
     },
   ];
 
@@ -35,30 +74,8 @@ const LocationsCard = ({ activities }: { activities: User[] }) => {
   };
 
   return (
-    <div
-      style={{
-        border: "1px solid var(--outline)",
-        borderRadius: "10px",
-        overflow: "hidden",
-        display: "flex",
-        alignItems: "start",
-        maxHeight: "500px",
-        minWidth: "500px",
-        justifyContent: "start",
-        backgroundColor: "var(--on-dominant)",
-        flexDirection: "row",
-        gap: "0px",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          padding: "10px",
-        }}
-      >
-        <Alttabs tabs={tabs} onSelectedTabChanged={onSelectedTabChanged} />
-      </div>
+    <div className="locations-card">
+      <Alttabs tabs={tabs} onSelectedTabChanged={onSelectedTabChanged} />
     </div>
   );
 };

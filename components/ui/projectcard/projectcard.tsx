@@ -1,7 +1,6 @@
 import { Project } from "@/types";
 import React, { useEffect, useState } from "react";
 import "./projectcard.css";
-import UserChart from "@/components/app/metrics/charts/userschart";
 import ProjectChart from "./projectchart";
 
 interface ProjectCardProps {

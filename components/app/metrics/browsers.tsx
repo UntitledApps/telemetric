@@ -1,4 +1,4 @@
-import { Activity, User } from "@/types";
+import { motion } from "framer-motion";
 import React from "react";
 
 interface BrowserUsage {
@@ -7,14 +7,14 @@ interface BrowserUsage {
   count: number; // Add count to the BrowserUsage interface
 }
 
-const BrowsersCard = ({ activities }: { activities: User[] }) => {
+const BrowsersCard = ({ activities }: { activities: string[] }) => {
   const [browserUsage, setBrowserUsage] = React.useState<BrowserUsage[]>([]);
 
   React.useEffect(() => {
     const browserCounts: { [key: string]: number } = {};
 
     activities.forEach((activity) => {
-      const browser = activity.browser; // Access the browser from activities
+      const browser = activity; // Access the browser from activities
       if (browser) {
         browserCounts[browser] = (browserCounts[browser] || 0) + 1;
       }
@@ -45,7 +45,7 @@ const BrowsersCard = ({ activities }: { activities: User[] }) => {
         overflow: "hidden",
         display: "flex",
         alignItems: "start",
-        minWidth: "500px",
+        width: "100%",
         justifyContent: "start",
         backgroundColor: "var(--on-dominant)",
         flexDirection: "column",
@@ -57,6 +57,7 @@ const BrowsersCard = ({ activities }: { activities: User[] }) => {
           display: "flex",
           alignItems: "space-between",
           width: "100%",
+          maxHeight: "40px",
           justifyContent: "space-between",
         }}
       >
@@ -64,8 +65,6 @@ const BrowsersCard = ({ activities }: { activities: User[] }) => {
           style={{
             color: "var(--secondary)",
             padding: "10px",
-            maxHeight: "40px",
-            lineHeight: "30px",
           }}
         >
           Browsers
@@ -86,48 +85,72 @@ const BrowsersCard = ({ activities }: { activities: User[] }) => {
           borderBottom: "1px solid var(--outline)",
         }}
       ></div>
-      {browserUsage.map((browser) => (
+      {browserUsage.length === 0 ? (
         <div
-          key={browser.browser}
           style={{
-            display: "flex",
-            alignItems: "center",
-            maxWidth: "100%",
-            minWidth: "100%",
-            background: `linear-gradient(to right, var(--dominant) ${browser.percentage}%, transparent ${browser.percentage}%)`,
-            gap: "10px",
-            marginBottom:
-              browserUsage.indexOf(browser) === browserUsage.length - 1
-                ? "0"
-                : "4px",
+            color: "var(--subtitle)",
             padding: "10px",
-            borderRadius: "0px",
+            fontSize: "12px",
+            textAlign: "center",
+            width: "100%",
           }}
         >
-          <img
-            src={`/images/browsers/${browser.browser.toLowerCase()}.png`}
-            alt={`${browser.browser} logo`}
-            style={{ width: "20px", height: "20px" }}
-          />
-
-          <p
-            style={{
-              color: "var(--secondary)",
-            }}
-          >
-            {browser.browser}
-          </p>
-          <p
-            style={{
-              color: "var(--secondary)",
-              marginLeft: "auto",
-            }}
-          >
-            {browser.count} ({browser.percentage}%){" "}
-            {/* Display count and percentage */}
-          </p>
+          No data. Yet.
         </div>
-      ))}
+      ) : (
+        browserUsage.map((browser) => (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: browserUsage.indexOf(browser) * 0.1 }}
+          >
+            <div
+              key={browser.browser}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                maxWidth: "100%",
+                minWidth: "100%",
+                background: `linear-gradient(to right, var(--dominant) ${browser.percentage}%, transparent ${browser.percentage}%)`,
+                gap: "10px",
+                marginBottom:
+                  browserUsage.indexOf(browser) === browserUsage.length - 1
+                    ? "0"
+                    : "4px",
+                padding: "10px",
+                borderRadius: "0px",
+              }}
+            >
+              <img
+                src={`/images/browsers/${browser.browser.toLowerCase()}.png`}
+                alt={`${browser.browser} logo`}
+                style={{
+                  width: "20px",
+                  height: "20px",
+                }}
+              />
+
+              <p
+                style={{
+                  color: "var(--secondary)",
+                }}
+              >
+                {browser.browser.charAt(0).toUpperCase() +
+                  browser.browser.slice(1)}
+              </p>
+              <p
+                style={{
+                  color: "var(--secondary)",
+                  marginLeft: "auto",
+                }}
+              >
+                {browser.count} ({browser.percentage}%){" "}
+                {/* Display count and percentage */}
+              </p>
+            </div>
+          </motion.div>
+        ))
+      )}
     </div>
   );
 };

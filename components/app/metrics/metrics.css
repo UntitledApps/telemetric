@@ -1,0 +1,39 @@
+.metrics-container {
+  display: flex;
+  max-height: 60vh;
+  flex-direction: row;
+  gap: 10px;
+}
+
+@media (max-width: 1000px) {
+  .metrics-container {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.metrics-container-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (max-width: 1000px) {
+  .metrics-container-item {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 900px) {
+  .metrics-container-item {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.metrics-container-item-2 {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
