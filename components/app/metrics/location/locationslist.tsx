@@ -1,60 +1,73 @@
+import { Location } from "@/types";
 import React from "react";
 
-interface Location {
-  location: string;
-  count: number;
-
-}
-
 interface LocationsListProps {
-  locationUsage?: Location[]; // Make locationUsage optional
+  locations: Location[]; // Make locationUsage optional
+  type: "country" | "region" | "city"; // New prop to specify the type
 }
 
-// Mapping of country names to country codes
-const countryCodeMap: { [key: string]: string } = {
-  Austria: "AT",
-  Germany: "DE",
-  France: "FR",
-  // Add more countries as needed
-};
-
+// Mapping of country names to country code
 const LocationsList: React.FC<LocationsListProps> = ({
-  locationUsage = [],
+  locations= [],
+  type,
 }) => {
+  // Filter locations based on the selected type
+  const filteredLocations = locations.filter((location) => {
+    if (type === "country") {
+      return location.country;
+    } else if (type === "region") {
+      return location.region;
+    } else if (type === "city") {
+      return location.city;
+    }
+    return false;
+  });
+
+  // Calculate counts for filtered locations
+  const locationCounts = filteredLocations.reduce((acc, location) => {
+    acc[location.country] = (acc[location.country] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
   return (
     <>
-      {locationUsage.length > 0 ? ( // Check if locationUsage has items
-        locationUsage.map((location) => {
-          const countryCode = countryCodeMap[location.location] || "default"; // Use a default if not found
+      {filteredLocations.length > 0 ? ( // Check if filteredLocations has items
+        filteredLocations.map((location) => {
           return (
             <div
-              key={location.location}
+              key={location.country}
               style={{
                 display: "flex",
                 alignItems: "center",
                 maxWidth: "100%",
                 minWidth: "100%",
-                background: `linear-gradient(to right, var(--dominant) ${location.count}%, transparent ${location.count}%)`, // Adjust gradient based on count
+                background: `linear-gradient(to right, var(--dominant) ${
+                  locationCounts[location.country]
+                }%, transparent ${locationCounts[location.country]}%)`, // Adjust gradient based on count
                 gap: "10px",
                 marginBottom: "4px",
                 padding: "10px",
                 borderRadius: "0px",
               }}
             >
-              <img
-                src={`/images/countries/${countryCode}.svg`} // Use country code for the flag
-                alt={`${location.location} flag`}
-                style={{ width: "20px", height: "20px" }}
-              />
+              {type === "country" && ( // Only display flag if type is country
+                <img
+                  src={`/images/countries/${location.countryCode}.svg`} // Use country code for the flag
+                  alt={`${location.countryCode} flag`}
+                  style={{ width: "20px", height: "20px" }}
+                />
+              )}
 
-              <p style={{ color: "var(--secondary)" }}>{location.location}</p>
+              <p style={{ color: "var(--secondary)" }}>
+                {location.countryCode}
+              </p>
               <p
                 style={{
                   color: "var(--secondary)",
                   marginLeft: "auto",
                 }}
               >
-                {location.count} {/* Display count */}
+                {locationCounts[location.countryCode]} {/* Display count */}
               </p>
             </div>
           );

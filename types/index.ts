@@ -10,6 +10,13 @@ export interface Project {
   favIconURL: string;
 }
 
+export interface Location {
+  countryCode: string;
+  city: string;
+  region: string;
+  country: string;
+}
+
 export interface Activity {
   id: string;
   initial: boolean;
@@ -18,22 +25,15 @@ export interface Activity {
   project_id: string;
   browser: string;
   os: string;
-  location: {
-    city: string;
-    region: string;
-    country: string;
-  };
+  location: Location;
   version: string;
 }
 
 export interface User {
   browser: string;
   os: string;
-  location: {
-    city: string;
-    region: string;
-    country: string;
-  };
+    location: Location;
+
   version: string;
 }
 
@@ -46,11 +46,7 @@ export interface Revenue {
   browser: string;
   os: string;
   referrer: string;
-  location: {
-    city: string;
-    region: string;
-    country: string;
-  };
+  location: Location;
   version: string;
 }
 export interface Event {
@@ -62,11 +58,7 @@ export interface Event {
   browser: string;
   os: string;
   referrer: string;
-  location: {
-    city: string;
-    region: string;
-    country: string;
-  };
+  location: Location;
   version: string;
 }
 export enum SelectedNavItem {
