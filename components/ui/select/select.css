@@ -1,0 +1,17 @@
+.select {
+  border-width: 1px;
+  border-color: var(--outline);
+  border-radius: 6px;
+  padding: 4px 8px;
+  height: 100%;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  transition: all 0.3s ease;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #8d8d8d;
+  box-shadow: 0 0 0 4px rgba(214, 214, 214, 1);
+}

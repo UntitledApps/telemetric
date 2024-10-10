@@ -1,14 +1,6 @@
 import * as React from "react";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Project } from "@/types";
+import Select from "@/components/ui/select/select";
 
 interface ProjectSelectProps {
   projects: Project[];
@@ -34,22 +26,16 @@ const ProjectSelect: React.FC<ProjectSelectProps> = ({
       </p>
     );
   }
+
+  // get the selected project index
+
   return (
-    <Select onValueChange={onProjectChange} value={projects[0].id}>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="Select a project" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectLabel>Projects</SelectLabel>
-          {projects.map((project) => (
-            <SelectItem key={project.id} value={project.id}>
-              {project.name}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+    <Select
+      options={projects.map((project) => project.id)}
+      itemNames={projects.map((project) => project.name)}
+      selectedOption={"selectedProject.id"}
+      onOptionChange={(value) => onProjectChange(value)}
+    />
   );
 };
 

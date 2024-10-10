@@ -1,11 +1,14 @@
 import { Activity, User } from "@/types";
 import { useEffect, useState } from "react";
+import { QuestionMarkCircleIcon } from "@heroicons/react/24/solid";
+
 import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { CircleHelp } from "lucide-react";
+import { IconMangoFill, IconAppleLogo } from "symbols-react";
 
 interface OSUsage {
   os: string;
@@ -62,6 +65,8 @@ const OperatingSystemCard = ({ activities }: { activities: User[] }) => {
         style={{
           display: "flex",
           alignItems: "space-between",
+          width: "100%",
+          maxHeight: "40px",
           justifyContent: "space-between",
         }}
       >
@@ -73,20 +78,6 @@ const OperatingSystemCard = ({ activities }: { activities: User[] }) => {
         >
           Operating Systems
         </h4>
-        <HoverCard>
-          <HoverCardTrigger>
-            <CircleHelp
-              color="var(--subtitle)"
-              style={{
-                width: "15px",
-                height: "15px",
-              }}
-            />
-          </HoverCardTrigger>
-          <HoverCardContent>
-            <p>The operating system your users are using.</p>
-          </HoverCardContent>
-        </HoverCard>
 
         <p
           style={{
@@ -114,7 +105,8 @@ const OperatingSystemCard = ({ activities }: { activities: User[] }) => {
             minWidth: "100%",
             background: `linear-gradient(to right, var(--dominant) ${os.percentage}%, transparent ${os.percentage}%)`,
             gap: "10px",
-            marginBottom: "4px",
+            marginBottom:
+              osUsage.indexOf(os) === osUsage.length - 1 ? "0" : "4px",
             padding: "10px",
             borderRadius: "0px",
           }}

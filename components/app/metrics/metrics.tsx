@@ -6,6 +6,7 @@ import BrowsersCard from "./browsers";
 import UserChart from "./charts/userschart";
 import OperatingSystemCard from "./operatingsystems";
 import Tabs from "./tabs";
+import LocationsCard from "./location/locationscard";
 
 interface MetricsProps {
   selectedProjectIndex: number;
@@ -42,7 +43,7 @@ const Metrics: React.FC<MetricsProps> = ({
         )
       );
       setCurrentUserData(
-        projects[selectedProjectIndex].activities.map((activity) => {
+        uniqueActivitiesArray.map((activity) => {
           return {
             browser: activity.browser,
             os: activity.os,
@@ -76,7 +77,7 @@ const Metrics: React.FC<MetricsProps> = ({
   const onSelectedTabChanged = (index: number) => {
     if (index === 0) {
       setCurrentUserData(
-        projects[selectedProjectIndex].activities.map((activity) => {
+        uniqueActivitiesArray.map((activity) => {
           return {
             browser: activity.browser,
             os: activity.os,
@@ -142,6 +143,7 @@ const Metrics: React.FC<MetricsProps> = ({
           )}
         </div>
       </div>
+      <LocationsCard activities={currentUserData} />
     </motion.div>
   );
 };

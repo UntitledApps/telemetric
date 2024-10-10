@@ -49,7 +49,7 @@ export function Navbar({
         src="/images/logo.png"
         alt="Logo"
         style={{
-          borderRadius: "12px",
+          borderRadius: "0px",
           border: "2px solid #DAEBFD",
           cursor: "pointer",
           boxShadow: "0px 1px 2px 0px rgba(16, 24, 40, 0.06)",

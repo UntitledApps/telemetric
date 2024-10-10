@@ -19,6 +19,7 @@ interface LocationData {
   country: string;
   region: string;
   city: string;
+  country_code: string;
 }
 
 async function getLocation(ip: string): Promise<LocationData> {
@@ -33,6 +34,7 @@ async function getLocation(ip: string): Promise<LocationData> {
     country: responseData.country,
     region: responseData.region,
     city: responseData.city,
+    country_code: responseData.country_code,
   };
 }
 
@@ -87,6 +89,7 @@ async function handleRequest(req: Request): Promise<Response> {
     const {
       projectID,
       initial,
+
       referrer,
       os,
       version,
@@ -115,6 +118,7 @@ async function handleRequest(req: Request): Promise<Response> {
           initial: initial,
           os: safeOs === null ? getOSFromUserAgent(userAgent) : safeOs,
           referrer: referrer,
+          user_agent: userAgent,
           location: location,
           timestamp: new Date().toISOString(),
           version: version,

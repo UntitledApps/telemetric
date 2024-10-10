@@ -1,12 +1,45 @@
 import { Project } from "@/types";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./projectcard.css";
+import UserChart from "@/components/app/metrics/charts/userschart";
+import ProjectChart from "./projectchart";
+
 interface ProjectCardProps {
   project: Project;
   onClick: (projectId: string) => void;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
+  const isValidUrl = (url: string) => {
+    return url.startsWith("https://");
+  };
+
+  const [appIcon, setAppIcon] = useState<string>("images/logo.png");
+
+  const fetchAppIcon = async (bundleId: string) => {
+    if (bundleId.startsWith("https://")) {
+      return (
+        "https://www.google.com/s2/favicons?domain=" + bundleId + "&sz=256"
+      );
+    }
+
+    const response = await fetch(
+      `https://itunes.apple.com/lookup?bundleId=${bundleId}`
+    );
+    const data = await response.json();
+    if (data.resultCount > 0) {
+      const appData = data.results[0];
+      return appData.artworkUrl100; // Use the 100x100 icon URL
+    }
+    return null; // Return null if no icon is found
+  };
+
+  useEffect(() => {
+    fetchAppIcon(project.url).then((icon) => {
+      setAppIcon(icon);
+    });
+  }, [project.url]);
+
   return (
     <div onClick={() => onClick(project.id)} className="project-card">
       <div
@@ -24,24 +57,28 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
             width: "30px",
             height: "30px",
             borderRadius: "50%",
-            background: `linear-gradient(${Math.random() * 360}deg,
-              hsl(${Math.random() * 360}, 70%, 50%),
-              hsl(${Math.random() * 360}, 70%, 50%))`,
+
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
           }}
         >
-          <p style={{ color: "white", fontSize: "16px", fontWeight: "400" }}>
-            {project.name.charAt(0).toUpperCase()}
-          </p>
+          <img
+            src={appIcon}
+            style={{
+              width: "30px",
+              height: "30px",
+              borderRadius: "50%",
+            }}
+            alt={project.name} // Added alt attribute for accessibility
+          />
         </div>
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "start",
-            gap: "4px",
+            gap: "0px",
             justifyContent: "start",
           }}
         >
@@ -49,13 +86,32 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
           <p
             style={{
               fontSize: "14px",
+              lineHeight: "14px",
               fontWeight: "400",
               color: "var(--subtitle)",
             }}
           >
             {project.type}
           </p>
+          <p
+            style={{
+              fontSize: "12px",
+              fontWeight: "400",
+              color: "var(--subtitle)",
+            }}
+          ></p>
         </div>
+      </div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: "10px",
+          justifyContent: "start",
+        }}
+      >
+        <ProjectChart activities={project.activities} />
       </div>
     </div>
   );

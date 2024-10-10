@@ -1,6 +1,6 @@
 // Avatar.js
 import { createClient } from "@/utils/supabase/client";
-import { Avatar } from "@lemonsqueezy/wedges";
+
 import { useEffect, useRef, useState } from "react";
 import "./Avatar.css";
 
@@ -35,7 +35,7 @@ const UserAccount = ({ onClick }: { onClick?: () => void }) => {
   const overlayRef = useRef<HTMLDivElement>(null); // {{ edit_1 }}
 
   return (
-    <Avatar
+    <img
       alt="Image alt text"
       src="https://images.unsplas.com/photo-1517841905240-472988babdf9?w=250&h=250&auto=format&fit=crop"
     />

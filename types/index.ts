@@ -6,9 +6,8 @@ export interface Project {
   activities: Activity[];
   revenue: Revenue[];
   events: Event[];
-
+  url: string;
   favIconURL: string;
-  ogImageURL: string;
 }
 
 export interface Activity {

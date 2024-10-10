@@ -13,7 +13,6 @@ const BrowsersCard = ({ activities }: { activities: User[] }) => {
   React.useEffect(() => {
     const browserCounts: { [key: string]: number } = {};
 
-  
     activities.forEach((activity) => {
       const browser = activity.browser; // Access the browser from activities
       if (browser) {
@@ -57,6 +56,7 @@ const BrowsersCard = ({ activities }: { activities: User[] }) => {
         style={{
           display: "flex",
           alignItems: "space-between",
+          width: "100%",
           justifyContent: "space-between",
         }}
       >
@@ -64,6 +64,8 @@ const BrowsersCard = ({ activities }: { activities: User[] }) => {
           style={{
             color: "var(--secondary)",
             padding: "10px",
+            maxHeight: "40px",
+            lineHeight: "30px",
           }}
         >
           Browsers
@@ -94,7 +96,10 @@ const BrowsersCard = ({ activities }: { activities: User[] }) => {
             minWidth: "100%",
             background: `linear-gradient(to right, var(--dominant) ${browser.percentage}%, transparent ${browser.percentage}%)`,
             gap: "10px",
-            marginBottom: "4px",
+            marginBottom:
+              browserUsage.indexOf(browser) === browserUsage.length - 1
+                ? "0"
+                : "4px",
             padding: "10px",
             borderRadius: "0px",
           }}
