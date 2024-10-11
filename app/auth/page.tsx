@@ -3,7 +3,7 @@
 import Button from "@/components/ui/button/button";
 import Input from "@/components/ui/input/input";
 import "@/components/ui/input/input.css"; // Import your CSS file
-import { createClient } from "@/utils/supabase/Client";
+import { createClient } from "@/utilsss/supabase/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import OTPInput from "react-otp-input";

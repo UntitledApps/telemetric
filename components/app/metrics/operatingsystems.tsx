@@ -46,7 +46,6 @@ const OperatingSystemCard = ({ activities }: { activities: string[] }) => {
         display: "flex",
         alignItems: "start",
 
-        minWidth: "500px",
         justifyContent: "start",
         backgroundColor: "var(--on-dominant)",
         flexDirection: "column",
@@ -87,78 +86,83 @@ const OperatingSystemCard = ({ activities }: { activities: string[] }) => {
           borderBottom: "1px solid var(--outline)",
         }}
       ></div>
-      {osUsage.length === 0 ? (
-        <div
-          style={{
-            color: "var(--subtitle)",
-            padding: "10px",
-            fontSize: "12px",
-            textAlign: "center",
-            width: "100%",
-          }}
-        >
-          No data. Yet.
-        </div>
-      ) : (
-        osUsage.map((os) => (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: osUsage.indexOf(os) * 0.1 }}
-            key={os.os}
+      <div style={{ width: "100%" }}>
+        {osUsage.length === 0 ? (
+          <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              maxWidth: "100%",
-              minWidth: "100%",
-              background: `linear-gradient(to right, var(--dominant) ${os.percentage}%, transparent ${os.percentage}%)`,
-              gap: "10px",
-              marginBottom:
-                osUsage.indexOf(os) === osUsage.length - 1 ? "0" : "4px",
+              color: "var(--subtitle)",
               padding: "10px",
-              borderRadius: "0px",
+              fontSize: "12px",
+              textAlign: "center",
+              width: "100%",
             }}
           >
-            <Image
-              src={`/images/os/${os.os.toLowerCase().replace(/\s+/g, "")}.png`}
-              alt={`${os.os} logo`}
-              width={20}
-              height={20}
+            No data. Yet.
+          </div>
+        ) : (
+          osUsage.map((os) => (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: osUsage.indexOf(os) * 0.1 }}
+              key={os.os}
               style={{
-           
-                filter:
-                  os.os.toLowerCase() === "ios" &&
-                  typeof window !== "undefined" &&
-                  window.matchMedia &&
-                  window.matchMedia("(prefers-color-scheme: dark)").matches
-                    ? "invert(1)"
-                    : "none",
-              }}
-            />
-
-            <p
-              style={{
-                color: "var(--secondary)",
-              }}
-            >
-              {os.os === "ios"
-                ? "iOS"
-                : os.os.toLowerCase() === "mac os"
-                ? "macOS"
-                : os.os.charAt(0).toUpperCase() + os.os.slice(1).toLowerCase()}
-            </p>
-            <p
-              style={{
-                color: "var(--secondary)",
-
-                marginLeft: "auto",
+                display: "flex",
+                alignItems: "center",
+                maxWidth: "100%",
+                minWidth: "100%",
+                background: `linear-gradient(to right, var(--dominant) ${os.percentage}%, transparent ${os.percentage}%)`,
+                gap: "10px",
+                marginBottom:
+                  osUsage.indexOf(os) === osUsage.length - 1 ? "0" : "4px",
+                padding: "10px",
+                borderRadius: "0px",
               }}
             >
-              {os.count} ({os.percentage}%) {/* Display count and percentage */}
-            </p>
-          </motion.div>
-        ))
-      )}
+              <Image
+                src={`/images/os/${os.os
+                  .toLowerCase()
+                  .replace(/\s+/g, "")}.png`}
+                alt={`${os.os} logo`}
+                width={20}
+                height={20}
+                style={{
+                  filter:
+                    os.os.toLowerCase() === "ios" &&
+                    typeof window !== "undefined" &&
+                    window.matchMedia &&
+                    window.matchMedia("(prefers-color-scheme: dark)").matches
+                      ? "invert(1)"
+                      : "none",
+                }}
+              />
+
+              <p
+                style={{
+                  color: "var(--secondary)",
+                }}
+              >
+                {os.os === "ios"
+                  ? "iOS"
+                  : os.os.toLowerCase() === "mac os"
+                  ? "macOS"
+                  : os.os.charAt(0).toUpperCase() +
+                    os.os.slice(1).toLowerCase()}
+              </p>
+              <p
+                style={{
+                  color: "var(--secondary)",
+
+                  marginLeft: "auto",
+                }}
+              >
+                {os.count} ({os.percentage}%){" "}
+                {/* Display count and percentage */}
+              </p>
+            </motion.div>
+          ))
+        )}
+      </div>
     </div>
   );
 };

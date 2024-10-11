@@ -1,11 +1,11 @@
-import { Activity } from "@/types";
 import React, { useState } from "react";
-import Chart from "./charts/chart";
+
+import Chart from "../charts/chart";
 import "./metricstab.css";
 
 interface Tab {
   label: string;
-  activities: Activity[];
+  activities: any[];
   count: string;
 }
 

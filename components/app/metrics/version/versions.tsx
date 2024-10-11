@@ -45,7 +45,7 @@ const VersionsCard = ({ versions }: { versions: string[] }) => {
         overflow: "hidden",
         display: "flex",
         alignItems: "start",
-        width: "100%",
+        flex: 1,
         justifyContent: "start",
         backgroundColor: "var(--on-dominant)",
         flexDirection: "column",

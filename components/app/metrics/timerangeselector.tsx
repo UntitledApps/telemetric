@@ -1,3 +1,4 @@
+import Select from "@/components/ui/select/select";
 import React, { useState } from "react";
 
 interface TimeRangeSelectorProps {
@@ -52,47 +53,30 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({ onSelect }) => {
   };
 
   return (
-    <div>
-      <h3>Select Time Range</h3>
-      <div>
-        <button onClick={() => handlePredefinedRange("today")}>Today</button>
-        <button onClick={() => handlePredefinedRange("yesterday")}>
-          Yesterday
-        </button>
-        <button onClick={() => handlePredefinedRange("last72hours")}>
-          Last 72 Hours
-        </button>
-        <button onClick={() => handlePredefinedRange("last7days")}>
-          Last 7 Days
-        </button>
-        <button onClick={() => handlePredefinedRange("last30days")}>
-          Last 30 Days
-        </button>
-        <button onClick={() => handlePredefinedRange("last90days")}>
-          Last 90 Days
-        </button>
-        <button onClick={() => handlePredefinedRange("lastYear")}>
-          Last Year
-        </button>
-        <button onClick={() => handlePredefinedRange("allTime")}>
-          All Time
-        </button>
-      </div>
-      <div>
-        <h4>Custom Range</h4>
-        <input
-          type="date"
-          value={customStartDate}
-          onChange={(e) => setCustomStartDate(e.target.value)}
-        />
-        <input
-          type="date"
-          value={customEndDate}
-          onChange={(e) => setCustomEndDate(e.target.value)}
-        />
-        <button onClick={handleCustomRange}>Apply Custom Range</button>
-      </div>
-    </div>
+    <Select
+      options={[
+        "today",
+        "yesterday",
+        "last72hours",
+        "last7days",
+        "last30days",
+        "last90days",
+        "lastYear",
+        "allTime",
+      ]}
+      onOptionChange={handlePredefinedRange}
+      selectedOption={""}
+      itemNames={[
+        "Today",
+        "Yesterday",
+        "Last 72 Hours",
+        "Last 7 Days",
+        "Last 30 Days",
+        "Last 90 Days",
+        "Last Year",
+        "All Time",
+      ]}
+    />
   );
 };
 

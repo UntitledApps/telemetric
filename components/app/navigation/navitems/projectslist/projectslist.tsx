@@ -2,7 +2,7 @@ import ProjectCard from "@/components/ui/projectcard/projectcard";
 import { Project } from "@/types";
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import "./projects.css"; // Import your CSS file
+import "./projectslist.css"; // Import your CSS file
 
 // Import the useProjects hook
 

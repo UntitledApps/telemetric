@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 
 import { Project, Revenue, SelectedNavItem } from "@/types/index";
 
-import Metrics from "./metrics/metrics";
+import Metrics from "./metrics/metrics/metrics";
 
-import { createClient } from "@/utils/supabase/Client";
-import { Navbar } from "./navigation/navbar";
-import DataExplorer from "./navigation/navitems/data_explorer";
-import Projects from "./navigation/navitems/projects";
+import { createClient } from "@/utilsss/supabase/client";
+import { Navbar } from "./navigation/navbar/navbar";
+
+import Projects from "./navigation/navitems/projectslist/projectslist";
 
 export function Dashboard() {
   // Change this to a regular function
@@ -62,17 +62,25 @@ export function Dashboard() {
       } else {
         const fetchedProjects: Project[] = []; // Temporary array to hold fetched projects
 
+        // Check if projects are already in local storage
+        const storedProjects = localStorage.getItem("projects");
+        const projectsFromStorage = storedProjects
+          ? JSON.parse(storedProjects)
+          : [];
+
         // Set to track unique project IDs
-
         for (const projectID of data.projects) {
-          // Check if the project ID already exists in the set
-
-          if (projects.find((project) => project.id === projectID)) {
+          // Check if the project ID already exists in the storage or state
+          if (
+            projectsFromStorage.find(
+              (project: Project) => project.id === projectID
+            ) ||
+            projects.find((project) => project.id === projectID)
+          ) {
             continue; // Skip to the next iteration if the ID already exists
           }
 
-          // Add the project ID to the set
-
+          // Fetch project data
           const { data: projectData, error: projectError } = await supabase
             .from("projects")
             .select("*")
@@ -122,11 +130,24 @@ export function Dashboard() {
           }
         }
 
+        // Store fetched projects in local storage
+        localStorage.setItem(
+          "projects",
+          JSON.stringify([...projectsFromStorage, ...fetchedProjects])
+        );
+
         setProjects((prevProjects) => [...prevProjects, ...fetchedProjects]);
         setHasLoaded(true);
       }
     };
-    if (!hasLoadedProjects) {
+
+    // Load projects from local storage if they exist
+    const storedProjects = localStorage.getItem("projects");
+    if (storedProjects) {
+      const projectsFromStorage = JSON.parse(storedProjects);
+      setProjects(projectsFromStorage);
+      setHasLoaded(true);
+    } else if (!hasLoadedProjects) {
       fetchProjectsAndActivities();
     }
   }, []);
@@ -147,14 +168,19 @@ export function Dashboard() {
     switch (selectedNavItem) {
       case SelectedNavItem.PROJECTS:
         return (
-          <Projects onProjectSelect={handleProjectChange} projects={projects} />
+          <div className="flex justify-center items-center">
+            <Projects
+              onProjectSelect={handleProjectChange}
+              projects={projects}
+            />
+          </div>
         );
       case SelectedNavItem.METRICS:
         return (
           <Metrics selectedProject={selectedProject!} projects={projects} />
         );
       case SelectedNavItem.ACCOUNT:
-        return <DataExplorer />;
+        return <div>Account</div>;
 
       default:
         return null;

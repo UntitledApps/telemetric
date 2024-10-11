@@ -31,7 +31,7 @@ const LocationsList = ({
   }, [locations]);
 
   return (
-    <>
+    <div style={{ overflow: "auto", width: "100%" }}>
       {sortedLocations.length > 0 ? (
         sortedLocations.map((location) => {
           const uniqueKey = location; // Use location as the unique key
@@ -94,7 +94,7 @@ const LocationsList = ({
       ) : (
         <p style={{ color: "var(--subtitle)" }}>No locations available.</p> // Fallback message
       )}
-    </>
+    </div>
   );
 };
 

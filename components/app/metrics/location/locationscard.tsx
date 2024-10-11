@@ -7,7 +7,7 @@ import LocationsList from "./locationslist";
 import { Location } from "@/types/index";
 
 const LocationsCard = ({
-  locationsPassed,
+  locationsPassed: locations,
 }: {
   locationsPassed: Location[];
 }) => {
@@ -23,24 +23,24 @@ const LocationsCard = ({
   React.useEffect(() => {
     const locationCounts: { [key: string]: number } = {};
 
-    locationsPassed.forEach((location) => {
+    locations.forEach((location) => {
       setCountries(
-        locationsPassed
+        locations
           .filter((location) => location.country)
           .map((location) => location.country)
       );
       setCities(
-        locationsPassed
+        locations
           .filter((location) => location.city)
           .map((location) => location.city)
       );
       setRegions(
-        locationsPassed
+        locations
           .filter((location) => location.region)
           .map((location) => location.region)
       );
       setCountryCodes(
-        locationsPassed
+        locations
           .filter((location) => location.country_code)
           .reduce((acc, location) => {
             acc[location.country] = location.country_code;
@@ -50,7 +50,7 @@ const LocationsCard = ({
 
     });
 
-  }, [locationsPassed, selectedTab]);
+  }, [locations, selectedTab]);
 
   const tabs = [
     {

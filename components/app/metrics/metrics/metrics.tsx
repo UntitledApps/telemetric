@@ -1,13 +1,15 @@
 import { Activity, Event, Project, Revenue, User } from "@/types/index";
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import BrowsersCard from "./browsers";
-import LocationsCard from "./location/locationscard";
+import BrowsersCard from "../browsers";
+import LocationsCard from "../location/locationscard";
 import "./metrics.css";
-import Tabs from "./metricstab";
-import OperatingSystemCard from "./operatingsystems";
-import ReferrersCard from "./referrer/referrers";
-import VersionsCard from "./version/versions";
+
+import Tabs from "../metricstabs/metricstab";
+import OperatingSystemCard from "../operatingsystems";
+import ReferrersCard from "../referrer/referrers";
+import VersionsCard from "../version/versions";
+import UserWorldMap from "../map";
 
 interface MetricsProps {
   selectedProject: Project;
@@ -25,6 +27,7 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, projects }) => {
   const [currentSelectTabIndex, setCurrentSelectTabIndex] = useState<number>(0);
 
   useEffect(() => {
+    console.log("selectedProject", selectedProject);
     if (selectedProject) {
       const uniqueUserSet = new Set();
       selectedProject.activities.forEach((activity) => {
@@ -42,15 +45,10 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, projects }) => {
           0
         )
       );
-      updateCurrentUserData(currentSelectTabIndex, selectedProject);
-    }
-  }, [selectedProject]); // Update when selectedProject changes
 
-  useEffect(() => {
-    if (selectedProject) {
       updateCurrentUserData(currentSelectTabIndex, selectedProject);
     }
-  }, [currentSelectTabIndex, selectedProject]); // Update when tab index or selected project changes
+  }, [selectedProject, currentSelectTabIndex]); // Update when selectedProject or tab index changes
 
   const updateCurrentUserData = (tabIndex: number, project: Project) => {
     if (tabIndex === 0) {
@@ -60,24 +58,29 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, projects }) => {
           os: activity.os,
           location: activity.location,
           version: activity.version,
+          referrer: activity.referrer,
         }))
       );
     } else if (tabIndex === 1) {
+      console.log("revenueData", project.revenue);
       setCurrentUserData(
         project.revenue.map((revenue) => ({
           browser: revenue.browser,
           os: revenue.os,
           location: revenue.location,
           version: revenue.version,
+          referrer: revenue.referrer,
         }))
       );
     } else if (tabIndex === 2) {
+      console.log("eventsData", project.events);
       setCurrentUserData(
         project.events.map((event) => ({
           browser: event.browser,
           os: event.os,
           location: event.location,
           version: event.version,
+          referrer: event.referrer,
         }))
       );
     }
@@ -94,12 +97,12 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, projects }) => {
     },
     {
       label: "Revenue",
-      activities: uniqueActivitiesArray,
+      activities: revenueData,
       count: revenueTotal + "€",
     },
     {
       label: "Events",
-      activities: uniqueActivitiesArray,
+      activities: eventsData,
       count: eventsData.length.toString(),
     },
   ];
@@ -124,36 +127,34 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, projects }) => {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
+      className="metrics-container-wrapper"
       transition={{ duration: 0.5 }} // Adjust the duration as needed
     >
-      <div
-        style={{
-          padding: "10px",
+      <div className="metrics-container">
+        <Tabs tabs={tabs} onSelectedTabChanged={handleTabChange} />
 
-          display: "flex",
-          gap: "10px",
-          flexDirection: "column",
-        }}
-      >
-        <div className="metrics-container">
-          <Tabs tabs={tabs} onSelectedTabChanged={handleTabChange} />
-
-          <div className="metrics-container-item">
-            <OperatingSystemCard activities={osData} />
-            {selectedProject.type === "website" && (
-              <BrowsersCard activities={browserData} />
-            )}
-          </div>
+        <div className="metrics-container-item">
+          <OperatingSystemCard activities={osData} />
+          {selectedProject.type === "website" && (
+            <BrowsersCard activities={browserData} />
+          )}
         </div>
-        <div className="metrics-container-item-2">
+        <div
+          style={{
+            width: "fill",
+            maxWidth: "100%",
+          }}
+        >
           <LocationsCard locationsPassed={locationData} />
+
+        </div>
+        <UserWorldMap locationsPassed={locationData} />
+        <div className="metrics-container-item-2">
           {selectedProject.type === "website" && (
             <>
               <ReferrersCard referrers={referrerData} />
             </>
           )}
-        </div>
-        <div className="metrics-container-item-2">
           <VersionsCard versions={versionData} />
         </div>
       </div>
