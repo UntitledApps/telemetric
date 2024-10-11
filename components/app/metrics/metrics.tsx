@@ -1,4 +1,4 @@
-import { Activity, Event, Project, Revenue, User } from "@/types";
+import { Activity, Event, Project, Revenue, User } from "@/types/index";
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import BrowsersCard from "./browsers";

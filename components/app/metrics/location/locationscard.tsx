@@ -1,9 +1,10 @@
 import Alttabs from "@/components/app/metrics/location/locationstabs";
 import React from "react";
 
-import { Location } from "@/types";
+
 import "./locationscard.css";
 import LocationsList from "./locationslist";
+import { Location } from "@/types/index";
 
 const LocationsCard = ({
   locationsPassed,
@@ -46,7 +47,7 @@ const LocationsCard = ({
             return acc;
           }, {} as { [key: string]: string }) // Initialize as an empty object
       );
-      
+
     });
 
   }, [locationsPassed, selectedTab]);

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 
-import { Project, Revenue, SelectedNavItem } from "@/types";
+import { Project, Revenue, SelectedNavItem } from "@/types/index";
 
 import { createClient } from "@/utils/supabase/client";
 import Metrics from "./metrics/metrics";

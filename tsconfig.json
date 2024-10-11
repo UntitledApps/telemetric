@@ -20,7 +20,7 @@
     "baseUrl": ".", // Add this line
 
     "paths": {
-      "@/*": ["*"],
+      "@/": ["./"],
       "@/components/*": ["components/*"],
       "@/types/*": ["types/*"],
       "@/utils/*": ["utils/*"]
