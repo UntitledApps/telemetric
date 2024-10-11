@@ -1,7 +1,4 @@
-import { Project, SelectedNavItem } from "@/types";
-import { createClient } from "@/utils/supabase/client"; // Adjust the import path as necessary
-import { CircleUserRound, Ellipsis, Link, LogOut } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Project, SelectedNavItem } from "@/types/index";
 
 interface NavigationProps {
   selectedNavItem: SelectedNavItem;

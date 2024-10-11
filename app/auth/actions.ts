@@ -3,7 +3,6 @@
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/utils/supabase/server";
-import { Provider } from "@supabase/supabase-js";
 
 export async function logout() {
   const supabase = createClient();
@@ -11,4 +10,3 @@ export async function logout() {
   await supabase.auth.signOut();
   redirect("/");
 }
-

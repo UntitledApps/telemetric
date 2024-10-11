@@ -1,8 +1,8 @@
 import { Project } from "@/types";
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import "./projectcard.css";
 import ProjectChart from "./projectchart";
-import Image from "next/image";
 
 interface ProjectCardProps {
   project: Project;
@@ -14,7 +14,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
     return url.startsWith("https://");
   };
 
-  const [appIcon, setAppIcon] = useState<string>("images/logo.png");
+  const [appIcon, setAppIcon] = useState<string>("/images/logo.png");
 
   const fetchAppIcon = async (bundleId: string) => {
     if (bundleId.startsWith("https://")) {
@@ -65,9 +65,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
         >
           <Image
             src={appIcon}
+            width={30}
+            height={30}
             style={{
-              width: "30px",
-              height: "30px",
               borderRadius: "50%",
             }}
             alt={project.name} // Added alt attribute for accessibility

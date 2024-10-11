@@ -1,7 +1,6 @@
 // Avatar.js
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/Client";
 
-import Image from "next/image"
 import { useEffect, useRef, useState } from "react";
 import "./avatar.css";
 
@@ -35,14 +34,7 @@ const UserAccount = ({ onClick }: { onClick?: () => void }) => {
   const avatarLetter = userEmail ? userEmail[0].toUpperCase() : "U";
   const overlayRef = useRef<HTMLDivElement>(null); // {{ edit_1 }}
 
-  return (
-    <Image
-      height={40}
-      width={40}
-      alt="Image alt text"
-      src="https://images.unsplas.com/photo-1517841905240-472988babdf9?w=250&h=250&auto=format&fit=crop"
-    />
-  );
+  return <div>{avatarLetter}</div>;
 };
 
 export default UserAccount;

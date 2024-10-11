@@ -2,8 +2,8 @@ import { Project, SelectedNavItem } from "@/types";
 
 import Avatar from "@/components/ui/avatar/avatar";
 import Image from "next/image";
-import ProjectSelect from "./projectselect";
 import TimeRangeSelector from "../metrics/timerangeselector";
+import ProjectSelect from "./projectselect";
 
 interface HeaderProps {
   projects: Project[];

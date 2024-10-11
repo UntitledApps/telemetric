@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 
 import { Project, Revenue, SelectedNavItem } from "@/types/index";
 
-import { createClient } from "@/utils/supabase/client";
 import Metrics from "./metrics/metrics";
 
+import { createClient } from "@/utils/supabase/Client";
 import { Navbar } from "./navigation/navbar";
 import DataExplorer from "./navigation/navitems/data_explorer";
 import Projects from "./navigation/navitems/projects";

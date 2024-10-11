@@ -123,10 +123,8 @@ const BrowsersCard = ({ activities }: { activities: string[] }) => {
             <Image
               src={`/images/browsers/${browser.browser.toLowerCase()}.png`}
               alt={`${browser.browser} logo`}
-              style={{
-                width: "20px",
-                height: "20px",
-              }}
+              width={20}
+              height={20}
             />
 
             <p

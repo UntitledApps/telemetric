@@ -149,11 +149,9 @@ const ReferrersCard = ({ referrers }: { referrers: string[] }) => {
               <Image
                 src={`https://www.google.com/s2/favicons?domain=${referrer.referrer}&sz=256`}
                 alt={`${referrer.referrer} favicon`}
-                style={{
-                  width: "20px",
-                  height: "20px",
-                  borderRadius: "4px",
-                }}
+                width={20}
+                height={20}
+               
               />
               <p
                 style={{

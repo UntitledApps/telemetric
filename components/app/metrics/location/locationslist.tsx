@@ -41,52 +41,52 @@ const LocationsList = ({
             <motion.a
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-                     href={`https://www.google.com/maps/place/${encodeURIComponent(
-                  location
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                key={uniqueKey}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  maxWidth: "100%",
-                  minWidth: "100%",
-                  background: `linear-gradient(to right, var(--dominant) ${(
-                    (locationCounts[location] / locations.length) *
-                    100
-                  ).toFixed(1)}%, transparent ${(
-                    (locationCounts[location] / locations.length) *
-                    100
-                  ).toFixed(1)}%)`, // Adjust gradient based on percentage
-                  gap: "10px",
-                  marginBottom: "4px",
-                  padding: "10px",
-                  borderRadius: "0px",
-                }}
+              href={`https://www.google.com/maps/place/${encodeURIComponent(
+                location
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              key={uniqueKey}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                maxWidth: "100%",
+                minWidth: "100%",
+                background: `linear-gradient(to right, var(--dominant) ${(
+                  (locationCounts[location] / locations.length) *
+                  100
+                ).toFixed(1)}%, transparent ${(
+                  (locationCounts[location] / locations.length) *
+                  100
+                ).toFixed(1)}%)`, // Adjust gradient based on percentage
+                gap: "10px",
+                marginBottom: "4px",
+                padding: "10px",
+                borderRadius: "0px",
+              }}
               transition={{ delay: sortedLocations.indexOf(location) * 0.01 }}
             >
               {countryCode && (
-                  <Image
-                    src={`/images/countries/${countryCode}.svg`}
-                    alt={`${countryCode} flag`}
-                    style={{ width: "20px", height: "20px" }}
-                  />
-                )}
-                <p style={{ color: "var(--secondary)" }}>{location}</p>
+                <Image
+                  src={`/images/countries/${countryCode}.svg`}
+                  alt={`${countryCode} flag`}
+                  width={20}
+                  height={20}
+                />
+              )}
+              <p style={{ color: "var(--secondary)" }}>{location}</p>
 
-                <p
-                  style={{
-                    color: "var(--secondary)",
-                    marginLeft: "auto",
-                  }}
-                >
-                  {locationCounts[location]} (
-                  {(
-                    (locationCounts[location] / locations.length) *
-                    100
-                  ).toFixed(1)}
-                  %) {/* Display count and percentage */}
+              <p
+                style={{
+                  color: "var(--secondary)",
+                  marginLeft: "auto",
+                }}
+              >
+                {locationCounts[location]} (
+                {((locationCounts[location] / locations.length) * 100).toFixed(
+                  1
+                )}
+                %) {/* Display count and percentage */}
               </p>
             </motion.a>
           );

@@ -3,7 +3,7 @@
 import Button from "@/components/ui/button/button";
 import Input from "@/components/ui/input/input";
 import "@/components/ui/input/input.css"; // Import your CSS file
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase/Client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import OTPInput from "react-otp-input";
@@ -45,7 +45,6 @@ const LoginPage = () => {
   };
 
   const handleVerifyCode = async (value: string) => {
-  
     const { error } = await supabase.auth.verifyOtp({
       email: email,
       token: value,
@@ -77,7 +76,6 @@ const LoginPage = () => {
           "Successfully logged in, but there was an error saving your data. Please try again."
         );
       } else {
-   
       }
 
       const promise = () =>

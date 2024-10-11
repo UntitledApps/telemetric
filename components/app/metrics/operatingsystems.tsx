@@ -122,9 +122,10 @@ const OperatingSystemCard = ({ activities }: { activities: string[] }) => {
             <Image
               src={`/images/os/${os.os.toLowerCase().replace(/\s+/g, "")}.png`}
               alt={`${os.os} logo`}
+              width={20}
+              height={20}
               style={{
-                width: "20px",
-                height: "20px",
+           
                 filter:
                   os.os.toLowerCase() === "ios" &&
                   typeof window !== "undefined" &&
