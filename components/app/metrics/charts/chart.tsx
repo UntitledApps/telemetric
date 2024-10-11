@@ -70,6 +70,9 @@ const Chart: React.FC<ChartProps> = ({ activities }) => {
         {
           data: completeData.map((item) => {
             const date = new Date(item.name);
+            const dayOfWeek = date.toLocaleString("default", {
+              weekday: "short",
+            });
             const month = date.toLocaleString("default", { month: "short" });
             const day = date.getDate();
 
@@ -87,7 +90,7 @@ const Chart: React.FC<ChartProps> = ({ activities }) => {
               }
             };
 
-            return `${month} ${day}${getOrdinalSuffix(day)}`;
+            return `${dayOfWeek}, ${day}${getOrdinalSuffix(day)} ${month}`;
           }),
           scaleType: "point",
           fill: "var(--subtitle)",

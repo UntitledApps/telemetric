@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import Image from "next/image";
 import React from "react";
 
 interface ReferrerUsage {
@@ -106,6 +107,7 @@ const ReferrersCard = ({ referrers }: { referrers: string[] }) => {
       ) : (
         referrerUsage.map((referrer) => (
           <motion.a
+            key={referrer.referrer} // Add the key prop here
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: referrerUsage.indexOf(referrer) * 0.01 }}
@@ -144,7 +146,7 @@ const ReferrersCard = ({ referrers }: { referrers: string[] }) => {
                 borderRadius: "0px",
               }}
             >
-              <img
+              <Image
                 src={`https://www.google.com/s2/favicons?domain=${referrer.referrer}&sz=256`}
                 alt={`${referrer.referrer} favicon`}
                 style={{

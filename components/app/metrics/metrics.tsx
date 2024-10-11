@@ -33,7 +33,7 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, projects }) => {
         }
       });
       setUniqueActivitiesArray(Array.from(uniqueUserSet) as Activity[]);
-    
+
       setRevenueData(selectedProject.revenue);
       setEventsData(selectedProject.events);
       setRevenueTotal(

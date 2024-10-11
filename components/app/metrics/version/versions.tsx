@@ -100,47 +100,41 @@ const VersionsCard = ({ versions }: { versions: string[] }) => {
       ) : (
         versionUsage.map((version) => (
           <motion.div
+            key={version.version} // Add the key prop here
             style={{
-              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              maxWidth: "100%",
+              minWidth: "100%",
+              background: `linear-gradient(to right, var(--dominant) ${version.percentage}%, transparent ${version.percentage}%)`,
+              gap: "10px",
+              marginBottom:
+                versionUsage.indexOf(version) === versionUsage.length - 1
+                  ? "0"
+                  : "4px",
+              padding: "10px",
+              borderRadius: "0px",
             }}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: versionUsage.indexOf(version) * 0.01 }}
           >
-            <div
-              key={version.version}
+            <p
               style={{
-                display: "flex",
-                alignItems: "center",
-                maxWidth: "100%",
-                minWidth: "100%",
-                background: `linear-gradient(to right, var(--dominant) ${version.percentage}%, transparent ${version.percentage}%)`,
-                gap: "10px",
-                marginBottom:
-                  versionUsage.indexOf(version) === versionUsage.length - 1
-                    ? "0"
-                    : "4px",
-                padding: "10px",
-                borderRadius: "0px",
+                color: "var(--secondary)",
               }}
             >
-              <p
-                style={{
-                  color: "var(--secondary)",
-                }}
-              >
-                {version.version === "" ? "Unknown" : version.version}
-              </p>
-              <p
-                style={{
-                  color: "var(--secondary)",
-                  marginLeft: "auto",
-                }}
-              >
-                {version.count} ({version.percentage}%){" "}
-                {/* Display count and percentage */}
-              </p>
-            </div>
+              {version.version === "" ? "Unknown" : version.version}
+            </p>
+            <p
+              style={{
+                color: "var(--secondary)",
+                marginLeft: "auto",
+              }}
+            >
+              {version.count} ({version.percentage}%){" "}
+              {/* Display count and percentage */}
+            </p>
           </motion.div>
         ))
       )}

@@ -3,11 +3,17 @@ import { Project, SelectedNavItem } from "@/types";
 import Avatar from "@/components/ui/avatar/avatar";
 import Image from "next/image";
 import ProjectSelect from "./projectselect";
+import TimeRangeSelector from "../metrics/timerangeselector";
 
 interface HeaderProps {
   projects: Project[];
   hasLoaded: boolean;
   onProjectChange: (value: string) => void;
+  handleTimeRangeSelect: (
+    range: string,
+    startDate?: Date,
+    endDate?: Date
+  ) => void;
   selectedProject: Project;
   onDestinationSelected: (navItem: SelectedNavItem) => void; // Change type to SelectedNavItem
   selectedIndex: SelectedNavItem; // Change type to SelectedNavItem
@@ -20,6 +26,7 @@ export function Navbar({
   projects,
   onProjectChange,
   hasLoaded,
+  handleTimeRangeSelect,
 }: HeaderProps) {
   // Check if the selected project has a metadata type of 'app'
   const showEnvironmentSelect = selectedProject?.type === "app";
@@ -77,6 +84,7 @@ export function Navbar({
           onProjectChange={onProjectChange}
           hasLoaded={hasLoaded}
         />
+        <TimeRangeSelector onSelect={handleTimeRangeSelect} />
       </div>
       <div
         style={{

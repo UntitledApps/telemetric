@@ -33,9 +33,18 @@ export function Dashboard() {
   }>({});
   const [hasLoaded, setHasLoaded] = useState<boolean>(false);
   const [revenueData, setRevenueData] = useState<Revenue[]>([]);
+  const [timeRange, setTimeRange] = useState<string>("");
 
   var hasLoadedProjects = false;
-
+  const handleTimeRangeSelect = (
+    range: string,
+    startDate?: Date,
+    endDate?: Date
+  ) => {
+    setTimeRange(range);
+    // You can also handle the startDate and endDate here for further processing
+    console.log("Selected Time Range:", range, startDate, endDate);
+  };
   useEffect(() => {
     const fetchProjectsAndActivities = async () => {
       hasLoadedProjects = true;
@@ -181,6 +190,7 @@ export function Dashboard() {
         onDestinationSelected={handleNavItemClick}
         selectedIndex={selectedNavItem}
         hasLoaded={hasLoaded}
+        handleTimeRangeSelect={handleTimeRangeSelect}
       />
 
       <main

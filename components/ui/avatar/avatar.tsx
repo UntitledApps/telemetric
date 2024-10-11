@@ -1,8 +1,9 @@
 // Avatar.js
 import { createClient } from "@/utils/supabase/client";
 
+import Image from "next/image"
 import { useEffect, useRef, useState } from "react";
-import "./Avatar.css";
+import "./avatar.css";
 
 const UserAccount = ({ onClick }: { onClick?: () => void }) => {
   // {{ edit_1 }}
@@ -35,7 +36,7 @@ const UserAccount = ({ onClick }: { onClick?: () => void }) => {
   const overlayRef = useRef<HTMLDivElement>(null); // {{ edit_1 }}
 
   return (
-    <img
+    <Image
       height={40}
       width={40}
       alt="Image alt text"

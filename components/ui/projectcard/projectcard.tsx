@@ -2,6 +2,7 @@ import { Project } from "@/types";
 import React, { useEffect, useState } from "react";
 import "./projectcard.css";
 import ProjectChart from "./projectchart";
+import Image from "next/image";
 
 interface ProjectCardProps {
   project: Project;
@@ -62,7 +63,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onClick }) => {
             alignItems: "center",
           }}
         >
-          <img
+          <Image
             src={appIcon}
             style={{
               width: "30px",

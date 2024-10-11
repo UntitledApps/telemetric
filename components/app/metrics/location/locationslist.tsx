@@ -1,6 +1,7 @@
 // Mapping of country names to country code
 
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 const LocationsList = ({
@@ -37,12 +38,14 @@ const LocationsList = ({
           const countryCode = countryCodes ? countryCodes[location] : undefined;
 
           return (
-            <motion.div
+            <motion.a
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: sortedLocations.indexOf(location) * 0.01 }}
-            >
-              <div
+                     href={`https://www.google.com/maps/place/${encodeURIComponent(
+                  location
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 key={uniqueKey}
                 style={{
                   display: "flex",
@@ -61,9 +64,10 @@ const LocationsList = ({
                   padding: "10px",
                   borderRadius: "0px",
                 }}
-              >
-                {countryCode && (
-                  <img
+              transition={{ delay: sortedLocations.indexOf(location) * 0.01 }}
+            >
+              {countryCode && (
+                  <Image
                     src={`/images/countries/${countryCode}.svg`}
                     alt={`${countryCode} flag`}
                     style={{ width: "20px", height: "20px" }}
@@ -83,9 +87,8 @@ const LocationsList = ({
                     100
                   ).toFixed(1)}
                   %) {/* Display count and percentage */}
-                </p>
-              </div>
-            </motion.div>
+              </p>
+            </motion.a>
           );
         })
       ) : (
