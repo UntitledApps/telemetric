@@ -1,5 +1,5 @@
 // Avatar.js
-import { createClient } from "@/utilsss/supabase/client";
+import { createClient } from "@/utils/supabase/client";
 
 import { useEffect, useRef, useState } from "react";
 import "./avatar.css";

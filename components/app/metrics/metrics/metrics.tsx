@@ -1,22 +1,29 @@
 import { Activity, Event, Project, Revenue, User } from "@/types/index";
 import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
-import BrowsersCard from "../browsers";
-import LocationsCard from "../location/locationscard";
-import "./metrics.css";
+import BrowsersCard from "../browsers/browsers";
+import EventsCard from "../events/events";
 
+import LocationsCard from "../locations/locationscard";
 import Tabs from "../metricstabs/metricstab";
-import OperatingSystemCard from "../operatingsystems";
+import OperatingSystemCard from "../os/operatingsystems";
 import ReferrersCard from "../referrer/referrers";
 import VersionsCard from "../version/versions";
-import UserWorldMap from "../map";
+import "./metrics.css";
 
 interface MetricsProps {
   selectedProject: Project;
   projects: Project[];
+  selectedTimeRange: string;
+  loading: boolean;
 }
 
-const Metrics: React.FC<MetricsProps> = ({ selectedProject, projects }) => {
+const Metrics: React.FC<MetricsProps> = ({
+  selectedProject,
+  projects,
+  selectedTimeRange,
+  loading,
+}) => {
   const [uniqueActivitiesArray, setUniqueActivitiesArray] = useState<
     Activity[]
   >([]);
@@ -27,7 +34,6 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, projects }) => {
   const [currentSelectTabIndex, setCurrentSelectTabIndex] = useState<number>(0);
 
   useEffect(() => {
-    console.log("selectedProject", selectedProject);
     if (selectedProject) {
       const uniqueUserSet = new Set();
       selectedProject.activities.forEach((activity) => {
@@ -48,7 +54,7 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, projects }) => {
 
       updateCurrentUserData(currentSelectTabIndex, selectedProject);
     }
-  }, [selectedProject, currentSelectTabIndex]); // Update when selectedProject or tab index changes
+  }, [selectedProject, currentSelectTabIndex]);
 
   const updateCurrentUserData = (tabIndex: number, project: Project) => {
     if (tabIndex === 0) {
@@ -89,6 +95,7 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, projects }) => {
   const handleTabChange = (index: number) => {
     setCurrentSelectTabIndex(index);
   };
+
   const tabs = [
     {
       label: "Unique Visitors",
@@ -128,10 +135,24 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, projects }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className="metrics-container-wrapper"
-      transition={{ duration: 0.5 }} // Adjust the duration as needed
+      transition={{ duration: 0.5 }}
     >
       <div className="metrics-container">
-        <Tabs tabs={tabs} onSelectedTabChanged={handleTabChange} />
+        <Tabs
+          loading={loading}
+          tabs={tabs}
+          onSelectedTabChanged={handleTabChange}
+          selectedTimeRange={selectedTimeRange}
+        />
+
+        {currentSelectTabIndex === 2 && (
+          <div className="metrics-container-item">
+            <EventsCard
+              events={eventsData.map((event) => event.name)}
+              users={uniqueActivitiesArray.map((activity) => activity.id)}
+            />
+          </div>
+        )}
 
         <div className="metrics-container-item">
           <OperatingSystemCard activities={osData} />
@@ -139,16 +160,10 @@ const Metrics: React.FC<MetricsProps> = ({ selectedProject, projects }) => {
             <BrowsersCard activities={browserData} />
           )}
         </div>
-        <div
-          style={{
-            width: "fill",
-            maxWidth: "100%",
-          }}
-        >
+        <div style={{ width: "fill", maxWidth: "100%" }}>
           <LocationsCard locationsPassed={locationData} />
-
         </div>
-        <UserWorldMap locationsPassed={locationData} />
+
         <div className="metrics-container-item-2">
           {selectedProject.type === "website" && (
             <>

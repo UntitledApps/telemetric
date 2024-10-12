@@ -5,7 +5,7 @@ import { Project, Revenue, SelectedNavItem } from "@/types/index";
 
 import Metrics from "./metrics/metrics/metrics";
 
-import { createClient } from "@/utilsss/supabase/client";
+import { createClient } from "@/utils/supabase/client";
 import { Navbar } from "./navigation/navbar/navbar";
 
 import Projects from "./navigation/navitems/projectslist/projectslist";
@@ -36,14 +36,80 @@ export function Dashboard() {
   const [timeRange, setTimeRange] = useState<string>("");
 
   var hasLoadedProjects = false;
-  const handleTimeRangeSelect = (
+  const handleTimeRangeSelect = async (
     range: string,
     startDate?: Date,
     endDate?: Date
   ) => {
     setTimeRange(range);
-    // You can also handle the startDate and endDate here for further processing
-    console.log("Selected Time Range:", range, startDate, endDate);
+    // Set loading state
+    setLoading(true);
+    // Reset error state
+    setError(null);
+    if (selectedProject) {
+      const { data: activitiesData, error: activitiesError } = await supabase
+        .from("activities")
+        .select("*")
+        .eq("project_id", selectedProject.id)
+        .gte(
+          "timestamp",
+          startDate?.toISOString() ||
+            new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+        )
+        .lte("timestamp", endDate?.toISOString() || new Date().toISOString());
+
+      const { data: revenueData, error: revenueError } = await supabase
+        .from("revenue")
+        .select("*")
+        .eq("project_id", selectedProject.id)
+        .gte(
+          "timestamp",
+          startDate?.toISOString() ||
+            new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+        )
+        .lte("timestamp", endDate?.toISOString() || new Date().toISOString());
+
+      const { data: eventsData, error: eventsError } = await supabase
+        .from("events")
+        .select("*")
+        .eq("project_id", selectedProject.id)
+        .gte(
+          "timestamp",
+          startDate?.toISOString() ||
+            new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
+        )
+        .lte("timestamp", endDate?.toISOString() || new Date().toISOString());
+
+      if (activitiesError) setError(activitiesError.message);
+      if (revenueError) setError(revenueError.message);
+      if (eventsError) setError(eventsError.message);
+
+      const updatedProject = {
+        ...selectedProject,
+        activities: activitiesData || [],
+        revenue: revenueData || [],
+        events: eventsData || [],
+      };
+
+      setSelectedProject(updatedProject);
+
+      // Update the project in the projects array
+      setProjects((prevProjects) =>
+        prevProjects.map((project) =>
+          project.id === updatedProject.id ? updatedProject : project
+        )
+      );
+      setLoading(false);
+
+      // Update local storage
+      const storedProjects = JSON.parse(
+        localStorage.getItem("projects") || "[]"
+      );
+      const updatedStoredProjects = storedProjects.map((project: Project) =>
+        project.id === updatedProject.id ? updatedProject : project
+      );
+      localStorage.setItem("projects", JSON.stringify(updatedStoredProjects));
+    }
   };
   useEffect(() => {
     const fetchProjectsAndActivities = async () => {
@@ -177,7 +243,12 @@ export function Dashboard() {
         );
       case SelectedNavItem.METRICS:
         return (
-          <Metrics selectedProject={selectedProject!} projects={projects} />
+          <Metrics
+            selectedProject={selectedProject!}
+            projects={projects}
+            selectedTimeRange={timeRange}
+            loading={loading}
+          />
         );
       case SelectedNavItem.ACCOUNT:
         return <div>Account</div>;
@@ -185,14 +256,6 @@ export function Dashboard() {
       default:
         return null;
     }
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        Loading...
-      </div>
-    );
   }
 
   if (error) return <div>Error: {error}</div>;

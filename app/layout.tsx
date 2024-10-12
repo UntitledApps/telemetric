@@ -2,7 +2,6 @@ import { createClient } from "@supabase/supabase-js";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google"; // {{ edit_1 }}
-import { Toaster } from "sonner";
 
 import "./globals.css";
 
@@ -27,7 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className} style={{ margin: "0px" }}>
         {children}
-        <Toaster position="top-center" richColors closeButton />
+
         <SpeedInsights />
       </body>
     </html>

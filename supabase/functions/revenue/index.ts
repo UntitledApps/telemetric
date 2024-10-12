@@ -18,6 +18,7 @@ interface LocationData {
   country: string;
   region: string;
   city: string;
+  country_code: string;
 }
 
 async function getLocation(ip: string): Promise<LocationData> {
@@ -32,6 +33,7 @@ async function getLocation(ip: string): Promise<LocationData> {
     country: responseData.country,
     region: responseData.region,
     city: responseData.city,
+    country_code: responseData.country_code,
   };
 }
 
@@ -51,14 +53,35 @@ function getBrowserFromUserAgent(userAgent: string): string {
   if (userAgent.includes("Ddg")) {
     return "DuckDuckGo Browser";
   }
+  if (userAgent.includes("Brave")) {
+    return "Brave";
+  }
+  if (userAgent.includes("Vivaldi")) {
+    return "Vivaldi";
+  }
+  if (userAgent.includes("SamsungBrowser")) {
+    return "Samsung Internet";
+  }
+  if (userAgent.includes("Opera Mini")) {
+    return "Opera Mini";
+  }
   if (userAgent.includes("Edge") || userAgent.includes("Edg")) {
     return "Edge";
   }
   if (userAgent.includes("Opera") || userAgent.includes("OPR")) {
     return "Opera";
   }
-  if (userAgent.includes("Chrome")) {
-    return "Chrome";
+  if (userAgent.includes("MSIE") || userAgent.includes("Trident")) {
+    return "Internet Explorer";
+  }
+  if (userAgent.includes("Yandex")) {
+    return "Yandex Browser";
+  }
+  if (userAgent.includes("UCWEB") || userAgent.includes("UCBrowser")) {
+    return "UC Browser";
+  }
+  if (userAgent.includes("Focus")) {
+    return "Firefox Focus";
   }
   if (userAgent.includes("Firefox")) {
     return "Firefox";
@@ -66,10 +89,11 @@ function getBrowserFromUserAgent(userAgent: string): string {
   if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
     return "Safari";
   }
-  if (userAgent.includes("MSIE") || userAgent.includes("Trident")) {
-    return "Internet Explorer";
+  if (userAgent.includes("Chrome")) {
+    return "Chrome";
   }
-  return "app";
+
+  return "Unknown Browser";
 }
 // Never remove this!: supabase functions deploy revenue --no-verify-jwt
 async function handleRequest(req: Request): Promise<Response> {
@@ -85,8 +109,11 @@ async function handleRequest(req: Request): Promise<Response> {
       projectID,
       referrer,
       total,
+      os,
       version,
     } = requestBody;
+
+    const safeOs = os || null;
 
     // Extract User-Agent from request headers
     const userAgent = req.headers.get("User-Agent") || "";
@@ -107,10 +134,10 @@ async function handleRequest(req: Request): Promise<Response> {
           project_id: projectID,
           timestamp: new Date().toISOString(),
           version: version,
-
+          user_agent: userAgent,
           total: total * 100,
           browser: getBrowserFromUserAgent(userAgent),
-          os: getOSFromUserAgent(userAgent),
+          os: safeOs === null ? getOSFromUserAgent(userAgent) : safeOs,
           location: location,
           referrer: referrer,
         },

@@ -1,6 +1,6 @@
 import { Project, SelectedNavItem } from "@/types";
 import Image from "next/image";
-import TimeRangeSelector from "../../metrics/timerangeselector";
+import TimeRangeSelector from "../timerange/timerangeselector";
 import ProjectSelect from "../projectselect";
 import "./navbar.css";
 

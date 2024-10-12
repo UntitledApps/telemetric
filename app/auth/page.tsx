@@ -3,17 +3,39 @@
 import Button from "@/components/ui/button/button";
 import Input from "@/components/ui/input/input";
 import "@/components/ui/input/input.css"; // Import your CSS file
-import { createClient } from "@/utilsss/supabase/client";
+import { createClient } from "@/utils/supabase/client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import OTPInput from "react-otp-input";
-import { toast } from "sonner";
+
+const Message = ({
+  message,
+  type,
+}: {
+  message: string;
+  type: "error" | "success";
+}) => {
+  return (
+    <p
+      style={{
+        color: type === "error" ? "red" : "green",
+        textAlign: "center",
+        fontSize: "12px",
+      }}
+    >
+      {message}
+    </p>
+  );
+};
 
 const LoginPage = () => {
   const [email, setEmail] = useState(""); // {{ edit_1 }}
   const [password, setPassword] = useState(""); // {{ edit_2 }}
   const [isLoading, setIsLoading] = useState(false); // {{ edit_3 }}
-  const [message, setMessage] = useState(""); // {{ edit_4 }}
+  const [message, setMessage] = useState<{
+    message: string;
+    type: "error" | "success";
+  } | null>(null); // {{ edit_4 }}
   const [isCodeSent, setIsCodeSent] = useState(false); // New state for OTP flow
   const [otp, setOtp] = useState(""); // New state for OTP input
   const supabase = createClient();
@@ -23,9 +45,6 @@ const LoginPage = () => {
     const {
       data: { session },
     } = await supabase.auth.getSession();
-    if (session) {
-      router.push("/");
-    }
   };
 
   // Use useEffect to check auth status when component mounts
@@ -52,45 +71,37 @@ const LoginPage = () => {
     });
 
     if (error) {
-      setMessage(
-        "This ain't the code we're looking for. Try again." +
+      setMessage({
+        message:
+          "This ain't the code we're looking for. Try again." +
           " " +
-          error.message
-      );
+          error.message,
+        type: "error",
+      });
       setOtp(""); // Clear the OTP input
       // Set focus back to the first input after 10ms
       setTimeout(() => {
         setOtp(""); // Clear the OTP input
       }, 10);
     } else {
-      const { data, error } = await supabase.from("users").upsert(
-        {
-          id: supabase.auth.getUser().then(({ data }) => data.user?.id),
-        },
-        { onConflict: "id" }
-      );
+      const { data, error } = await supabase.from("users").upsert({
+        id: supabase.auth.getUser().then(({ data }) => data.user?.id),
+      });
 
       if (error) {
         console.error("Error upserting user data:", error);
-        setMessage(
-          "Successfully logged in, but there was an error saving your data. Please try again."
-        );
+        setMessage({
+          message: "Something went wrong. Please try again.",
+          type: "error",
+        });
       } else {
+        setMessage({
+          message: "Signing in...",
+          type: "success",
+        });
+
+        router.push("/");
       }
-
-      const promise = () =>
-        new Promise((resolve) =>
-          setTimeout(() => resolve({ name: "Sonner" }), 2000)
-        );
-
-      toast.promise(promise, {
-        loading: "Logging in...",
-        success: (data) => {
-          return "Logged in!";
-        },
-        error: "Error",
-      });
-      router.push("/");
     }
     setIsLoading(false);
   };
@@ -138,6 +149,44 @@ const LoginPage = () => {
                 renderSeparator={<span style={{ margin: "0 5px" }}></span>}
                 shouldAutoFocus={true} // Automatically focus on the first input
               />
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  marginTop: "10px",
+                }}
+              >
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() =>
+                    window.open("https://mail.google.com", "_blank")
+                  }
+                  style={{ flex: 1, marginRight: "5px" }}
+                >
+                  <img
+                    src="/images/gmail.png"
+                    alt="Gmail"
+                    style={{ width: "20px" }}
+                  />
+                  Open Gmail
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() =>
+                    window.open("https://outlook.live.com/mail/0/", "_blank")
+                  }
+                  style={{ flex: 1, marginLeft: "5px" }}
+                >
+                  <img
+                    src="/images/outlook.png"
+                    alt="Outlook"
+                    style={{ width: "20px" }}
+                  />
+                  Open Outlook
+                </Button>
+              </div>
             </form>
           ) : (
             <form
@@ -165,18 +214,7 @@ const LoginPage = () => {
               </Button>
             </form>
           )}
-          {message && (
-            <p
-              style={{
-                color: "red",
-                textAlign: "center",
-                fontSize: "12px",
-                marginTop: "10px",
-              }}
-            >
-              {message}
-            </p>
-          )}{" "}
+          {message && <Message message={message.message} type={message.type} />}
         </div>
       </div>
     </div>

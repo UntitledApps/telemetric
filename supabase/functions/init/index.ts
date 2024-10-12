@@ -54,14 +54,35 @@ function getBrowserFromUserAgent(userAgent: string): string {
   if (userAgent.includes("Ddg")) {
     return "DuckDuckGo Browser";
   }
+  if (userAgent.includes("Brave")) {
+    return "Brave";
+  }
+  if (userAgent.includes("Vivaldi")) {
+    return "Vivaldi";
+  }
+  if (userAgent.includes("SamsungBrowser")) {
+    return "Samsung Internet";
+  }
+  if (userAgent.includes("Opera Mini")) {
+    return "Opera Mini";
+  }
   if (userAgent.includes("Edge") || userAgent.includes("Edg")) {
     return "Edge";
   }
   if (userAgent.includes("Opera") || userAgent.includes("OPR")) {
     return "Opera";
   }
-  if (userAgent.includes("Chrome")) {
-    return "Chrome";
+  if (userAgent.includes("MSIE") || userAgent.includes("Trident")) {
+    return "Internet Explorer";
+  }
+  if (userAgent.includes("Yandex")) {
+    return "Yandex Browser";
+  }
+  if (userAgent.includes("UCWEB") || userAgent.includes("UCBrowser")) {
+    return "UC Browser";
+  }
+  if (userAgent.includes("Focus")) {
+    return "Firefox Focus";
   }
   if (userAgent.includes("Firefox")) {
     return "Firefox";
@@ -69,11 +90,11 @@ function getBrowserFromUserAgent(userAgent: string): string {
   if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
     return "Safari";
   }
-  if (userAgent.includes("MSIE") || userAgent.includes("Trident")) {
-    return "Internet Explorer";
+  if (userAgent.includes("Chrome")) {
+    return "Chrome";
   }
 
-  return "Unknown";
+  return "Unknown Browser";
 }
 
 // Never remove this!: supabase functions deploy init --no-verify-jwt
