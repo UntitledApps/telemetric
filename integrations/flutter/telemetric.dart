@@ -15,7 +15,6 @@ class Telemetric {
   // Private variable to store the project ID
   static String? _projectID;
   static String? _userID;
-  static bool initial = false;
   static String? _version = '1.0.0';
 
   /// Initializes the Telemetric with a [projectID].
@@ -36,7 +35,6 @@ class Telemetric {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({
           'projectID': _projectID,
-          "initial": initial,
           "version": _version,
           "os": _getOS(),
         }),
@@ -129,7 +127,6 @@ class Telemetric {
     final prefs = await SharedPreferences.getInstance();
     _userID = prefs.getString('telemetric_user_id');
     if (_userID == null) {
-      initial = true;
       _userID = _generateUserID();
       await prefs.setString('telemetric_user_id', _userID!);
     }

@@ -46,9 +46,8 @@ async function handleRequest(req: Request): Promise<Response> {
         },
         body: JSON.stringify({
           reqString: {
-            headers: new Headers(req.headers),
-            method: req.method,
-            url: req.url,
+            userAgent: req.headers.get("User-Agent") || "",
+            ip: req.headers.get("cf-connecting-ip") || "127.0.0.1",
           },
           projectID,
 
@@ -67,10 +66,10 @@ async function handleRequest(req: Request): Promise<Response> {
       throw new Error(`Filter function error: ${errorMessage}`);
     }
 
-    // If the filter function didn't throw an error, continue with the rest of the function
+    // Parse the JSON response to access browser and other properties
+    const filterData = await filterResponse.json();
 
-    // Extract User-Agent from request headers
-    const userAgent = req.headers.get("User-Agent") || "";
+    // If the filter function didn't throw an error, continue with the rest of the function
 
     const eventID = globalThis.crypto.randomUUID();
     const { error: eventError } = await supabase
@@ -84,10 +83,10 @@ async function handleRequest(req: Request): Promise<Response> {
           name: name,
           version: version,
           referrer: referrer,
-          browser: browser,
-          os: safeOs === null ? os : safeOs,
+          browser: filterData.browser,
+          os: safeOs === null ? filterData.reqOS : safeOs,
           user_agent: req.headers.get("User-Agent"),
-          location: location,
+          location: filterData.location,
         },
       ]);
 

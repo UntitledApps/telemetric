@@ -39,7 +39,7 @@ function getOSFromUserAgent(userAgent: string): string {
   if (userAgent.includes("Linux")) return "Linux";
   if (userAgent.includes("Android")) return "Android";
   if (userAgent.includes("iPhone") || userAgent.includes("iPad")) return "iOS";
-  return "Unknown";
+  return "";
 }
 
 // Function to check if the request is from a bot
@@ -47,7 +47,6 @@ function isBot(userAgent: string): boolean {
   const botKeywords = [
     "bot",
     "crawler",
-    "dart",
     "spider",
     "scraper",
     "indexer",
@@ -588,16 +587,17 @@ function isBot(userAgent: string): boolean {
   ];
 
   const lowerUserAgent = userAgent.toLowerCase();
+
   return botKeywords.some((keyword) => lowerUserAgent.includes(keyword));
 }
 
-async function getRequestData(req: Request): Promise<{
+async function getRequestData(req: { userAgent: string; ip: string }): Promise<{
   reqOS: string | null;
   browser: string | null;
   location: LocationData;
 }> {
-  const userAgent = req.headers.get("User-Agent") || "";
-  const ip = req.headers.get("cf-connecting-ip") || "127.0.0.1";
+  const userAgent = req.userAgent;
+  const ip = req.ip;
   // Fetch location data
   const location = await getLocation(ip);
   return {
@@ -655,7 +655,7 @@ function getBrowserFromUserAgent(userAgent: string): string {
   return "Unknown Browser";
 }
 
-// Never remove this!: supabase functions deploy event --no-verify-jwt
+// Never remove this!: supabase functions deploy filter --no-verify-jwt
 async function handleRequest(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") {
     // Handle CORS preflight request
@@ -666,19 +666,21 @@ async function handleRequest(req: Request): Promise<Response> {
   try {
     const requestBody = await req.json();
     const {
-      reqString,
+      passedRequest,
+      os,
     } = requestBody;
 
     // Extract User-Agent from request headers
-    if (isBot(reqString.headers.get("User-Agent") || "")) {
+
+    if (isBot(passedRequest.userAgent)) {
       return new Response("Bot defended", {
         status: 400,
         headers: { "Content-Type": "application/json" },
       });
     }
-    const { reqOS, browser, location } = await getRequestData(req);
+    const { reqOS, browser, location } = await getRequestData(passedRequest);
 
-    const safeOs = reqOS || null;
+    const safeOs = os || reqOS;
 
     const jsonResponse = new Response(
       JSON.stringify({

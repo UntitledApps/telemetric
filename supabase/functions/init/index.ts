@@ -30,6 +30,7 @@ async function handleRequest(req: Request): Promise<Response> {
       referrer,
       os,
       version,
+      userID,
     } = requestBody;
 
     // Set default values for optional fields
@@ -43,16 +44,11 @@ async function handleRequest(req: Request): Promise<Response> {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          reqString: {
-            headers: new Headers(req.headers),
-            method: req.method,
-            url: req.url,
+          passedRequest: {
+            userAgent: req.headers.get("User-Agent") || "",
+            ip: req.headers.get("cf-connecting-ip") || "127.0.0.1",
           },
-          projectID,
-          initial,
-          referrer,
-          os: safeOs, 
-          version,
+          os: safeOs,
         }),
       },
     );
@@ -65,26 +61,23 @@ async function handleRequest(req: Request): Promise<Response> {
       throw new Error(`Filter function error: ${errorMessage}`);
     }
 
-    // If the filter function didn't throw an error, continue with the rest of the function
+    // Parse the JSON response to access browser and other properties
+    const filterData = await filterResponse.json();
 
-    // Extract User-Agent from request headers
-    const userAgent = req.headers.get("User-Agent") || "";
     // Upsert user data
-
     const activityID = globalThis.crypto.randomUUID();
     const { error: activityError } = await supabase
       .from("activities") // Replace with your actual table name
       .upsert([
         {
           id: activityID, // Replace with the actual column name for activity ID
-
+          user_id: userID,
           project_id: projectID,
-          browser: filterResponse.browser,
-          initial: initial,
-          os: safeOs === null ? filterResponse.reqOS : safeOs,
+          browser: filterData.browser,
+          os: safeOs === null ? filterData.reqOS : safeOs,
           referrer: referrer,
-          user_agent: userAgent,
-          location: filterResponse.location,
+          user_agent: req.headers.get("User-Agent") || "",
+          location: filterData.location,
           timestamp: new Date().toISOString(),
           version: version,
         },
