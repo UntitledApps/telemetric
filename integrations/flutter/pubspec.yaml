@@ -1,4 +1,8 @@
 name: telemetric
+description: The privacy friendly, open source way of collecting user data.
+version: 0.0.7
+repository: https://github.com/untitledapps/telemetric
+
 # This package supports all platforms listed below.
 platforms:
   android:

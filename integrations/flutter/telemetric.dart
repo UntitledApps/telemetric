@@ -16,18 +16,16 @@ class Telemetric {
   static String? _projectID;
   static String? _userID;
   static bool initial = false;
-  static bool trackInDebug = false;
   static String? _version = '1.0.0';
 
   /// Initializes the Telemetric with a [projectID].
-  static Future<void> init(String projectID,
-      {String? version, bool trackInDebug = false}) async {
+  static Future<void> init(String projectID, {String? version}) async {
     _projectID = projectID;
-    Telemetric.trackInDebug = trackInDebug; // Fixed assignment
+
     _version = version;
 
     // Check if user ID exists in storage, if not create a new one
-    if (kDebugMode && !trackInDebug) return;
+    if (kDebugMode) return;
     await _initializeUserID();
     const url = 'https://hkromzwdaxhcragbcnmw.supabase.co/functions/v1/init';
 
@@ -56,7 +54,7 @@ class Telemetric {
   /// Tracks an event with a [name]
   static Future<void> event(String name) async {
     if (!safetyCheck("Event '$name'")) return;
-    if (kDebugMode && !trackInDebug) return;
+    if (kDebugMode) return;
     const url = 'https://hkromzwdaxhcragbcnmw.supabase.co/functions/v1/event';
 
     try {
@@ -84,7 +82,7 @@ class Telemetric {
   /// Tracks revenue with an [amount]
   static Future<void> revenue(double amount) async {
     if (!safetyCheck('Revenue')) return;
-    if (kDebugMode && !trackInDebug) return;
+    if (kDebugMode) return;
     const url = 'https://hkromzwdaxhcragbcnmw.supabase.co/functions/v1/revenue';
 
     try {

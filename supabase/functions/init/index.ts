@@ -1,4 +1,4 @@
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.4";
 
 const supabase = createClient(
   Deno.env.get("SUPABASE_URL")!,
@@ -14,89 +14,6 @@ function setCORSHeaders(response: Response): Response {
   );
   return response;
 }
-
-interface LocationData {
-  country: string;
-  region: string;
-  city: string;
-  country_code: string;
-}
-
-async function getLocation(ip: string): Promise<LocationData> {
-  const response = await fetch(`https://get.geojs.io/v1/ip/geo/${ip}.json`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch location data");
-  }
-
-  const responseData = await response.json();
-
-  return {
-    country: responseData.country,
-    region: responseData.region,
-    city: responseData.city,
-    country_code: responseData.country_code,
-  };
-}
-
-// Function to get OS from User-Agent
-function getOSFromUserAgent(userAgent: string): string {
-  if (userAgent.includes("Windows")) return "Windows";
-  if (userAgent.includes("Mac OS")) return "Mac OS";
-  if (userAgent.includes("X11")) return "UNIX";
-  if (userAgent.includes("Linux")) return "Linux";
-  if (userAgent.includes("Android")) return "Android";
-  if (userAgent.includes("iPhone") || userAgent.includes("iPad")) return "iOS";
-  return "Unknown";
-}
-
-// Function to get Browser from User-Agent
-function getBrowserFromUserAgent(userAgent: string): string {
-  if (userAgent.includes("Ddg")) {
-    return "DuckDuckGo Browser";
-  }
-  if (userAgent.includes("Brave")) {
-    return "Brave";
-  }
-  if (userAgent.includes("Vivaldi")) {
-    return "Vivaldi";
-  }
-  if (userAgent.includes("SamsungBrowser")) {
-    return "Samsung Internet";
-  }
-  if (userAgent.includes("Opera Mini")) {
-    return "Opera Mini";
-  }
-  if (userAgent.includes("Edge") || userAgent.includes("Edg")) {
-    return "Edge";
-  }
-  if (userAgent.includes("Opera") || userAgent.includes("OPR")) {
-    return "Opera";
-  }
-  if (userAgent.includes("MSIE") || userAgent.includes("Trident")) {
-    return "Internet Explorer";
-  }
-  if (userAgent.includes("Yandex")) {
-    return "Yandex Browser";
-  }
-  if (userAgent.includes("UCWEB") || userAgent.includes("UCBrowser")) {
-    return "UC Browser";
-  }
-  if (userAgent.includes("Focus")) {
-    return "Firefox Focus";
-  }
-  if (userAgent.includes("Firefox")) {
-    return "Firefox";
-  }
-  if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
-    return "Safari";
-  }
-  if (userAgent.includes("Chrome")) {
-    return "Chrome";
-  }
-
-  return "Unknown Browser";
-}
-
 // Never remove this!: supabase functions deploy init --no-verify-jwt
 async function handleRequest(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") {
@@ -110,7 +27,6 @@ async function handleRequest(req: Request): Promise<Response> {
     const {
       projectID,
       initial,
-
       referrer,
       os,
       version,
@@ -118,14 +34,42 @@ async function handleRequest(req: Request): Promise<Response> {
 
     // Set default values for optional fields
     const safeOs = os || null;
+    // Create a new Request object for the filter function
+    const filterRequest = new Request(
+      "https://hkromzwdaxhcragbcnmw.supabase.co/functions/v1/filter",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          reqString: {
+            headers: new Headers(req.headers),
+            method: req.method,
+            url: req.url,
+          },
+          projectID,
+          initial,
+          referrer,
+          os: safeOs, 
+          version,
+        }),
+      },
+    );
+
+    // Send the request to the filter function
+    const filterResponse = await fetch(filterRequest);
+    // Check if the filter function returned an error
+    if (!filterResponse.ok) {
+      const errorMessage = await filterResponse.text();
+      throw new Error(`Filter function error: ${errorMessage}`);
+    }
+
+    // If the filter function didn't throw an error, continue with the rest of the function
 
     // Extract User-Agent from request headers
     const userAgent = req.headers.get("User-Agent") || "";
     // Upsert user data
-    const ip = req.headers.get("cf-connecting-ip") || "127.0.0.1";
-
-    // Fetch location data
-    const location = await getLocation(ip);
 
     const activityID = globalThis.crypto.randomUUID();
     const { error: activityError } = await supabase
@@ -135,12 +79,12 @@ async function handleRequest(req: Request): Promise<Response> {
           id: activityID, // Replace with the actual column name for activity ID
 
           project_id: projectID,
-          browser: getBrowserFromUserAgent(userAgent),
+          browser: filterResponse.browser,
           initial: initial,
-          os: safeOs === null ? getOSFromUserAgent(userAgent) : safeOs,
+          os: safeOs === null ? filterResponse.reqOS : safeOs,
           referrer: referrer,
           user_agent: userAgent,
-          location: location,
+          location: filterResponse.location,
           timestamp: new Date().toISOString(),
           version: version,
         },
