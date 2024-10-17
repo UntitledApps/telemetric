@@ -268,6 +268,7 @@ export function Dashboard() {
         height: "100vh",
         width: "100vw", 
         overflowX:  "hidden",
+        backgroundColor: "var(--dominant)",
       
         padding: "0px",
 
@@ -291,7 +292,7 @@ export function Dashboard() {
           width: "100%",
           height: "100%",
           minHeight: "100vh",
-          overflowY: "auto",
+       
         }}
       >
         {renderContent()}

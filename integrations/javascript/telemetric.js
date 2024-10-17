@@ -1,14 +1,14 @@
+//C:\Users\likam\Documents\AppDevelopment\Webapps\Telemetric-Private\integrations\javascript\dist
 export default class Telemetric {
   static projectID = null;
   static userID = null;
   static version = null;
-  static trackOnLocalhost = false;
+
   static initial = false;
 
   static async init(projectID, version, trackOnLocalhost = false) {
     this.projectID = projectID;
     this.version = version;
-    this.trackOnLocalhost = trackOnLocalhost;
 
     await this._initializeUserID();
     const url = "https://hkromzwdaxhcragbcnmw.supabase.co/functions/v1/init";
@@ -16,7 +16,7 @@ export default class Telemetric {
     // Check if we should track on localhost
     if (window.location.hostname === "localhost" && !this.trackOnLocalhost) {
       console.log(
-        "Telemetric: Not tracking on localhost. You can change this by setting trackOnLocalhost to true."
+        "Telemetric initialized successfully, but will not send any data on Localhost."
       );
       return;
     }
@@ -27,8 +27,8 @@ export default class Telemetric {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          projectID: this.projectID,
-          initial: this.initial,
+          project_id: this.projectID,
+          user_id: this.userID,
           version: this.version,
 
           referrer: document.referrer,
@@ -44,9 +44,7 @@ export default class Telemetric {
   static async event(name) {
     if (!this.safetyCheck(`Event '${name}'`)) return;
     if (window.location.hostname === "localhost" && !this.trackOnLocalhost) {
-      console.log(
-        "Telemetric: Not tracking on localhost. You can change this by setting trackOnLocalhost to true."
-      );
+      console.log("Telemetric: Not tracking on localhost.");
       return;
     }
     const url = "https://hkromzwdaxhcragbcnmw.supabase.co/functions/v1/event";
@@ -58,9 +56,11 @@ export default class Telemetric {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          projectID: this.projectID,
+          project_id: this.projectID,
 
           name: name,
+
+          referrer: document.referrer,
           version: this.version,
         }),
       });
@@ -76,9 +76,7 @@ export default class Telemetric {
   static async revenue(amount) {
     if (!this.safetyCheck("Revenue")) return;
     if (window.location.hostname === "localhost" && !this.trackOnLocalhost) {
-      console.log(
-        "Telemetric: Not tracking on localhost. You can change this by setting trackOnLocalhost to true."
-      );
+      console.log("Telemetric: Not tracking on localhost.");
       return;
     }
     const url = "https://hkromzwdaxhcragbcnmw.supabase.co/functions/v1/revenue";
@@ -90,9 +88,9 @@ export default class Telemetric {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          projectID: this.projectID,
+          project_id: this.projectID,
           version: this.version,
-
+          referrer: document.referrer,
           total: amount,
         }),
       });
@@ -125,6 +123,7 @@ export default class Telemetric {
 
   static async _initializeUserID() {
     this.userID = localStorage.getItem("telemetric_user_id");
+  
     if (!this.userID) {
       this.initial = true;
       this.userID = this._generateUserID();

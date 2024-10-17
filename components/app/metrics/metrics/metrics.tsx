@@ -134,6 +134,7 @@ const Metrics: React.FC<MetricsProps> = ({
   );
 
   return (
+    <div className="flex justify-center items-center">
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -177,6 +178,7 @@ const Metrics: React.FC<MetricsProps> = ({
         </div>
       </div>
     </motion.div>
+    </div>
   );
 };
 

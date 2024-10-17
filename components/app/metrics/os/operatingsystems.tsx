@@ -45,7 +45,7 @@ const OperatingSystemCard = ({ activities }: { activities: string[] }) => {
 
         display: "flex",
         alignItems: "start",
-
+        width: "100%",
         justifyContent: "start",
         backgroundColor: "var(--on-dominant)",
         flexDirection: "column",
