@@ -265,7 +265,10 @@ export function Dashboard() {
       style={{
         display: "flex",
         flexDirection: "column",
-        height: "100%",
+        height: "100vh",
+        width: "100vw", 
+        overflowX:  "hidden",
+      
         padding: "0px",
 
         alignItems: "start",

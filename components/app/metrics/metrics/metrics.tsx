@@ -10,7 +10,7 @@ import OperatingSystemCard from "../os/operatingsystems";
 import ReferrersCard from "../referrer/referrers";
 import VersionsCard from "../version/versions";
 import "./metrics.css";
-
+import { DataType } from "@/types/index";
 interface MetricsProps {
   selectedProject: Project;
   projects: Project[];
@@ -101,16 +101,19 @@ const Metrics: React.FC<MetricsProps> = ({
       label: "Unique Visitors",
       activities: uniqueActivitiesArray,
       count: uniqueActivitiesArray.length.toString(),
+      dataType: DataType.USERS,
     },
     {
       label: "Revenue",
       activities: revenueData,
       count: revenueTotal + "€",
+      dataType: DataType.REVENUE,
     },
     {
       label: "Events",
       activities: eventsData,
       count: eventsData.length.toString(),
+      dataType: DataType.EVENTS,
     },
   ];
 

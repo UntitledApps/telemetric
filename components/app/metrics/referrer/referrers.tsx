@@ -95,7 +95,7 @@ const ReferrersCard = ({ referrers }: { referrers: string[] }) => {
               padding: "10px",
               fontSize: "12px",
               textAlign: "center",
-              width: "100%",
+        
             }}
           >
             No data. Yet.

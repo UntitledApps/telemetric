@@ -16,6 +16,8 @@ const Projects: React.FC<ProjectsProps> = ({ onProjectSelect, projects }) => {
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
 
   useEffect(() => {
+    // Scroll the page to the top when projects change
+    window.scrollTo(0, 0);
     setFilteredProjects(projects);
   }, [projects]);
 

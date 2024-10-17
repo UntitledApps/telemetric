@@ -10,6 +10,8 @@ import {
   YAxis,
 } from "recharts";
 
+import { DataType } from "@/types/index";
+
 interface Activity {
   timestamp: string; // Assuming the timestamp is in timestampz format
 }
@@ -22,9 +24,14 @@ interface AggregatedData {
 interface ChartProps {
   activities: Activity[];
   selectedTimeRange: string;
+  dataType: DataType; // Add the dataType prop
 }
 
-const Chart: React.FC<ChartProps> = ({ activities, selectedTimeRange }) => {
+const Chart: React.FC<ChartProps> = ({
+  activities,
+  selectedTimeRange,
+  dataType,
+}) => {
   // Get start and end dates from the selected time range
 
   const [startDate, endDate] = React.useMemo(() => {
@@ -58,7 +65,7 @@ const Chart: React.FC<ChartProps> = ({ activities, selectedTimeRange }) => {
         start = new Date(0); // Start from epoch
         break;
     }
-
+    console.log(start, end);
     return [start, end];
   }, [selectedTimeRange]);
   const filteredActivities = activities.filter((activity) => {
@@ -88,11 +95,11 @@ const Chart: React.FC<ChartProps> = ({ activities, selectedTimeRange }) => {
 
   // Create a complete date range for the selected time range
   const completeData: AggregatedData[] = [];
-  for (
-    let i = 0;
-    i < (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24);
-    i++
-  ) {
+  const totalDays =
+    Math.ceil(
+      (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
+    ) + 1; // Include end date
+  for (let i = 0; i < totalDays; i++) {
     const date = new Date(startDate);
     date.setDate(startDate.getDate() + i);
     const dateString = date.toISOString().split("T")[0];
@@ -105,6 +112,16 @@ const Chart: React.FC<ChartProps> = ({ activities, selectedTimeRange }) => {
   completeData.sort(
     (a, b) => new Date(a.name).getTime() - new Date(b.name).getTime()
   );
+
+  const formatXAxisLabel = (label: string) => {
+    const [datePart, hourPart] = label.split(" "); // Split into date and hour
+    const date = new Date(`${datePart}T00:00:00`); // Create a date object
+    const options: Intl.DateTimeFormatOptions = {
+      month: "short",
+      day: "numeric",
+    }; // Define formatting options
+    return date.toLocaleDateString("en-US", options); // Format the date
+  };
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -124,6 +141,9 @@ const Chart: React.FC<ChartProps> = ({ activities, selectedTimeRange }) => {
           axisLine={false}
           tickLine={false}
           tick={{ fill: "var(--unselected)", fontSize: 12 }}
+          domain={["dataMin", "dataMax"]} // Adjust domain for hours
+          type="category" // Ensure this is set to "category" for hour display
+          tickFormatter={formatXAxisLabel} // Use the custom formatter
         />
         <YAxis
           tickLine={false}
@@ -133,7 +153,7 @@ const Chart: React.FC<ChartProps> = ({ activities, selectedTimeRange }) => {
         <Tooltip
           content={({ payload, label }) => {
             if (payload && payload.length > 0) {
-              const date = new Date(label);
+              const date = new Date(label.split(" ")[0]); // Get the date part
               const formattedDate = date.toLocaleDateString("en-US", {
                 weekday: "short",
                 day: "numeric",
@@ -160,7 +180,11 @@ const Chart: React.FC<ChartProps> = ({ activities, selectedTimeRange }) => {
                     {formattedDate} ({daysAgoText})
                   </p>
                   <p style={{ color: "var(--secondary)" }}>
-                    Users: {payload[0].value}
+                    {dataType === DataType.USERS
+                      ? `Users: ${payload[0].value}`
+                      : dataType === DataType.REVENUE
+                      ? `Revenue: $${payload[0].value}`
+                      : `Events: ${payload[0].value}`}
                   </p>
                 </div>
               );

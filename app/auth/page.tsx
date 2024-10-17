@@ -4,6 +4,7 @@ import Button from "@/components/ui/button/button";
 import Input from "@/components/ui/input/input";
 import "@/components/ui/input/input.css"; // Import your CSS file
 import { createClient } from "@/utils/supabase/client";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import OTPInput from "react-otp-input";
@@ -18,7 +19,7 @@ const Message = ({
   return (
     <p
       style={{
-        color: type === "error" ? "red" : "green",
+        color: "var(--secondary )",
         textAlign: "center",
         fontSize: "12px",
       }}
@@ -45,6 +46,9 @@ const LoginPage = () => {
     const {
       data: { session },
     } = await supabase.auth.getSession();
+    if (session) {
+      router.push("/");
+    }
   };
 
   // Use useEffect to check auth status when component mounts
@@ -64,6 +68,10 @@ const LoginPage = () => {
   };
 
   const handleVerifyCode = async (value: string) => {
+    setMessage({
+      message: "Verifying code...",
+      type: "success",
+    });
     const { error } = await supabase.auth.verifyOtp({
       email: email,
       token: value,
@@ -84,23 +92,56 @@ const LoginPage = () => {
         setOtp(""); // Clear the OTP input
       }, 10);
     } else {
-      const { data, error } = await supabase.from("users").upsert({
-        id: supabase.auth.getUser().then(({ data }) => data.user?.id),
+      setMessage({
+        message: "Signing in...",
+        type: "success",
       });
+      const { data: userData } = await supabase.auth.getUser();
+      const userId = userData.user?.id;
 
-      if (error) {
-        console.error("Error upserting user data:", error);
-        setMessage({
-          message: "Something went wrong. Please try again.",
-          type: "error",
-        });
+      if (userId) {
+        const { data: existingUser, error: fetchError } = await supabase
+          .from("customers")
+          .select()
+          .eq("id", userId)
+          .single();
+
+        if (fetchError && fetchError.code !== "PGRST116") {
+          console.error("Error fetching user data:", fetchError);
+          setMessage({
+            message: "Something went wrong. Please try again.",
+            type: "error",
+          });
+        } else if (!existingUser) {
+          const { error: insertError } = await supabase
+            .from("users")
+            .insert({ id: userId });
+
+          if (insertError) {
+            console.error("Error inserting user data:", insertError);
+            setMessage({
+              message: "Something went wrong. Please try again.",
+              type: "error",
+            });
+          } else {
+            setMessage({
+              message: "Signing in...",
+              type: "success",
+            });
+            router.push("/");
+          }
+        } else {
+          setMessage({
+            message: "Signing in...",
+            type: "success",
+          });
+          router.push("/");
+        }
       } else {
         setMessage({
-          message: "Signing in...",
-          type: "success",
+          message: "User ID not found. Please try again.",
+          type: "error",
         });
-
-        router.push("/");
       }
     }
     setIsLoading(false);
@@ -113,14 +154,21 @@ const LoginPage = () => {
         justifyContent: "center",
         alignItems: "center",
         height: "100vh",
+        backgroundColor: "var(--dominant)",
       }}
     >
       <div style={{ maxWidth: "300px" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "0px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
           <div>
-            <p>
+            <p
+              style={{
+                color: "var(--secondary)",
+                fontSize: "14px",
+                textAlign: "start",
+              }}
+            >
               {isCodeSent
-                ? "Code has been sent! Give it a few minutes to arrive and then enter the code you received down below."
+                ? "Code has been sent! Give it a few minutes to arrive and then enter the code you received down below. It might land in your spam folder."
                 : "Welcome! Enter your email and we'll send you a code to login."}
             </p>
           </div>
@@ -153,21 +201,45 @@ const LoginPage = () => {
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
-                  marginTop: "10px",
+                  marginTop: "30px",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: "10px",
+                  width: "100%",
                 }}
               >
+                <p
+                  style={{
+                    color: "var(--secondary)",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                  }}
+                >
+                  Quickly access your email client
+                </p>
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() =>
                     window.open("https://mail.google.com", "_blank")
                   }
-                  style={{ flex: 1, marginRight: "5px" }}
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
+                    justifyContent: "center",
+                    gap: "10px",
+                    color: "var(--secondary)",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                  }}
                 >
-                  <img
-                    src="/images/gmail.png"
+                  <Image
+                    src="/images/gmail.webp"
                     alt="Gmail"
-                    style={{ width: "20px" }}
+                    width={20}
+                    height={14}
                   />
                   Open Gmail
                 </Button>
@@ -177,12 +249,23 @@ const LoginPage = () => {
                   onClick={() =>
                     window.open("https://outlook.live.com/mail/0/", "_blank")
                   }
-                  style={{ flex: 1, marginLeft: "5px" }}
+                  style={{
+                    flex: 1,
+                    display: "flex",
+                    width: "100%",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    gap: "10px",
+                    color: "var(--secondary)",
+                    fontSize: "14px",
+                    fontWeight: "500",
+                  }}
                 >
-                  <img
-                    src="/images/outlook.png"
+                  <Image
+                    src="/images/outlook.webp"
                     alt="Outlook"
-                    style={{ width: "20px" }}
+                    width={22}
+                    height={20}
                   />
                   Open Outlook
                 </Button>

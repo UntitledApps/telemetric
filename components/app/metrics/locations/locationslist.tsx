@@ -48,10 +48,10 @@ const LocationsList = ({
               rel="noopener noreferrer"
               key={uniqueKey}
               style={{
+                textDecoration: "none",
                 display: "flex",
                 alignItems: "center",
-                maxWidth: "100%",
-                minWidth: "100%",
+            
                 background: `linear-gradient(to right, var(--dominant) ${(
                   (locationCounts[location] / locations.length) *
                   100
@@ -92,7 +92,17 @@ const LocationsList = ({
           );
         })
       ) : (
-        <p style={{ color: "var(--subtitle)" }}>No locations available.</p> // Fallback message
+        <div
+        style={{
+          color: "var(--subtitle)",
+          padding: "10px",
+          fontSize: "12px",
+          textAlign: "center",
+          
+        }}
+      >
+        No data. Yet.
+      </div> // Fallback message
       )}
     </div>
   );

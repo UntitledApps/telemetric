@@ -66,3 +66,9 @@ export enum SelectedNavItem {
   METRICS = "METRICS",
   ACCOUNT = "ACCOUNT",
 }
+
+export enum DataType {
+  USERS = "users",
+  REVENUE = "revenue",
+  EVENTS = "events",
+}

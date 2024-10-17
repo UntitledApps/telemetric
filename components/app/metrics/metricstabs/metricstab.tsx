@@ -3,11 +3,13 @@ import React, { useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import Chart from "../charts/chart";
+import { DataType } from "@/types/index";
 import "./metricstab.css";
 interface Tab {
   label: string;
   activities: any[];
   count: string;
+  dataType: DataType;
 }
 
 interface TabsProps {
@@ -69,6 +71,7 @@ const Tabs: React.FC<TabsProps> = ({
         <Chart
           activities={tabs[activeIndex].activities}
           selectedTimeRange={selectedTimeRange}
+          dataType={tabs[activeIndex].dataType}
         />
       </div>
     </div>

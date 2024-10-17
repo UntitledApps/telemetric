@@ -9,6 +9,12 @@
   cursor: pointer;
 }
 
+.button:disabled {
+  color: #ffffff;
+
+  cursor: not-allowed;
+}
+
 .ghost {
   background-color: transparent;
   color: #000000;
@@ -16,7 +22,11 @@
 }
 
 .ghost:hover {
-  background-color: #00000016;
+  background-color: rgba(var(--secondary), 0.7);
+  color: #000000;
+}
+
+.ghost:disabled {
   color: #000000;
 }
 
