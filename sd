@@ -1,0 +1,8 @@
+#!/bin/bash
+# Script name: sd
+# This script deploys Supabase functions without verifying JWT
+supabase functions deploy event --no-verify-jwt
+supabase functions deploy revenue --no-verify-jwt
+supabase functions deploy init --no-verify-jwt
+supabase functions deploy filter --no-verify-jwt
+brew upgrade supabase

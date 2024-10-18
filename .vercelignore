@@ -1,0 +1,22 @@
+# Ignore node_modules directory
+node_modules/
+
+# Ignore build artifacts
+dist/
+build/
+
+# Ignore environment variable files
+.env
+.env.local
+.env.development
+.env.production
+
+# Ignore log files
+*.log
+
+# Ignore specific files
+secret.txt
+temp/
+
+integrations/
+

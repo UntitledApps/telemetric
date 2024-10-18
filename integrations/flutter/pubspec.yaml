@@ -1,0 +1,38 @@
+name: telemetric
+description: The privacy friendly, open source way of collecting user data.
+version: 0.0.7
+repository: https://github.com/untitledapps/telemetric
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+environment:
+  sdk: ^3.5.3
+  flutter: ">=1.17.0"
+topics:
+  - api
+  - logging
+  - analytics
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.3.2
+  web: ^1.1.0
+  http: ^1.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter packages.
+flutter:

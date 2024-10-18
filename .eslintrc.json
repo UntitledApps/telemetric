@@ -1,3 +1,9 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "react/no-unescaped-entities": "off",
+    "@next/next/no-page-custom-font": "off",
+    "react/react-in-jsx-scope": "off", // Disable this rule if you are using React 17+
+    "no-unused-vars": "off" // Disable unused vars rule
+  }
 }

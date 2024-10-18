@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Telemetric SDK Example</title>
+  </head>
+
+  <body>
+    <script src="https://hkromzwdaxhcragbcnmw.supabase.co/storage/v1/object/public/cdn/telemetric.bundle.js"></script>
+    <script>
+      // Access the default export of the Telemetric module
+      const Telemetric = window.Telemetric.default;
+
+      // Initialize the Telemetric SDK
+      if (Telemetric && typeof Telemetric.init === "function") {
+        Telemetric.init("c1badaba-2f6e-4a92-a0f8-eb173bdc03f2").then(() => {
+          // Track an event
+          Telemetric.event("Browser");
+
+          // Track revenue
+          Telemetric.revenue(0.99);
+        });
+      }
+    </script>
+    <button onclick="Telemetric.event('click')">Click Me</button>
+  </body>
+</html>

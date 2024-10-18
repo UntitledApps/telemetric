@@ -1,0 +1,67 @@
+.locations-tabs-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  background-color: var(--on-dominant);
+  height: 500px;
+}
+.locations-tabs-count {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--secondary);
+}
+.locations-tabs-count.active {
+  color: var(--accent);
+}
+
+.locations-tabs {
+  display: flex;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  border-bottom: 1px solid var(--outline);
+}
+.locations-tab {
+  width: 100%;
+  max-width: 200px;
+  text-align: start;
+  font-size: 14px;
+  align-items: start;
+  justify-content: start;
+  padding: 8px;
+  display: flex;
+  align-items: start;
+  justify-content: start;
+  flex-direction: column;
+  gap: 4px;
+
+  font-weight: 500;
+  flex: 1;
+  padding: 10px;
+  background: var(--on-dominant);
+  border: none;
+  cursor: pointer;
+  color: var(--unselected); /* Use your unselected text color variable */
+  transition: backgrounsd 0.3s, color 0.3s;
+
+  font-size: 16px;
+  font-weight: 500;
+}
+.locations-tab.active {
+  border-bottom: 5px solid var(--secondary); /* Use your accent color variable */
+  font-weight: bold;
+  color: var(--secondary);
+
+  font-weight: 500;
+  background: var(--on-dominant);
+}
+.locations-tab-content {
+  padding: 0px;
+  overflow-y: scroll;
+  scrollbar-width: none; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+.locations-tab-content::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
+  background: var(--on-dominant);
+}
