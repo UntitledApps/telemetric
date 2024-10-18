@@ -1,9 +1,19 @@
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog"; // Assuming you have a Dialog component
 import { CalendarIcon } from "@radix-ui/react-icons";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectItem,
+  SelectContent,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import React, { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { addDays } from "date-fns";
@@ -58,14 +68,14 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({ onSelect }) => {
 
     setSelectedRange(value);
     onSelect(value, startDate, new Date()); // Call onSelect with the selected range
-  }
+  };
 
   const handleRangeSelect = (range: DateRange | undefined) => {
     setDateRange(range);
     if (range?.from && range?.to) {
       onSelect("custom", range.from, range.to); // Call onSelect with the custom range
     }
-  }
+  };
 
   return (
     <div className={cn("grid gap-2")}>
@@ -82,7 +92,10 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({ onSelect }) => {
             {singleDate ? format(singleDate, "PPP") : <span>Pick a date</span>}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="flex w-auto flex-col space-y-2 p-2" align="start">
+        <PopoverContent
+          className="flex w-auto flex-col space-y-2 p-2"
+          align="start"
+        >
           <Select onValueChange={handlePresetChange}>
             <SelectTrigger>
               <SelectValue placeholder="Select a preset" />
