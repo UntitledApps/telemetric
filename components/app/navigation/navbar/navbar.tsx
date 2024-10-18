@@ -3,6 +3,7 @@ import Image from "next/image";
 import TimeRangeSelector from "../timerange/timerangeselector";
 import ProjectSelect from "../projectselect";
 import "./navbar.css";
+import { DatePickerWithPresetsAndRange } from "./test";
 
 interface HeaderProps {
   projects: Project[];
@@ -41,6 +42,7 @@ export function Navbar({
 
     
       <TimeRangeSelector onSelect={handleTimeRangeSelect} />
+      <DatePickerWithPresetsAndRange onSelect={() => {}} /> 
     </header>
   );
 }

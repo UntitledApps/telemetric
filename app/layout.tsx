@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google"; // {{ edit_1 }}
 
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,7 +27,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className} style={{ margin: "0px" }}>
+      <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
         {children}
+        </ThemeProvider>
+   
 
         <SpeedInsights />
       </body>

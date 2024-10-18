@@ -1,22 +1,32 @@
+import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog"; // Assuming you have a Dialog component
+import { CalendarIcon } from "@radix-ui/react-icons";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 import { Select, SelectItem, SelectContent, SelectTrigger, SelectValue } from "@/components/ui/select";
 import React, { useState } from "react";
+import { Calendar } from "@/components/ui/calendar";
+import { addDays } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { format } from "util";
 
 interface TimeRangeSelectorProps {
   onSelect: (range: string, startDate?: Date, endDate?: Date) => void;
 }
 
 const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({ onSelect }) => {
-  const [customStartDate, setCustomStartDate] = useState<string>("");
-  const [customEndDate, setCustomEndDate] = useState<string>("");
-  const [selectedRange, setSelectedRange] = useState<string>("last7days");
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false); // New state for dialog
+  const [dateRange, setDateRange] = React.useState<DateRange | undefined>({
+    from: new Date(2022, 0, 20),
+    to: addDays(new Date(2022, 0, 20), 20),
+  });
+  const [singleDate, setSingleDate] = React.useState<Date>();
+  const [selectedRange, setSelectedRange] = React.useState<string>("last7days");
 
-  const handlePredefinedRange = (range: string) => {
+  const handlePresetChange = (value: string) => {
     const now = new Date();
     let startDate: Date;
 
-    switch (range) {
+    switch (value) {
       case "today":
         startDate = new Date(now.setHours(0, 0, 0, 0));
         break;
@@ -42,51 +52,63 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({ onSelect }) => {
       case "allTime":
         startDate = new Date(0); // Start from epoch
         break;
-      case "custom":
-        startDate = new Date(0); // Start from epoch
-        setIsDialogOpen(true); // Open dialog for custom range
-        break;
       default:
         return;
     }
-    setSelectedRange(range);
-    //log the range
 
-    onSelect(range, startDate, new Date());
-  };
+    setSelectedRange(value);
+    onSelect(value, startDate, new Date()); // Call onSelect with the selected range
+  }
 
-  const handleCustomRange = () => {
-    if (customStartDate && customEndDate) {
-      onSelect("custom", new Date(customStartDate), new Date(customEndDate));
-      setIsDialogOpen(false); // Close dialog after selection
+  const handleRangeSelect = (range: DateRange | undefined) => {
+    setDateRange(range);
+    if (range?.from && range?.to) {
+      onSelect("custom", range.from, range.to); // Call onSelect with the custom range
     }
-  };
+  }
 
   return (
-    <>
-      <Select onValueChange={handlePredefinedRange} value={selectedRange}>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select a time range" />
-        </SelectTrigger>
-        <SelectContent position="popper">
-          <SelectItem value="today">Today</SelectItem>
-          <SelectItem value="yesterday">Yesterday</SelectItem>
-          <SelectItem value="last72hours">Last 72 Hours</SelectItem>
-          <SelectItem value="last7days">Last 7 Days</SelectItem>
-          <SelectItem value="last30days">Last 30 Days</SelectItem>
-          <SelectItem value="last90days">Last 90 Days</SelectItem>
-          <SelectItem value="lastYear">Last Year</SelectItem>
-          <SelectItem value="allTime">All Time</SelectItem>
-          <SelectItem value="custom">Custom</SelectItem> {/* Added custom option */}
-        </SelectContent>
-      </Select>
-      {/* Dialog for custom date range if isDialogOpen is true */}
-      {isDialogOpen && (
-        <div>
-          {/* Your custom date range input logic here */}
-        </div>
-      )}
-    </>
+    <div className={cn("grid gap-2")}>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button
+            variant={"outline"}
+            className={cn(
+              "w-[240px] justify-start text-left font-normal",
+              !singleDate && "text-muted-foreground"
+            )}
+          >
+            <CalendarIcon className="mr-2 h-4 w-4" />
+            {singleDate ? format(singleDate, "PPP") : <span>Pick a date</span>}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="flex w-auto flex-col space-y-2 p-2" align="start">
+          <Select onValueChange={handlePresetChange}>
+            <SelectTrigger>
+              <SelectValue placeholder="Select a preset" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectItem value="today">Today</SelectItem>
+              <SelectItem value="yesterday">Yesterday</SelectItem>
+              <SelectItem value="last72hours">Last 72 Hours</SelectItem>
+              <SelectItem value="last7days">Last 7 Days</SelectItem>
+              <SelectItem value="last30days">Last 30 Days</SelectItem>
+              <SelectItem value="last90days">Last 90 Days</SelectItem>
+              <SelectItem value="lastYear">Last Year</SelectItem>
+              <SelectItem value="allTime">All Time</SelectItem>
+            </SelectContent>
+          </Select>
+          <Calendar
+            initialFocus
+            mode="range"
+            defaultMonth={dateRange?.from}
+            selected={dateRange}
+            onSelect={handleRangeSelect}
+            numberOfMonths={2}
+          />
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 };
 

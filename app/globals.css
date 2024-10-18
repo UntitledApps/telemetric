@@ -6,30 +6,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-:root {
-  --accent: #0057ff;
-  --subtitle: #666666;
-  --dominant: #fafafa;
-  --on-dominant: #ffffff;
-  --secondary: #171717;
-  --outline: #e1e1e1;
-  --unselected: #8e8e8e;
-  --outline-hover: #c9c9c9;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --accent: #4d8eff;
-    --subtitle: #a0a0a0;
-    --dominant: #000000;
-    --on-dominant: #0a0a0a;
-    --secondary: #f0f0f0;
-    --outline: #212121;
-    --unselected: #707070;
-    --outline-hover: #4d4d4d;
-  }
-}
-
 @layer utilities {
   .text-balance {
     text-wrap: balance;
@@ -38,6 +14,15 @@ body {
 
 @layer base {
   :root {
+    --accent: #0057ff;
+    --subtitle: #666666;
+    --dominant: #fafafa;
+    --on-dominant: #ffffff;
+    --secondary: #171717;
+    --outline: #e1e1e1;
+    --unselected: #8e8e8e;
+    --outline-hover: #c9c9c9;
+
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
@@ -46,7 +31,7 @@ body {
     --popover-foreground: 0 0% 3.9%;
     --primary: 0 0% 9%;
     --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 96.1%;
+  
     --secondary-foreground: 0 0% 9%;
     --muted: 0 0% 96.1%;
     --muted-foreground: 0 0% 45.1%;
@@ -65,6 +50,16 @@ body {
     --radius: 0.5rem;
   }
   .dark {
+    --accent: #4d8eff;
+    --subtitle: #a0a0a0;
+    --dominant: #000000;
+    --secondary: #f4f4f4;
+    --on-dominant: #0a0a0a;
+
+    --outline: #212121;
+    --unselected: #707070;
+    --outline-hover: #4d4d4d;
+
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
     --card: 0 0% 3.9%;
@@ -73,7 +68,7 @@ body {
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
+    
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 14.9%;
     --muted-foreground: 0 0% 63.9%;

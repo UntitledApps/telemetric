@@ -1,6 +1,6 @@
 .navbar {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: start;
   justify-content: start;
   margin-top: 100px;

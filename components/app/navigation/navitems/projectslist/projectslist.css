@@ -1,11 +1,11 @@
 /* styles.css */
 .projects-container {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 10px;
   padding: 10px;
   width: 100%;
-  max-width: 400px;
+  max-width: 80%;
 }
 
 @media (max-width: 550px) {

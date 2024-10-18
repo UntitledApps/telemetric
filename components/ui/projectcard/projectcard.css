@@ -1,6 +1,7 @@
 .project-card {
   border-radius: 8px;
   height: 100px;
+  
 
   border: 1px solid var(--outline);
   color: var(--secondary);
